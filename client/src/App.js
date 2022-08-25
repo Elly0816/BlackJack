@@ -31,6 +31,7 @@ function App() {
   const [numOfDealerCards, setNumOfDealerCards] = useState(dealerCards.length);
   const [playerCards, setPlayerCards] = useState([]);
   const [numOfPlayerCards, setNumOfPlayerCards] = useState(playerCards.length);
+  const [backCard, setBackCard] = useState(false);
 
   function shuffleDeck(){ //This shuffles the deck
     let shuffled = imageList
@@ -46,17 +47,18 @@ function App() {
 
   function drawCards(){//Draw two cards for the player and one for the dealer
     setNumInDeck(imageList.length);
-    let dealerCardList = [...dealerCards];
-    for(let i=0; i<1; i++){
+    let dealerCardList = [...dealerCards]; //Holds the dealer cards for use in loop
+    for(let i=0; i<2; i++){
       dealerCardList.push(deck.pop());
       setDeck(deck.slice(0, deck.length));
       setNumInDeck(deck.length);
     };
     console.log(`DealerCardList: ${dealerCardList}`);
     setDealerCards([...dealerCardList]);
+    setBackCard(true);
     setNumOfDealerCards(dealerCardList.length);
 
-    let playerCardList = [...playerCards];
+    let playerCardList = [...playerCards]; //Holds the player cards for use in loop
     for (let i=0; i<2; i++){
       playerCardList.push(deck.pop());
       setDeck(deck.slice(0, deck.length));
@@ -85,7 +87,7 @@ function App() {
 
   return (
     <div className="App">
-      <DealerContext.Provider value={{dealerCards, numOfDealerCards}}>
+      <DealerContext.Provider value={{dealerCards, numOfDealerCards, backCard}}>
         <Dealer/>
       </DealerContext.Provider>
 

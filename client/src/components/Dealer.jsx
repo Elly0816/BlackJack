@@ -20,8 +20,10 @@ export default function Dealer(){
     return <div className='dealer'>
             <span>Dealer</span>
             <div className='flex-container'>
-                {Array.from({ length: numCards}, ((item, index) => <Card face={cardFaces[index]} key={index}/>))}
+                {Array.from({ length: numCards}, ((item, index) => index === 0 ? 
+                <Card face={'back.png'} key={index}/>
+                : <Card face={cardFaces[index]} key={index}/>))}
             </div>
-            <Card face={'back.png'}/>
+            <Card face={'deck'}/>
           </div>
 }
