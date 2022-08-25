@@ -1,3 +1,22 @@
 body {
     margin: 0;
 }
+
+.App {
+    background-color: green;
+}
+
+.dealer,
+.player {
+    color: white;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.card {
+    border-style: outline;
+    width: 50px;
+    height: 72.6px;
+}

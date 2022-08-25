@@ -63,11 +63,11 @@ function App() {
 
   return (
     <div className="App">
-      <DealerContext.Provider>
+      <DealerContext.Provider value={{dealerCards, numOfDealerCards}}>
         <Dealer/>
       </DealerContext.Provider>
 
-      <PlayerContext.Provider>
+      <PlayerContext.Provider value={{playerCards, numOfPlayerCards}}>
         <Player/>
       </PlayerContext.Provider>
     </div>
