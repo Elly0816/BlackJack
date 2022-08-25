@@ -1,15 +1,18 @@
-body {
+body,
+div {
     margin: 0;
 }
 
 .App {
     background-color: green;
+    min-height: 100vh;
 }
 
 .dealer,
 .player {
     color: white;
     padding: 10% 2% 5%;
+    height: 50%;
     font-weight: bold;
     font-size: x-large;
 }
