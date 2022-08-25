@@ -22,5 +22,6 @@ export default function Dealer(){
             <div className='flex-container'>
                 {Array.from({ length: numCards}, ((item, index) => <Card face={cardFaces[index]} key={index}/>))}
             </div>
+            <Card face={'back.png'}/>
           </div>
 }

@@ -1,6 +1,8 @@
 import './App.css';
 import Dealer from './components/Dealer';
 import Player from './components/Player';
+import Hit from './components/Hit';
+import Stand from './components/Stand';
 import { useState, createContext, useEffect} from 'react';
 
 //Get images in folder and add them to an object
@@ -90,6 +92,10 @@ function App() {
       <PlayerContext.Provider value={{playerCards, numOfPlayerCards}}>
         <Player/>
       </PlayerContext.Provider>
+      <div className='buttons'>
+        <Hit/>
+        <Stand/>
+      </div>
     </div>
   );
 }

@@ -5,7 +5,9 @@ export default function Card (props){
 
     const imgUrl = `${folder}/${props.face}`;
 
-    return props.face === 'back' ? <div className="card back"></div> :
+    return props.face === 'back.png' ? <div className="card">
+        <img className="back" src='./back.png' alt={'back of card'}/>
+    </div> :
     <div className="card">
         <img className="face" src={imgUrl} alt={props.face}/>
     </div>
