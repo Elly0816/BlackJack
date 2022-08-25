@@ -35,31 +35,51 @@ function App() {
       .map(value => ({ value, sort: Math.random() }))
       .sort((a, b) => a.sort - b.sort)
       .map(({ value }) => value);
-    return shuffled;
+      console.log(`shuffled: ${shuffled}`);
+    setDeck(shuffled);
   }
 
-  // console.log(`deck: ${deck}\n length: ${deck.length}`);
+  console.log(`deck: ${deck}\n length: ${deck.length}`);
+  console.log(dealerCards, playerCards);
 
   function drawCards(){//Draw two cards for the player and one for the dealer
-    setDeck(shuffleDeck());
     setNumInDeck(imageList.length);
+    let dealerCardList = [...dealerCards];
     for(let i=0; i<1; i++){
-      setDealerCards([...dealerCards, deck.pop()]);
+      dealerCardList.push(deck.pop());
       setDeck(deck.slice(0, deck.length));
       setNumInDeck(deck.length);
-      setNumOfDealerCards(numOfDealerCards + 1);
-    }
+    };
+    console.log(`DealerCardList: ${dealerCardList}`);
+    setDealerCards([...dealerCardList]);
+    setNumOfDealerCards(dealerCardList.length);
+
+    let playerCardList = [...playerCards];
     for (let i=0; i<2; i++){
-      setPlayerCards([...playerCards, deck.pop()]);
+      playerCardList.push(deck.pop());
       setDeck(deck.slice(0, deck.length));
       setNumInDeck(deck.length);
-      setNumOfPlayerCards(numOfPlayerCards +1);
-    }
+    };
+    console.log(`PlayerCardList: ${playerCardList}`);
+    setPlayerCards([...playerCardList]);
+    setNumOfPlayerCards(playerCardList.length);
+
   }
 
   useEffect(()=> {
-    drawCards();
-  }, []);
+    if (!shuffle){
+      setShuffle(true);
+      shuffleDeck();
+    }
+    if(numInDeck > 49){
+      const draw = setInterval(() => {
+        drawCards();
+      }, 500);
+      return () => {
+        clearInterval(draw);
+      }
+    }
+  });
 
   return (
     <div className="App">
