@@ -38,7 +38,7 @@ function App() {
     return shuffled;
   }
 
-  console.log(`deck: ${deck}\n length: ${deck.length}`);
+  // console.log(`deck: ${deck}\n length: ${deck.length}`);
 
   function drawCards(){//Draw two cards for the player and one for the dealer
     setDeck(shuffleDeck());

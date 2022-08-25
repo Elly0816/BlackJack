@@ -9,14 +9,22 @@ body {
 .dealer,
 .player {
     color: white;
+    padding: 10% 2% 5%;
+    font-weight: bold;
+    font-size: x-large;
 }
 
 .flex-container {
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .card {
     border-style: outline;
-    width: 50px;
-    height: 72.6px;
+}
+
+.face {
+    width: 100px;
+    height: 145.2px;
 }

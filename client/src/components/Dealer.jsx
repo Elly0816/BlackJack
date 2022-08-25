@@ -1,21 +1,21 @@
 import Card from './Card';
 import { useContext, useState, useEffect } from 'react';
-import { DealerContext } from '../App';
+import { DealerContext } from '../App.js';
 
 export default function Dealer(){
      
-    const {dealerCards, numDealerCards} = useContext(DealerContext);
+    const {dealerCards, numOfDealerCards} = useContext(DealerContext);
 
     const [cardFaces, setCardFaces] = useState([]);
 
-    const [numCards, setNumCards] = useState(0);
+    const [numCards, setNumCards] = useState();
 
     useEffect(() => {
-        if (numDealerCards !== numCards){
-            setCardFaces([...dealerCards]);
-            setNumCards(numDealerCards);
+        if (numOfDealerCards !== numCards){
+            setCardFaces(dealerCards);
+            setNumCards(numOfDealerCards);
         }
-    }, [numDealerCards])
+    }, [numOfDealerCards]);
 
     return <div className='dealer'>
             <span>Dealer</span>
