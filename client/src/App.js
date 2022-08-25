@@ -93,8 +93,8 @@ function App() {
         <Player/>
       </PlayerContext.Provider>
       <div className='buttons'>
-        <Hit/>
         <Stand/>
+        <Hit/>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 export default function Hit(){
 
 
-    return <button></button>
+    return <button className='game-button hit'>
+        <span>Hit</span></button>
 }

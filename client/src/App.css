@@ -12,7 +12,7 @@ div {
 .player {
     color: white;
     padding: 10% 2% 5%;
-    height: 50%;
+    height: 45%;
     font-weight: bold;
     font-size: x-large;
 }
@@ -37,4 +37,27 @@ div {
     position: absolute;
     top: 15px;
     right: 15px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    height: 10%;
+}
+
+.game-button {
+    width: 45%;
+    margin: 0 10px;
+    padding: 15px 32px;
+    font-weight: bold;
+}
+
+.hit {
+    background-color: whitesmoke;
+}
+
+.stand {
+    background-color: whitesmoke;
 }
