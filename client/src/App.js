@@ -72,7 +72,7 @@ function App() {
 
   return (
     <div className="App">
-      <DealerContext.Provider value={{dealerCards, numOfDealerCards, backCard}}>
+      <DealerContext.Provider value={{dealerCards, numOfDealerCards, backCard, numInDeck}}>
         <Dealer/>
       </DealerContext.Provider>
 
