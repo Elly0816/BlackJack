@@ -63,16 +63,25 @@ div {
 }
 
 .game-button {
+    border-color: whitesmoke;
     width: 45%;
     margin: 0 10px;
     padding: 15px 32px;
     font-weight: bold;
+    background-color: whitesmoke;
+    font-size: large;
 }
 
-.hit {
-    background-color: whitesmoke;
+.hit:hover {
+    background-color: greenyellow;
+    border-color: greenyellow;
+    transition: 0.5s;
+    color: white;
 }
 
-.stand {
-    background-color: whitesmoke;
+.stand:hover {
+    background-color: rosybrown;
+    border-color: rosybrown;
+    transition: 0.5s;
+    color: white;
 }
