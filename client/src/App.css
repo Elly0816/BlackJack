@@ -8,19 +8,29 @@ div {
     min-height: 100vh;
 }
 
-.dealer,
-.player {
+.dealer {
     color: white;
     padding: 10% 2% 5%;
-    height: 45%;
     font-weight: bold;
     font-size: x-large;
+}
+
+.player {
+    width: 50%;
+    color: white;
+    font-weight: bold;
+    font-size: x-large;
+    padding: 5% 1% 2.5%;
+    height: 248.75px;
+    margin: 0;
 }
 
 .flex-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
+    padding-top: 2%;
 }
 
 .players-container {
