@@ -1,12 +1,12 @@
 import Card from './Card';
-import { PlayerContext } from '../App.js';
+import { PlayerContext } from './Game.jsx';
 import { useContext, useEffect, useState } from 'react';
 
 export default function Player(props){
 
 
 
-    const {numOfPlayerCards, playerCards, countCards} = useContext(PlayerContext);
+    const {playerCards, countCards} = useContext(PlayerContext);
 
     const [cardFaces, setCardFaces] = useState([]);
     const [numOfCards, setNumOfCards] = useState();
@@ -14,12 +14,12 @@ export default function Player(props){
     const [total, setTotal] = useState();
 
     useEffect(() => {
-        if (numOfPlayerCards !== numOfCards){
+        if (playerCards.length !== numOfCards){
             setCardFaces(playerCards);
-            setNumOfCards(numOfPlayerCards);
+            setNumOfCards(playerCards.length);
             setTotal(countCards(playerCards));
         }
-    }, [numOfPlayerCards]);
+    }, [playerCards]);
 
     return <div className='player'>
             <span>Player 1: {total}</span>
