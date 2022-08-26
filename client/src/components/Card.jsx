@@ -17,7 +17,9 @@ export default function Card (props){
     return props.face === 'deck' ? 
     <div className="deck">
         <img className="back" src='./back.png' alt={'back of card'}/>
-        <span className='centered'>{numDeck}</span>
+        <div className='centered'>
+            <span>{numDeck}</span>
+        </div>
     </div> 
     : 
     props.face === 'back.png' ? 

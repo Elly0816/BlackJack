@@ -25,6 +25,6 @@ export default function Player(props){
             <span>Player 1: {total}</span>
             <div className="flex-container">
                 { Array.from({length: numOfCards}, ((item, index) => <Card face={cardFaces[index]} key={index}/>))}
+            </div>
         </div>
-    </div>
 }
