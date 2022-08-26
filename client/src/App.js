@@ -5,7 +5,7 @@ import {useState} from 'react';
 
 function App() {
 
-  const [startGame, setStartGame] = useState(true);
+  const [startGame, setStartGame] = useState(false);
 
   return (
     <div className="App">
