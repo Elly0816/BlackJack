@@ -3,6 +3,7 @@ import Dealer from './Dealer';
 import Player from './Player';
 import Hit from './Hit';
 import Stand from './Stand';
+import Deal from './Deal';
 
 export default function Game(props){
 
@@ -17,6 +18,7 @@ export default function Game(props){
   const [backCard, setBackCard] = useState(false);
   const [gameOver, setGameOver] = useState();
   const [startGame, setStartGame] = useState();
+  const [toDeal, setToDeal] = useState(true);
 
 
   function shuffleDeck(){ //This shuffles the deck
@@ -39,7 +41,8 @@ export default function Game(props){
   }
 
 
-  function drawCards(){//Draw two cards for the player and one for the dealer
+  function dealCards(){//Draw two cards for the player and one for the dealer
+    setToDeal(false);
     setNumInDeck(imageList.length);
     let dealerCardList = [...dealerCards]; //Holds the dealer cards for use in loop
     for(let i=0; i<2; i++){
@@ -62,8 +65,8 @@ export default function Game(props){
     setPlayerCards([...playerCardList]);
     // setNumOfPlayerCards(playerCardList.length);
 
-    if (countCards(dealerCards, true) === 21){
-
+    if (countCards(dealerCards, true) === 21){//Check for dealer win
+        
     }
 
   }
@@ -73,14 +76,14 @@ export default function Game(props){
       setShuffle(true);
       shuffleDeck();
     }
-    if(numInDeck > 48){
-      const draw = setInterval(() => {
-        drawCards();
-      }, 500);
-      return () => {
-        clearInterval(draw);
-      }
-    }
+    // if(numInDeck > 48){
+    //   const draw = setInterval(() => {
+    //     drawCards();
+    //   }, 500);
+    //   return () => {
+    //     clearInterval(draw);
+    //   }
+    // }
   });
 
 
@@ -94,6 +97,7 @@ export default function Game(props){
       </PlayerContext.Provider>
       
       <div className='buttons'>
+        {toDeal && <Deal deal={dealCards}/>}
         <Stand/>
         <Hit hit={hitPlayer}/>
       </div>
