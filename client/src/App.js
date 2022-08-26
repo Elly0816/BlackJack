@@ -27,8 +27,15 @@ function App() {
     setDeck(shuffled);
   }
 
-  // console.log(`deck: ${deck}\n length: ${deck.length}`);
-  // console.log(dealerCards, playerCards);
+  //This function deals a card to the player
+  function hitPlayer(){
+    let playerCardList = [...playerCards];
+    playerCardList.push(deck.pop());
+    setPlayerCards([...playerCardList]);
+    setNumOfPlayerCards(playerCardList.length);
+    setNumInDeck(numInDeck - 1);
+  }
+
 
   function drawCards(){//Draw two cards for the player and one for the dealer
     setNumInDeck(imageList.length);
@@ -72,7 +79,7 @@ function App() {
 
   return (
     <div className="App">
-      <DealerContext.Provider value={{dealerCards, numOfDealerCards, numInDeck, countCards}}>
+      <DealerContext.Provider value={{dealerCards, numOfDealerCards, backCard, numInDeck, countCards}}>
         <Dealer/>
       </DealerContext.Provider>
 
@@ -82,7 +89,7 @@ function App() {
       
       <div className='buttons'>
         <Stand/>
-        <Hit/>
+        <Hit hit={hitPlayer}/>
       </div>
     </div>
   );

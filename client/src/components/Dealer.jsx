@@ -4,7 +4,7 @@ import { DealerContext } from '../App.js';
 
 export default function Dealer(){
      
-    const {dealerCards, numOfDealerCards, numInDeck, countCards} = useContext(DealerContext);
+    const {dealerCards, numOfDealerCards, numInDeck, countCards, backCard} = useContext(DealerContext);
 
     const [cardFaces, setCardFaces] = useState([]);
 
@@ -12,14 +12,11 @@ export default function Dealer(){
 
     const [total, setTotal] = useState();
 
-    const [firstBack, setFirstBack] = useState(true);
-
-
     useEffect(() => {
         if (numOfDealerCards !== numCards){
             setCardFaces(dealerCards);
             setNumCards(numOfDealerCards);
-            setTotal(countCards(dealerCards, firstBack));
+            setTotal(countCards(dealerCards, backCard));
         }
     }, [numOfDealerCards]);
 

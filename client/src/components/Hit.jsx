@@ -1,6 +1,6 @@
-export default function Hit(){
+export default function Hit(props){
 
 
-    return <button className='game-button hit'>
+    return <button onClick={props.hit} className='game-button hit'>
         <span>Hit</span></button>
 }
