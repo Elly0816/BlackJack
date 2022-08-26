@@ -1,5 +1,11 @@
 body,
-div {
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin: 0;
 }
 
@@ -113,4 +119,28 @@ div {
     background-image: url(../public/blackJack.jpg);
     min-height: 100vh;
     background-size: 100%;
+    color: white;
+    font-size: larger;
+    font-weight: bolder;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding-top: 50px;
+}
+
+.home-item h2,
+.home-item button {
+    margin-top: 50px;
+}
+
+button {
+    height: 50px;
+    background-color: gray;
+    border-color: gray;
+    color: white;
+    font-weight: bold;
+    font-size: large;
+    border-radius: 25px;
+    ;
 }
