@@ -6,20 +6,23 @@ export default function Player(props){
 
 
 
-    const {numOfPlayerCards, playerCards} = useContext(PlayerContext);
+    const {numOfPlayerCards, playerCards, countCards} = useContext(PlayerContext);
 
-    const [cardFaces, setCardFaces] = useState([...playerCards]);
-    const [numOfCards, setNumOfCards] = useState(numOfPlayerCards);
+    const [cardFaces, setCardFaces] = useState([]);
+    const [numOfCards, setNumOfCards] = useState();
+
+    const [total, setTotal] = useState();
 
     useEffect(() => {
         if (numOfPlayerCards !== numOfCards){
-            setCardFaces([...playerCards]);
+            setCardFaces(playerCards);
             setNumOfCards(numOfPlayerCards);
+            setTotal(countCards(playerCards));
         }
     }, [numOfPlayerCards]);
 
     return <div className='player'>
-            <span>Player 1</span>
+            <span>Player 1: {total}</span>
             <div className="flex-container">
                 { Array.from({length: numOfCards}, ((item, index) => <Card face={cardFaces[index]} key={index}/>))}
         </div>

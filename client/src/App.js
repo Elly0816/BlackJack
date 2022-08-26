@@ -23,7 +23,7 @@ function App() {
       .map(value => ({ value, sort: Math.random() }))
       .sort((a, b) => a.sort - b.sort)
       .map(({ value }) => value);
-      console.log(`shuffled: ${shuffled}`);
+      // console.log(`shuffled: ${shuffled}`);
     setDeck(shuffled);
   }
 
@@ -38,7 +38,7 @@ function App() {
       setDeck(deck.slice(0, deck.length));
       setNumInDeck(deck.length);
     };
-    console.log(`DealerCardList: ${dealerCardList}`);
+    // console.log(`DealerCardList: ${dealerCardList}`);
     setDealerCards([...dealerCardList]);
     setBackCard(true);
     setNumOfDealerCards(dealerCardList.length);
@@ -49,7 +49,7 @@ function App() {
       setDeck(deck.slice(0, deck.length));
       setNumInDeck(deck.length);
     };
-    console.log(`PlayerCardList: ${playerCardList}`);
+    // console.log(`PlayerCardList: ${playerCardList}`);
     setPlayerCards([...playerCardList]);
     setNumOfPlayerCards(playerCardList.length);
 
@@ -72,13 +72,14 @@ function App() {
 
   return (
     <div className="App">
-      <DealerContext.Provider value={{dealerCards, numOfDealerCards, backCard, numInDeck}}>
+      <DealerContext.Provider value={{dealerCards, numOfDealerCards, numInDeck, countCards}}>
         <Dealer/>
       </DealerContext.Provider>
 
-      <PlayerContext.Provider value={{playerCards, numOfPlayerCards}}>
+      <PlayerContext.Provider value={{playerCards, numOfPlayerCards, countCards}}>
         <Player/>
       </PlayerContext.Provider>
+      
       <div className='buttons'>
         <Stand/>
         <Hit/>
@@ -110,7 +111,9 @@ for (let image in images){
 }
 
 //Function to count the cards held
-function countCards(cardList){
+function countCards(cardList, firstBack=false){
+  let cardsToCount = [...cardList];
+
   const values = { //Object that holds the values of each card
     ace: 11,
     2: 2,
@@ -129,10 +132,15 @@ function countCards(cardList){
   
   let cardValues = []; //Array that holds the value on each card
 
-  for (const card of cardList){
+  if (firstBack){
+      cardsToCount = cardsToCount.splice(1, 1);  
+  };
+  console.log(cardsToCount);
+  for (const card of cardsToCount){
     const value = card.split('_')[0];
     cardValues.push(value);
   };
+
 
   let total = 0;
 
@@ -145,6 +153,6 @@ function countCards(cardList){
   } else if (total + 11 <= 21 && cardValues.includes('ace')){
     total += 11;
   }
-
+  console.log(`total: ${total}`);
   return total;
 };
