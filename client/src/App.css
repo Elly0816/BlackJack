@@ -23,6 +23,12 @@ div {
     align-items: center;
 }
 
+.players-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .card {
     border-style: outline;
 }

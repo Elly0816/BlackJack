@@ -9,7 +9,7 @@ function App() {
 
   return (
     <div className="App">
-      {startGame ? <Game/> : <Home/>}
+      {startGame ? <Game start={startGame}/> : <Home start={startGame}/>}
     </div>
   );
 }

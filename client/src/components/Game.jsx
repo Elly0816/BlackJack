@@ -14,6 +14,7 @@ export default function Game(props){
   const [dealerCards, setDealerCards] = useState([]);
   // const [numOfDealerCards, setNumOfDealerCards] = useState(dealerCards.length);
   const [playerCards, setPlayerCards] = useState([]);
+  const [player2Cards, setPlayer2Cards] = useState([]);
   // const [numOfPlayerCards, setNumOfPlayerCards] = useState(playerCards.length);
   const [backCard, setBackCard] = useState(false);
   const [gameOver, setGameOver] = useState();
@@ -88,24 +89,27 @@ export default function Game(props){
 
 
     return <div className='game'>
-        <DealerContext.Provider value={{dealerCards, backCard, numInDeck, countCards}}>
-        <Dealer/>
-      </DealerContext.Provider>
-
-      <PlayerContext.Provider value={{playerCards, countCards}}>
-        <Player/>
-      </PlayerContext.Provider>
-      
-      <div className='buttons'>
-        {toDeal && <Deal deal={dealCards}/>}
-        <Stand/>
-        <Hit hit={hitPlayer}/>
-      </div>
-    </div>
+                <Dealer cards={dealerCards}
+                 backCard={backCard}
+                  countCards={countCards}
+                    numInDeck={numInDeck}
+                  />
+            <div className='players-container'>
+                    <Player name={'Your total'} cards={playerCards} countCards={countCards}/>
+                    <Player name={'Player 2 total'} cards={player2Cards} countCards={countCards}/>
+            </div>
+            
+            <div className='buttons'>
+                {toDeal && <Deal deal={dealCards}/>}
+                <Stand/>
+                <Hit hit={hitPlayer}/>
+            </div>
+        </div>
 };
 
-export const DealerContext = createContext();
-export const PlayerContext = createContext();
+// export const DealerContext = createContext();
+// export const PlayerContext = createContext();
+// export const Player2Context = createContext();
 
 //Get images in folder and add them to an object
 function importAll(r) {

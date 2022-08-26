@@ -1,10 +1,8 @@
 import Card from './Card';
-import { useContext, useState, useEffect } from 'react';
-import { DealerContext } from './Game.jsx';
+import { useState, useEffect } from 'react';
 
-export default function Dealer(){
+export default function Dealer(props){
      
-    const {dealerCards, numInDeck, countCards, backCard} = useContext(DealerContext);
 
     const [cardFaces, setCardFaces] = useState([]);
 
@@ -13,12 +11,12 @@ export default function Dealer(){
     const [total, setTotal] = useState();
 
     useEffect(() => {
-        if (dealerCards.length !== numCards){
-            setCardFaces(dealerCards);
-            setNumCards(dealerCards.length);
-            setTotal(countCards(dealerCards, backCard));
+        if (props.cards.length !== numCards){
+            setCardFaces(props.cards);
+            setNumCards(props.cards.length);
+            setTotal(props.countCards(props.cards, props.backCard));
         }
-    }, [dealerCards]);
+    }, [props.cards]);
 
     return <div className='dealer'>
             <span>Dealer: {total}</span>
@@ -27,6 +25,6 @@ export default function Dealer(){
                 <Card face={'back.png'} key={index}/>
                 : <Card face={cardFaces[index]} key={index}/>))}
             </div>
-            <Card numDeck={numInDeck} face={'deck'}/>
+            <Card numDeck={props.numInDeck} face={'deck'}/>
           </div>
 }
