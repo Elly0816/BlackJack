@@ -108,3 +108,9 @@ div {
     transition: 0.5s;
     color: white;
 }
+
+.home {
+    background-image: url(../public/blackJack.jpg);
+    min-height: 100vh;
+    background-size: 100%;
+}
