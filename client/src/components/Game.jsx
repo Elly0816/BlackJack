@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext} from 'react';
+import { useState, useEffect} from 'react';
 import Dealer from './Dealer';
 import Player from './Player';
 import Hit from './Hit';
@@ -77,6 +77,7 @@ export default function Game(props){
       setShuffle(true);
       shuffleDeck();
     }
+    console.log(props.socket);
     // if(numInDeck > 48){
     //   const draw = setInterval(() => {
     //     drawCards();
@@ -107,9 +108,6 @@ export default function Game(props){
         </div>
 };
 
-// export const DealerContext = createContext();
-// export const PlayerContext = createContext();
-// export const Player2Context = createContext();
 
 //Get images in folder and add them to an object
 function importAll(r) {

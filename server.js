@@ -23,6 +23,9 @@ const io = new Server(server, {
 })
 
 //Using the created websocket
+io.on('connection', (socket) => {
+    console.log(`user ${socket.id} connected to the server`);
+});
 
 
 
