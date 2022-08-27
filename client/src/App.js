@@ -1,9 +1,9 @@
 import './App.css';
 import Game from './components/Game';
 import Home from './components/Home';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import axios from 'axios';
-import io from 'socket.io-client';
+import {io} from 'socket.io-client';
 
 function App() {
   //When the user clicks to start a game, 
@@ -16,11 +16,16 @@ function App() {
 
   function socketConnect (){
     if (!socket){
-      setSocket(io.connect(endpoint));
-      setStartGame(true);
+      setSocket(io(endpoint));
       console.log(endpoint);
     }; 
   };
+
+  useEffect(() => {
+    if (socket?.connected){
+      setStartGame(true);
+    }
+  }, [socket]);
 
 
   return (

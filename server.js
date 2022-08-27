@@ -1,35 +1,36 @@
 const express = require('express');
 const app = express();
-const cors = require('cors');
 const http = require('http');
-const { Server } = require('socket.io');
-const port = 5000;
-
+const socketIO = require('socket.io');
+const cors = require('cors');
 
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.set('trust proxy', 1);
 
-const server = http.createServer(app);
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
 
-//Creates the websocket
+server = http.Server(app);
+// server.listen(5000);
 
-const io = new Server(server, {
+io = socketIO(server, {
     cors: {
-        origin: process.eventNames.CLIENT,
-        methods: ["GET", "POST"]
+        origin: '*'
     }
-})
+});
 
-//Using the created websocket
+
+//Websocket
+
 io.on('connection', (socket) => {
-    console.log(`user ${socket.id} connected to the server`);
+    console.log(`The client connected to the socket on id: ${socket.id}`);
+    socket.on('disconnect', () => {
+        console.log(`${socket.id} disconnected`);
+    });
 });
 
 
 
-
-app.listen(port, () => {
-    console.log(`App is listening on port: ${port}`);
+server.listen(5000, () => {
+    console.log(`Listening on port: 5000`);
 });
