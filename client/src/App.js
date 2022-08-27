@@ -13,6 +13,7 @@ function App() {
   const endpoint = process.env.NODE_ENV ? process.env.REACT_APP_DEV_NODE_ENV : null;
   const [socket, setSocket] = useState();
   const [startGame, setStartGame] = useState(false);
+  const [searching, setSearching] = useState(false);
 
   function socketConnect (){
     if (!socket){
@@ -23,12 +24,17 @@ function App() {
     }; 
   };
 
-
+  if (socket){
+    socket.on('searching', () => {
+      setSearching(true);
+    });
+  }
 
   return (
     <div className="App">
       {startGame ? <Game socket={socket} start={startGame}/> : <Home 
-                                          socketConnect={socketConnect}/>}
+                                          socketConnect={socketConnect} 
+                                          searching={searching}/>}
     </div>
   );
 }

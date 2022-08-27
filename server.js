@@ -27,18 +27,43 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
     });
-
+    let newRoom;
+    //Variable to store the other player
+    let otherPlayer;
     //When socket is searching for user
     socket.on('search', async() => {
+        socket.emit('searching');
         socket.search = true;
-        const sockets = await io.fetchSockets();
-        console.log(socket);
-        //Create random room for two sockets
-        for (const player of sockets) {
-            if (player.connected && player.search && player.id !== socket.id) {
+        const sockets = await io.fetchSockets(); //Get all the sockets
+        // console.log(socket);
+        // console.log(sockets);
+        // console.log(socket.id.length);
 
-                break;
-            }
+        //Set duration for search to last
+        let startSearch = Date.now();
+        let endSearch = startSearch + 30000;
+
+        while (Date.now() < endSearch > startSearch) {
+            if (sockets.length > 1) {
+                for (const player of sockets) {
+                    if (player.connected && player.search && player.id !== socket.id) {
+                        socket.search = false;
+                        player.search = false;
+                        newRoom = `${socket.id}${player.id}`;
+                        player.join(newRoom);
+                        socket.join(newRoom); //Join the room of the player waiting
+                        otherPlayer = player;
+                        startSearch = endSearch;
+                        break;
+                    };
+                };
+            };
+        }
+        //If time is up and a room was created
+        if (newRoom) {
+            io.to(newRoom).emit("ready");
+        } else { //Time is up and no room was created
+            socket.emit('time up')
         }
     });
 });
