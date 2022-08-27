@@ -27,6 +27,20 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
     });
+
+    //When socket is searching for user
+    socket.on('search', async() => {
+        socket.search = true;
+        const sockets = await io.fetchSockets();
+        console.log(socket);
+        //Create random room for two sockets
+        for (const player of sockets) {
+            if (player.connected && player.search && player.id !== socket.id) {
+
+                break;
+            }
+        }
+    });
 });
 
 

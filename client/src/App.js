@@ -16,16 +16,13 @@ function App() {
 
   function socketConnect (){
     if (!socket){
-      setSocket(io(endpoint));
+      const connectedSocket = io(endpoint);
+      setSocket(connectedSocket);
+      connectedSocket.emit('search');
       console.log(endpoint);
     }; 
   };
 
-  useEffect(() => {
-    if (socket?.connected){
-      setStartGame(true);
-    }
-  }, [socket]);
 
 
   return (
