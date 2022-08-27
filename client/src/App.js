@@ -28,6 +28,13 @@ function App() {
     socket.on('searching', () => {
       setSearching(true);
     });
+    
+  };
+
+  if (socket){
+    socket.on('time up', () => {
+      setSearching(false);
+    });
   }
 
   return (

@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
         let startSearch = Date.now();
         let endSearch = startSearch + 30000;
 
-        while (Date.now() < endSearch > startSearch) {
+        while (Date.now() < endSearch && startSearch < endSearch) {
             if (sockets.length > 1) {
                 for (const player of sockets) {
                     if (player.connected && player.search && player.id !== socket.id) {
@@ -58,11 +58,13 @@ io.on('connection', (socket) => {
                     };
                 };
             };
-        }
+            console.log(`endtime: ${endSearch}\n startTime: ${startSearch}`);
+        };
         //If time is up and a room was created
         if (newRoom) {
             io.to(newRoom).emit("ready");
         } else { //Time is up and no room was created
+            console.log('time up');
             socket.emit('time up')
         }
     });
