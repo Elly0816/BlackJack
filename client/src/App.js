@@ -15,11 +15,18 @@ function App() {
   const [startGame, setStartGame] = useState(false);
   const [searching, setSearching] = useState(false);
 
-  function socketConnect (){
-    if (!socket){
-      const connectedSocket = io(endpoint);
-      setSocket(connectedSocket);
-      connectedSocket.emit('search');
+  useEffect(()=>{
+    const connectedSocket = io(endpoint);
+    setSocket(connectedSocket);
+  }, []);
+
+  let timer;
+
+  function socketSearch (){
+    if (socket){
+      timer = setInterval(() => {
+        socket.emit('search');
+      }, 500);
       console.log(endpoint);
     }; 
   };
@@ -32,15 +39,16 @@ function App() {
   };
 
   if (socket){
-    socket.on('time up', () => {
-      setSearching(false);
+    socket.on('sockets', (sockets) => {
+      let socketSet = new Set (sockets);
+      console.log(socketSet);
     });
   }
 
   return (
     <div className="App">
       {startGame ? <Game socket={socket} start={startGame}/> : <Home 
-                                          socketConnect={socketConnect} 
+                                          socketSearch={socketSearch} 
                                           searching={searching}/>}
     </div>
   );
