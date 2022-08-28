@@ -53,6 +53,7 @@ function App() {
       console.log('joined Room');
       clearInterval(timer);
       setSearching(false);
+      setStartGame(true);
     });
   }
 

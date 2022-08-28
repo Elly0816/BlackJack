@@ -29,7 +29,9 @@ export default function Game(props){
       .map(({ value }) => value);
       // console.log(`shuffled: ${shuffled}`);
     setDeck(shuffled);
-  }
+    
+    }
+  
 
   //This function deals a card to the player
   function hitPlayer(){
