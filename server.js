@@ -30,6 +30,9 @@ io.on('connection', (socket) => {
     // console.log(socket);
     let room;
     let otherPlayer;
+    let myCards = [];
+    let opponentCards = [];
+    let dealerCards = [];
     console.log(`The client connected to the socket on id: ${socket.id}`);
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
@@ -96,6 +99,10 @@ io.on('connection', (socket) => {
                     otherPlayer.search = false;
                     socket.search = false;
                     io.to(room).emit('joined');
+                    setTimeout(() => {
+                        const shuffled = shuffle(cards);
+                        io.to(room).emit('shuffled', shuffled);
+                    }, 500);
                     break;
                 }
             }
@@ -110,3 +117,37 @@ io.on('connection', (socket) => {
 server.listen(5000, () => {
     console.log(`Listening on port: 5000`);
 });
+
+
+function shuffle(cards) { //This shuffles the deck
+    let shuffled = cards
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+
+    return shuffled;
+};
+
+// function dealCards(){//Draw two cards for the player and one for the dealer
+//   setToDeal(false);
+//   setNumInDeck(imageList.length);
+//   let dealerCardList = [...dealerCards]; //Holds the dealer cards for use in loop
+//   for(let i=0; i<2; i++){
+//     dealerCardList.push(deck.pop());
+//     setDeck(deck.slice(0, deck.length));
+//     setNumInDeck(deck.length);
+//   };
+//   // console.log(`DealerCardList: ${dealerCardList}`);
+//   setDealerCards([...dealerCardList]);
+//   setBackCard(true);
+//   // setNumOfDealerCards(dealerCardList.length);
+
+//   let playerCardList = [...playerCards]; //Holds the player cards for use in loop
+//   for (let i=0; i<2; i++){
+//     playerCardList.push(deck.pop());
+//     setDeck(deck.slice(0, deck.length));
+//     setNumInDeck(deck.length);
+//   };
+//   // console.log(`PlayerCardList: ${playerCardList}`);
+//   setPlayerCards([...playerCardList]);
+//   // setNumOfPlayerCards(playerCardList.length);

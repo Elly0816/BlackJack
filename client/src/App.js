@@ -24,6 +24,7 @@ function App() {
 
   function socketSearch (){
     if (socket){
+      setSearching(true);
       timer = setInterval(() => {
         socket.emit('search');
       }, 1000);
