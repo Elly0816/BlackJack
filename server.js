@@ -25,6 +25,7 @@ io = socketIO(server, {
 
 io.on('connection', (socket) => {
     // console.log(socket);
+    let room;
     console.log(`The client connected to the socket on id: ${socket.id}`);
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
@@ -44,7 +45,7 @@ io.on('connection', (socket) => {
             const ids = [];
             const sockets = await io.fetchSockets();
             for (single of sockets) {
-                if (single.connected && single.search) {
+                if (single.connected && single.search && single.id !== socket.id) {
                     ids.push(single.id);
                 };
             }
@@ -63,6 +64,38 @@ io.on('connection', (socket) => {
         //If time is up and a room was created
 
     });
+
+    //Listen for connection request
+    socket.on('toConnect', (arg) => {
+        console.log(`I want to connect to ${arg}`);
+        async function getOtherSocket() {
+            const connectedSocketsList = [];
+            const connectedSockets = await io.fetchSockets();
+            // console.log(`get other sockets just ran ${connectedSockets}`);
+            for (single of connectedSockets) {
+                connectedSocketsList.push(single);
+            }
+            return connectedSocketsList;
+        };
+
+        getOtherSocket().then((connectedSockets) => {
+            // console.log(`Then method of getOtherSockets promise ${connectedSockets}`);
+            for (connectedSocket of connectedSockets) {
+                console.log(connectedSocket.id, arg);
+                if (connectedSocket.id === arg) {
+                    room = `${socket}${arg}`;
+                    console.log(`This is the room ${room}`);
+                    console.log('joined');
+                    connectedSocket.join(room);
+                    socket.join(room);
+                    io.to(room).emit('joined');
+                    break;
+                }
+            }
+        });
+
+    });
+
 });
 
 

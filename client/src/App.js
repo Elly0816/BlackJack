@@ -26,7 +26,7 @@ function App() {
     if (socket){
       timer = setInterval(() => {
         socket.emit('search');
-      }, 500);
+      }, 1000);
       console.log(endpoint);
     }; 
   };
@@ -42,6 +42,17 @@ function App() {
     socket.on('sockets', (sockets) => {
       let socketSet = new Set (sockets);
       console.log(socketSet);
+      for (let other of socketSet){
+        socket.emit('toConnect', other);
+      };
+    });
+  };
+
+  if (socket){
+    socket.on('joined', () => {
+      console.log('joined Room');
+      clearInterval(timer);
+      setSearching(false);
     });
   }
 
