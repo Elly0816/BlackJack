@@ -33,6 +33,8 @@ io.on('connection', (socket) => {
     let myCards = [];
     let opponentCards = [];
     let dealerCards = [];
+    let shuffled;
+    let cardsHaveBeenShuffled
     console.log(`The client connected to the socket on id: ${socket.id}`);
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
@@ -41,8 +43,8 @@ io.on('connection', (socket) => {
     socket.on('search', () => {
         //Variable to store the other player
         socket.search = true;
-        socket.emit('searching');
-        console.log('searching');
+        // socket.emit('searching');
+        // console.log('searching');
         //Get all the sockets
         // console.log(socket);
         // console.log(sockets);
@@ -56,12 +58,13 @@ io.on('connection', (socket) => {
                     ids.push(single.id);
                 };
             }
-            console.log(ids);
+            // console.log(ids);
             return ids;
         };
 
         getSockets().then((res) => {
             socket.emit('sockets', res);
+            // console.log('sockets');
         });
 
 
@@ -74,41 +77,107 @@ io.on('connection', (socket) => {
 
     //Listen for connection request
     socket.on('toConnect', (arg) => {
-        console.log(`I want to connect to ${arg}`);
         async function getOtherSocket() {
+            console.log(`I want to connect to ${arg}`);
             const connectedSocketsList = [];
             const connectedSockets = await io.fetchSockets();
             // console.log(`get other sockets just ran ${connectedSockets}`);
             for (single of connectedSockets) {
-                connectedSocketsList.push(single);
+                if (single.search && single.id !== socket.id) {
+                    connectedSocketsList.push(single);
+                }
             }
             return connectedSocketsList;
         };
 
         getOtherSocket().then((connectedSockets) => {
             // console.log(`Then method of getOtherSockets promise ${connectedSockets}`);
-            for (connectedSocket of connectedSockets) {
-                console.log(connectedSocket.id, arg);
-                if (connectedSocket.id === arg) {
-                    room = `${socket}${arg}`;
+            for (const connectedSocket of connectedSockets) {
+                // console.log(connectedSocket.id, arg);
+                if (connectedSocket.id === arg && arg.search && socket.search) {
+                    room = `${socket.id.split('').slice(0, 10)}++${arg.split('').slice(10)}`;
                     console.log(`This is the room ${room}`);
-                    console.log('joined');
                     otherPlayer = connectedSocket;
-                    otherPlayer.join(room);
-                    socket.join(room);
-                    otherPlayer.search = false;
-                    socket.search = false;
-                    io.to(room).emit('joined');
-                    setTimeout(() => {
-                        const shuffled = shuffle(cards);
-                        io.to(room).emit('shuffled', shuffled);
-                    }, 500);
+                    if (!socket.rooms.has(room)) {
+                        otherPlayer.search = false;
+                        socket.search = false;
+                        socket.join(room);
+                        otherPlayer.join(room);
+                        console.log('both joined');
+                        io.to(room).emit('joined');
+                        // console.log(`${socket.id} and ${otherPlayer.id} joined room ${room}`);
+                        let timerToShuffle = setTimeout(() => {
+                            shuffled = shuffle(cards);
+                            io.to(room).emit('shuffled', shuffled);
+                            // console.log('cards have been shuffled')
+                            clearTimeout(timerToShuffle);
+                        }, 500);
+                    };
+                    // else if (!otherPlayer.rooms.has(room)) {
+                    //     otherPlayer.join(room);
+                    //     console.log('other player not in room');
+                    // };
+
+
+
+
+
+
+
                     break;
                 }
             }
+        }).then(() => {
+
+            let timerToDeal = setTimeout(() => {
+                if (otherPlayer.rooms.has(room) && socket.rooms.has(room) && !otherPlayer.search && !socket.search) {
+                    for (let i = 0; i < 2; i++) {
+                        dealerCards.push(shuffled.pop());
+                        // console.log(dealerCards)
+                        myCards.push(shuffled.pop());
+                        // console.log(myCards);
+                        opponentCards.push(shuffled.pop());
+                        // console.log(opponentCards);
+                        // console.log(shuffled);
+                    };
+                    // for (let i = 0; i < 2; i++) { //Deal to my cards
+                    //     myCards.push(shuffled.pop());
+                    // };
+                    // for (let i = 0; i < 2; i++) {
+                    //     opponentCards.push(shuffled.pop());
+                    // };
+                    /* 
+                        THIS SHOULD BE THE STRUCTURE OF THE PAYLOAD DURING THE GAME
+                    */
+                    let game = {
+                            deck: shuffled,
+                            dealer: dealerCards,
+                            players: [{
+                                    id: socket.id,
+                                    cards: myCards
+                                },
+                                {
+                                    id: otherPlayer.id,
+                                    cards: opponentCards
+                                }
+                            ]
+                        }
+                        // io.to(room).emit("game state", game);
+                    socket.emit("game state", game);
+                    otherPlayer.emit("game state", game);
+                    clearTimeout(timerToDeal);
+                }
+
+            }, 2000);
         });
 
     });
+
+    //This receives the start game event from the client and then deals the cards
+    // socket.on('start game', () => {
+
+    // });
+
 
 });
 

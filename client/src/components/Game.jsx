@@ -18,14 +18,32 @@ export default function Game(props){
   // const [numOfPlayerCards, setNumOfPlayerCards] = useState(playerCards.length);
   const [backCard, setBackCard] = useState(false);
   const [gameOver, setGameOver] = useState();
-  const [startGame, setStartGame] = useState();
+  // const [startGame, setStartGame] = useState();
   const [toDeal, setToDeal] = useState(true);
 
 
   // This gets the shuffled cards from the server
   props.socket.on('shuffled', (arg) => {
+    clearInterval(props.search);
+    clearInterval(props.connect);
     setDeck(arg);
     setNumInDeck(arg.length);
+    // props.socket.emit('start game');
+  });
+
+  //When tha cards have been dealt
+  props.socket.on('game state', (arg) => {
+    const {deck, dealer, players} = arg;
+    setDeck(deck);
+    setNumInDeck(deck.length);
+    setDealerCards(dealer);
+    for (const player of players){
+      if(player.id === props.socket.id){
+        setPlayerCards(player.cards);
+      } else {
+        setPlayer2Cards(player.cards);
+      }
+    }
   });
 
 

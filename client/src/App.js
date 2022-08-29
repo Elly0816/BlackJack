@@ -14,6 +14,7 @@ function App() {
   const [socket, setSocket] = useState();
   const [startGame, setStartGame] = useState(false);
   const [searching, setSearching] = useState(false);
+  let socketSet;
 
   useEffect(()=>{
     const connectedSocket = io(endpoint);
@@ -27,25 +28,35 @@ function App() {
       setSearching(true);
       timer = setInterval(() => {
         socket.emit('search');
-      }, 1000);
+        if (startGame){
+          clearInterval(timer);
+        }
+      }, 200);
+      setSearching(true);
       console.log(endpoint);
     }; 
   };
 
-  if (socket){
-    socket.on('searching', () => {
-      setSearching(true);
-    });
+  // if (socket){
+  //   socket.on('searching', () => {
+  //   });
     
-  };
+  // };
 
   if (socket){
     socket.on('sockets', (sockets) => {
-      let socketSet = new Set (sockets);
-      console.log(socketSet);
-      for (let other of socketSet){
-        socket.emit('toConnect', other);
-      };
+      if(searching){
+        let socketSet = new Set (sockets); //This includes all sockets excluding client's socket
+        console.log(socketSet);
+        console.log(socketSet.size);
+        if (socketSet.size > 0){
+          for (let other of socketSet){
+            socket.emit('toConnect', other);
+        };
+      }
+      }
+      
+      
     });
   };
 
@@ -60,7 +71,7 @@ function App() {
 
   return (
     <div className="App">
-      {startGame ? <Game socket={socket} start={startGame}/> : <Home 
+      {startGame ? <Game timer={timer} socket={socket} start={startGame}/> : <Home 
                                           socketSearch={socketSearch} 
                                           searching={searching}/>}
     </div>
