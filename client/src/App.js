@@ -33,7 +33,7 @@ function App() {
         }
       }, 200);
       setSearching(true);
-      console.log(endpoint);
+      // console.log(endpoint);
     }; 
   };
 
@@ -47,8 +47,8 @@ function App() {
     socket.on('sockets', (sockets) => {
       if(searching){
         let socketSet = new Set (sockets); //This includes all sockets excluding client's socket
-        console.log(socketSet);
-        console.log(socketSet.size);
+        // console.log(socketSet);
+        // console.log(socketSet.size);
         if (socketSet.size > 0){
           for (let other of socketSet){
             socket.emit('toConnect', other);
@@ -62,7 +62,7 @@ function App() {
 
   if (socket){
     socket.on('joined', () => {
-      console.log('joined Room');
+      // console.log('joined Room');
       clearInterval(timer);
       setSearching(false);
       setStartGame(true);

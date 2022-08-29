@@ -25,19 +25,29 @@ const cards = ['10_C.png', '10_D.png', '10_H.png', '10_S.png', '2_C.png', '2_D.p
 
 
 //Websocket
-
+let game;
+let room;
+let otherPlayer;
+let myCards = [];
+let opponentCards = [];
+let dealerCards = [];
+let shuffled;
+let cardsHaveBeenShuffled;
 io.on('connection', (socket) => {
     // console.log(socket);
-    let room;
-    let otherPlayer;
+    game = null
+    room = null;
+    otherPlayer = null;
     let myCards = [];
     let opponentCards = [];
     let dealerCards = [];
-    let shuffled;
-    let cardsHaveBeenShuffled
+    shuffled = null;
+    cardsHaveBeenShuffled = null;
+    
     console.log(`The client connected to the socket on id: ${socket.id}`);
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
+        
     });
     //When socket is searching for user
     socket.on('search', () => {
@@ -78,7 +88,7 @@ io.on('connection', (socket) => {
     //Listen for connection request
     socket.on('toConnect', (arg) => {
         async function getOtherSocket() {
-            console.log(`I want to connect to ${arg}`);
+            // console.log(`I want to connect to ${arg}`);
             const connectedSocketsList = [];
             const connectedSockets = await io.fetchSockets();
             // console.log(`get other sockets just ran ${connectedSockets}`);
@@ -96,14 +106,14 @@ io.on('connection', (socket) => {
                 // console.log(connectedSocket.id, arg);
                 if (connectedSocket.id === arg && arg.search && socket.search) {
                     room = `${socket.id.split('').slice(0, 10)}++${arg.split('').slice(10)}`;
-                    console.log(`This is the room ${room}`);
+                    // console.log(`This is the room ${room}`);
                     otherPlayer = connectedSocket;
                     if (!socket.rooms.has(room)) {
                         otherPlayer.search = false;
                         socket.search = false;
                         socket.join(room);
                         otherPlayer.join(room);
-                        console.log('both joined');
+                        // console.log('both joined');
                         io.to(room).emit('joined');
                         // console.log(`${socket.id} and ${otherPlayer.id} joined room ${room}`);
                         let timerToShuffle = setTimeout(() => {
@@ -113,17 +123,6 @@ io.on('connection', (socket) => {
                             clearTimeout(timerToShuffle);
                         }, 500);
                     };
-                    // else if (!otherPlayer.rooms.has(room)) {
-                    //     otherPlayer.join(room);
-                    //     console.log('other player not in room');
-                    // };
-
-
-
-
-
-
-
                     break;
                 }
             }
@@ -140,16 +139,10 @@ io.on('connection', (socket) => {
                         // console.log(opponentCards);
                         // console.log(shuffled);
                     };
-                    // for (let i = 0; i < 2; i++) { //Deal to my cards
-                    //     myCards.push(shuffled.pop());
-                    // };
-                    // for (let i = 0; i < 2; i++) {
-                    //     opponentCards.push(shuffled.pop());
-                    // };
                     /* 
                         THIS SHOULD BE THE STRUCTURE OF THE PAYLOAD DURING THE GAME
                     */
-                    let game = {
+                    game = {
                             deck: shuffled,
                             dealer: dealerCards,
                             players: [{
@@ -162,9 +155,13 @@ io.on('connection', (socket) => {
                                 }
                             ]
                         }
-                        // io.to(room).emit("game state", game);
-                    socket.emit("game state", game);
-                    otherPlayer.emit("game state", game);
+                    io.to(room).emit("game state", game);
+                    //socket.emit("game state", game);
+                    for (const player of game.players){
+                        if (player.id !== socket.id){
+                            io.sockets.sockets.get(player.id).emit("hide buttons");
+                        }
+                    }
                     clearTimeout(timerToDeal);
                 }
 
@@ -173,13 +170,40 @@ io.on('connection', (socket) => {
 
     });
 
-    //This receives the start game event from the client and then deals the cards
-    // socket.on('start game', () => {
+    //socket receives player 21 and socket id from client
+    socket.on('player 21', (arg) => {
+        if (arg === socket.id) {
+            game.dealer.push(game.deck.pop());
+            for (const player of game.players) {
+                if (player.id !== socket.id) {
+                    player.cards = [];
+                    break;
+                }
+            }
+            io.to(room).emit('game state', game);
+        }
+    });
 
-    // });
+
+    //player hits
+    socket.on('hit', (arg) => {
+        for (const player of game.players){
+            if (player.id === socket.id){
+                player.cards.push(game.deck.pop());
+                break;
+            }
+        }
+        io.to(room).emit('game state', game);
+        for (const player of game.players){
+            if (player.id !== socket.id){
+                io.sockets.sockets.get(player.id).emit('show buttons');
+            }
+        }
+        console.log(`game: ${game}`);
+    });
 
 
-});
+}); //End of socket obj
 
 
 

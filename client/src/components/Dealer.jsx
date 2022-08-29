@@ -21,7 +21,7 @@ export default function Dealer(props){
     return <div className='dealer'>
             <span>Dealer: {total}</span>
             <div className='flex-container'>
-                {Array.from({ length: numCards}, ((item, index) => index === 0 ? 
+                {Array.from({ length: numCards}, ((item, index) => (props.backCard && index === 0) ? 
                 <Card face={'back.png'} key={index}/>
                 : <Card face={cardFaces[index]} key={index}/>))}
             </div>

@@ -3,7 +3,6 @@ import Dealer from './Dealer';
 import Player from './Player';
 import Hit from './Hit';
 import Stand from './Stand';
-import Deal from './Deal';
 
 export default function Game(props){
 
@@ -16,16 +15,15 @@ export default function Game(props){
   const [playerCards, setPlayerCards] = useState([]);
   const [player2Cards, setPlayer2Cards] = useState([]);
   // const [numOfPlayerCards, setNumOfPlayerCards] = useState(playerCards.length);
-  const [backCard, setBackCard] = useState(false);
+  const [backCard, setBackCard] = useState(true);
   const [gameOver, setGameOver] = useState();
   // const [startGame, setStartGame] = useState();
-  const [toDeal, setToDeal] = useState(true);
+  const [showButtons, setShowButtons] = useState(false);
 
 
   // This gets the shuffled cards from the server
   props.socket.on('shuffled', (arg) => {
-    clearInterval(props.search);
-    clearInterval(props.connect);
+    clearInterval(props.timer);
     setDeck(arg);
     setNumInDeck(arg.length);
     // props.socket.emit('start game');
@@ -43,7 +41,66 @@ export default function Game(props){
       } else {
         setPlayer2Cards(player.cards);
       }
+    };
+    if(countCards(playerCards) !== 21){
+      setShowButtons(true);
+    };
+    if (countCards(playerCards) === 21){
+      if (countCards(dealerCards) < 17){
+        setTimeout(() => {
+        props.socket.emit('player 21', props.socket.id);
+      }, 500);
+    } else if (countCards(dealerCards) > countCards(playerCards) || countCards(dealerCards) > countCards(playerCards)){
+      props.socket.emit('player wins', props.socket.id);
+      console.log('player wins');
+    } else {
+      props.socket.emit('player and dealer tie', props.socket.id);
+      console.log('player and dealer tie');
     }
+    };
+    if(playerCards.length === 3){
+      setShowButtons(false);
+    }
+    
+  });
+
+  useEffect(()=>{
+      if(countCards(playerCards) === 21){//If any player has 21 cards after dealing
+        setShowButtons(false);
+        setTimeout(() => {
+          setBackCard(false);
+          if (countCards(dealerCards) < 17){
+              setTimeout(() => {
+              props.socket.emit('player 21', props.socket.id);
+            }, 500);
+          }}, 800);
+        //Set a win state
+      };
+      if(playerCards.length === 3){
+        setShowButtons(false);
+      };
+  }, [player2Cards, playerCards]);
+
+
+  //Function to execute hit
+  function hit(){
+    props.socket.emit('hit', props.socket.id);
+  };
+
+  //function to execute stand
+  function stand(){
+    
+  };
+
+  props.socket.on('show buttons', () => {
+    if (playerCards.length !== 3){
+      setShowButtons(true);
+    }
+    
+  });
+
+  props.socket.on('hide buttons', () => {
+    setShowButtons(false);
   });
 
 
@@ -58,11 +115,10 @@ export default function Game(props){
                     <Player name={'Player 2 total'} cards={player2Cards} countCards={countCards}/>
             </div>
             
-            <div className='buttons'>
-                {/* {toDeal && <Deal deal={dealCards}/>}
-                <Stand/>
-                <Hit hit={hitPlayer}/> */}
-            </div>
+            { showButtons && <div className='buttons'>
+                                  <Stand stand={stand}/>
+                                  <Hit hit={hit}/>
+                              </div>}
         </div>
 };
 
