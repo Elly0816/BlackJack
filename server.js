@@ -3,7 +3,8 @@ const app = express();
 const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
-const async = require('async');
+// const async = require('async');
+const path = require('path');
 
 app.use(cors());
 
@@ -21,7 +22,8 @@ server = http.Server(app);
 
 io = socketIO(server, {
     cors: {
-        origin: '*'
+        origin: process.env.CLIENT, 
+        methods: ["GET", "POST"]
     }
 });
 
