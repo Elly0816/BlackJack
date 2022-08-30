@@ -10,7 +10,11 @@ function App() {
   //io opens a connection on the server and connects to another free connection
   //When a connection is found, startgame is set to true
 
-  const endpoint = process.env.NODE_ENV ? process.env.REACT_APP_DEV_NODE_ENV : null;
+
+  const development = 'http://localhost:5000/';
+  const production = 'https://polar-harbor-23442.herokuapp.com/';
+
+  const endpoint = process.env.NODE_ENV ? production : development;
   const [socket, setSocket] = useState();
   const [startGame, setStartGame] = useState(false);
   const [searching, setSearching] = useState(false);

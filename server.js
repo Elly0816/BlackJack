@@ -7,6 +7,11 @@ const async = require('async');
 
 app.use(cors());
 
+const PORT = process.env.PORT || 5000;
+
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
@@ -256,7 +261,7 @@ app.get('/', (req, res) => {
 });
 
 
-server.listen(5000, () => {
+server.listen(PORT, () => {
     console.log(`Listening on port: 5000`);
 });
 
