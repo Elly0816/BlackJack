@@ -120,7 +120,7 @@ export default function Game(props){
       if (player2LastPlay === 'stand' && lastPlay === 'stand'){
         setShowButtons(false);
         setBackCard(false);
-        props.setTimeout(() => {
+        setTimeout(() => {
           if(countCards(dealerCards, backCard) < 17){
             props.socket.emit('both stand');
           } else if ((countCards(dealerCards, backCard) === 21) && countCards(playerCards) === 21 && countCards(player2Cards) === 21){
