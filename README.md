@@ -19,3 +19,10 @@ npm install
 *To install dependencies*
 
 
+#### Note: Two clients must be connected and searching to the server in order to be able to connect to eachh other. 
+
+
+
+
+
+
