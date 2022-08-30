@@ -19,9 +19,12 @@ export default function Player(props){
 
     return <div className='player'>
             <span>{props.name}: {total}</span>
+            {(total === 0 && props.start) ? <h1>BUST</h1> : 
             <div className="flex-container">
                 { Array.from({length: numOfCards}, ((item, index) => <Card face={cardFaces[index]} key={index}/>))}
             </div>
+            }
+            
         </div>
 };
 

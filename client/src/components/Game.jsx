@@ -3,6 +3,7 @@ import Dealer from './Dealer';
 import Player from './Player';
 import Hit from './Hit';
 import Stand from './Stand';
+import Results from './Results';
 
 export default function Game(props){
 
@@ -17,8 +18,12 @@ export default function Game(props){
   // const [numOfPlayerCards, setNumOfPlayerCards] = useState(playerCards.length);
   const [backCard, setBackCard] = useState(true);
   const [gameOver, setGameOver] = useState();
-  // const [startGame, setStartGame] = useState();
-  const [showButtons, setShowButtons] = useState(false);
+  const [startGame, setStartGame] = useState();
+  const [showButtons, setShowButtons] = useState(true);
+  const [result, setResult] = useState();
+  const [lastPlay, setLastPlay] = useState();
+  const [player2LastPlay, setPlayer2LastPlay] = useState();
+  const [game, setGame] = useState();
 
 
   // This gets the shuffled cards from the server
@@ -35,91 +40,166 @@ export default function Game(props){
     setDeck(deck);
     setNumInDeck(deck.length);
     setDealerCards(dealer);
+    setGame(arg);
     for (const player of players){
       if(player.id === props.socket.id){
         setPlayerCards(player.cards);
+        setLastPlay(player.lastPlay);
       } else {
         setPlayer2Cards(player.cards);
+        setPlayer2LastPlay(player.lastPlay);
       }
     };
-    if(countCards(playerCards) !== 21){
-      setShowButtons(true);
-    };
-    if (countCards(playerCards) === 21){
-      if (countCards(dealerCards) < 17){
-        setTimeout(() => {
-        props.socket.emit('player 21', props.socket.id);
-      }, 500);
-    } else if (countCards(dealerCards) > countCards(playerCards) || countCards(dealerCards) > countCards(playerCards)){
-      props.socket.emit('player wins', props.socket.id);
-      console.log('player wins');
-    } else {
-      props.socket.emit('player and dealer tie', props.socket.id);
-      console.log('player and dealer tie');
-    }
-    };
-    if(playerCards.length === 3){
-      setShowButtons(false);
-    }
+    setStartGame(true);
     
   });
 
   useEffect(()=>{
+    if(playerCards.length === 0 && startGame && player2Cards.length > 0){
+      setShowButtons(false);
+    }
+
+    if(countCards(dealerCards, setBackCard) > 21 && playerCards.length === 0 && player2Cards.length === 0 && !backCard){
+      setResult('tie');
+      console.log('tie');
+    }
+
+    if (playerCards.length === 0 && player2Cards.length === 0 && deck.length !== 0){
+      setShowButtons(false);
+      if(backCard){
+        setBackCard(false)
+      } else {
+        if(countCards(dealerCards, backCard) < 17){
+          setTimeout(() => {
+            // setBackCard(false);
+            // console.log("dealer total below 17");
+          props.socket.emit('both bust', props.socket.id);
+        }, 500);
+        } else {
+            setResult('dealer win')
+        }
+      }
+      // setBackCard(false);
+      
+    }
       if(countCards(playerCards) === 21){//If any player has 21 cards after dealing
-        setShowButtons(false);
+        console.log(' mytotal is 21');
+        if (player2Cards.length !== 0){
+          setShowButtons(false);
+        };
         setTimeout(() => {
           setBackCard(false);
           if (countCards(dealerCards) < 17){
               setTimeout(() => {
+                // setBackCard(false);
+                console.log("dealer total below 17");
               props.socket.emit('player 21', props.socket.id);
             }, 500);
           }}, 800);
         //Set a win state
       };
-      if(playerCards.length === 3){
-        setShowButtons(false);
+      if(countCards(playerCards) >= 21){
+        if (player2Cards.length !== 0){
+          setShowButtons(false);
+        };
+        console.log('total is over 21');
+        props.socket.emit('over 21', props.socket.id);
       };
-  }, [player2Cards, playerCards]);
+      if (countCards(playerCards) === 21){
+        if (countCards(dealerCards) < 17){
+          props.socket.emit('player 21', props.socket.id);
+      } else if (countCards(dealerCards) > countCards(playerCards) || countCards(dealerCards) < countCards(playerCards)){
+        props.socket.emit('player wins', props.socket.id);
+        console.log('player wins');
+      } else {
+        props.socket.emit('player and dealer tie', props.socket.id);
+        console.log('player and dealer tie');
+      }
+      };
+
+      if (player2LastPlay === 'stand' && lastPlay === 'stand'){
+        setShowButtons(false);
+        setBackCard(false);
+        props.setTimeout(() => {
+          if(countCards(dealerCards, backCard) < 17){
+            props.socket.emit('both stand');
+          } else if ((countCards(dealerCards, backCard) === 21) && countCards(playerCards) === 21 && countCards(player2Cards) === 21){
+            setResult('tie');
+  
+          } else if (countCards(dealerCards) >= 17 && countCards(dealerCards) < 21){
+            if (countCards(playerCards) > countCards(dealerCards)){
+              props.socket.emit('player wins');
+              setResult('win');
+            } else if (countCards(playerCards) < countCards(dealerCards)){
+              setResult('lose');
+            }
+          }
+        }, 2000);
+        
+      }
+
+  }, [player2Cards, playerCards, lastPlay, player2LastPlay, game]);
+
+
+  // useEffect(() => {
+  //   if (playerCards.length === 0){
+  //     setShowButtons(false);
+  //   };
+  // }, [playerCards])
 
 
   //Function to execute hit
   function hit(){
+    if (player2Cards.length !== 0){
+      setShowButtons(false);
+    };
     props.socket.emit('hit', props.socket.id);
   };
 
   //function to execute stand
   function stand(){
-    
+    if (player2Cards.length !== 0){
+      setShowButtons(false);
+      props.socket.emit('stand', props.socket.id);
+    } else {
+      props.socket.emit('stand', props.socket.id);
+    }
   };
 
   props.socket.on('show buttons', () => {
-    if (playerCards.length !== 3){
+    if (playerCards.length > 0){
       setShowButtons(true);
     }
     
   });
 
   props.socket.on('hide buttons', () => {
-    setShowButtons(false);
+    if (player2Cards.length !== 0){
+      setShowButtons(false);
+    };
   });
 
 
-    return <div className='game'>
-                <Dealer cards={dealerCards}
-                 backCard={backCard}
-                  countCards={countCards}
-                    numInDeck={numInDeck}
-                  />
-            <div className='players-container'>
-                    <Player name={'Your total'} cards={playerCards} countCards={countCards}/>
-                    <Player name={'Player 2 total'} cards={player2Cards} countCards={countCards}/>
-            </div>
-            
-            { showButtons && <div className='buttons'>
-                                  <Stand stand={stand}/>
-                                  <Hit hit={hit}/>
-                              </div>}
-        </div>
+
+
+
+    return  result ? <Results result={result}/> : 
+                      <div className='game'>
+                          <Dealer cards={dealerCards}
+                          backCard={backCard}
+                            countCards={countCards}
+                              numInDeck={numInDeck}
+                            />
+                            <div className='players-container'>
+                                    <Player start={startGame} name={'My total'} cards={playerCards} countCards={countCards}/>
+                                    <Player start={startGame} name={'Opponent total'} cards={player2Cards} countCards={countCards}/>
+                            </div>
+
+                            { showButtons && <div className='buttons'>
+                                                  <Stand stand={stand}/>
+                                                  <Hit hit={hit}/>
+                                              </div>}
+                                            </div>
 };
 
 
@@ -170,9 +250,9 @@ function countCards(cardList, firstBack=false){
     total += values[value];
   };
   if (total > 21 && cardValues.includes('ace')){
-    total -= 11;
+    total -= 10;
   } else if (total + 11 <= 21 && cardValues.includes('ace')){
-    total += 11;
+    total += 10;
   };
   return total;
 };

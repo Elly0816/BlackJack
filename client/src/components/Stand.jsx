@@ -1,5 +1,5 @@
-export default function Stand(){
+export default function Stand(props){
 
-    return <button className='game-button stand'>
+    return <button onClick={props.stand} className='game-button stand'>
     <span>Stand</span></button>
 }

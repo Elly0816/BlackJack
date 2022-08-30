@@ -147,11 +147,13 @@ io.on('connection', (socket) => {
                             dealer: dealerCards,
                             players: [{
                                     id: socket.id,
-                                    cards: myCards
+                                    cards: myCards,
+                                    lastPlay:  null
                                 },
                                 {
                                     id: otherPlayer.id,
-                                    cards: opponentCards
+                                    cards: opponentCards,
+                                    lastPlay: null
                                 }
                             ]
                         }
@@ -184,6 +186,11 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('both stand', () => {
+        game.dealer.push(game.deck.pop());
+        io.to(room).emit('game state', game);
+    });
+
 
     //player hits
     socket.on('hit', (arg) => {
@@ -195,16 +202,58 @@ io.on('connection', (socket) => {
         }
         io.to(room).emit('game state', game);
         for (const player of game.players){
+            if(player.id === socket.id){
+                player.lastPlay = 'hit';
+            }
             if (player.id !== socket.id){
                 io.sockets.sockets.get(player.id).emit('show buttons');
             }
         }
-        console.log(`game: ${game}`);
+        // console.log(`game: ${game}`);
     });
 
+    //player stands
+    socket.on('stand', () => { //If the other player's last play is stand or the other player has no cards, emit game state
+        io.to(room).emit('game state', game);
+        console.log('stand');
+        for (const player of game.players){
+            if(player.id === socket.id){
+                player.lastPlay = 'stand';
+            }
+            if (player.id !== socket.id){
+                if (player.lastPlay === 'stand' || player.cards.length === 0){
+                    io.to(room).emit('game state', game);
+                }
+                io.sockets.sockets.get(player.id).emit('show buttons');
+            }
+        }
+    });
+
+    socket.on('over 21', () => {
+        for (const player of game.players){
+            if (player.id === socket.id){
+                player.cards = [];
+                break;
+            }
+        }
+        io.to(room).emit('game state', game);
+    });
+
+    socket.on('both bust', () =>{
+        game.dealer.push(game.deck.pop());
+        io.to(room).emit('game state', game);
+    });
+
+    
 
 }); //End of socket obj
 
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './client/build', 'index.html'), (err) => {
+        res.status(500).send(err);
+    });
+});
 
 
 server.listen(5000, () => {
