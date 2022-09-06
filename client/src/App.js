@@ -14,8 +14,8 @@ function App() {
   const development = 'http://localhost:5000/';
   const production = 'https://polar-harbor-23442.herokuapp.com/';
 
-  const endpoint = process.env.NODE_ENV ? production : development;
-  // const endpoint = 'http://localhost:5000/';
+  // const endpoint = process.env.NODE_ENV ? production : development;
+  const endpoint = 'http://localhost:5000/';
   const [socket, setSocket] = useState();
   const [startGame, setStartGame] = useState(false);
   const [searching, setSearching] = useState(false);
