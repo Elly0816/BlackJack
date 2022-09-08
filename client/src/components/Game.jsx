@@ -62,6 +62,7 @@ export default function Game(props){
     if(countCards(dealerCards, setBackCard) > 21 && playerCards.length === 0 && player2Cards.length === 0 && !backCard){
       setResult('tie');
       console.log('tie');
+      props.socket.emit('reset');
     }
 
     if (playerCards.length === 0 && player2Cards.length === 0 && deck.length !== 0){
@@ -77,6 +78,8 @@ export default function Game(props){
         }, 500);
         } else {
             setResult('dealer win')
+            props.socket.emit('reset');
+
         }
       }
       // setBackCard(false);
@@ -125,13 +128,16 @@ export default function Game(props){
             props.socket.emit('both stand');
           } else if ((countCards(dealerCards, backCard) === 21) && countCards(playerCards) === 21 && countCards(player2Cards) === 21){
             setResult('tie');
+            props.socket.emit('reset');
   
           } else if (countCards(dealerCards) >= 17 && countCards(dealerCards) < 21){
             if (countCards(playerCards) > countCards(dealerCards)){
               props.socket.emit('player wins');
               setResult('win');
+              props.socket.emit('reset');
             } else if (countCards(playerCards) < countCards(dealerCards)){
               setResult('lose');
+              props.socket.emit('reset');
             }
           }
         }, 2000);

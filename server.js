@@ -3,22 +3,15 @@ const app = express();
 const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
-// const async = require('async');
+
 const path = require('path');
+
 
 app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 
-// app.use(express.static(path.join(__dirname, 'client/build')));
-
-
-// app.get('/', (req, res) => {
-//     res.sendFile(__dirname + '/index.html');
-// });
-
 server = http.Server(app);
-// server.listen(5000);
 
 // io = socketIO(server, {
 //     cors: {
@@ -39,289 +32,60 @@ const cards = ['10_C.png', '10_D.png', '10_H.png', '10_S.png', '2_C.png', '2_D.p
 
 
 //Websocket
-// let game;
-// let room;
-// let otherPlayer;
-// let myCards = [];
-// let opponentCards = [];
-// let dealerCards = [];
-// let shuffled;
-// let cardsHaveBeenShuffled;
-game = {
-    deck: [],
-    dealer: [],
-    players: [{ id: null, cards: [], lastMove: null },
-        { id: null, cards: [], lastMove: null }
-    ]
-};
+
 io.on('connection', (socket) => {
-    // console.log(socket);
-    game.deck = [];
-    game.dealer = []
-    let { deck, dealer, players } = game;
-    room = null;
-    otherPlayer = null;
-    let [me, opponent] = players;
-    me.cards = [];
-    opponent.cards = [];
-    // let myCards = [];
-    // let opponentCards = [];
-    // let dealerCards = [];
-    shuffled = null;
-    cardsHaveBeenShuffled = null;
+    let room;
+    console.log(`A connection has been made with socket id: ${socket.id}`);
 
-    console.log(`The client connected to the socket on id: ${socket.id}`);
+    //When the socket has been disconnected
     socket.on('disconnect', () => {
-        console.log(`${socket.id} disconnected`);
-
+        console.log(`${socket.id} has disconnected.`);
     });
-    //When socket is searching for user
+
+
+    //When the user searches for another socket to connect to 
     socket.on('search', () => {
-        //Variable to store the other player
-        socket.search = true;
-        // socket.emit('searching');
-        // console.log('searching');
-        //Get all the sockets
-        // console.log(socket);
-        // console.log(sockets);
-        // console.log(socket.id.length);
-
+        //Set the socket's searching property to true
+        socket.searching = true;
+        //Get all the connected and searching sockets
         async function getSockets() {
-            const ids = [];
-            const sockets = await io.fetchSockets();
-            for (single of sockets) {
-                if (single.connected && single.search && single.id !== socket.id) {
-                    ids.push(single.id);
-                };
-            }
-            // console.log(ids);
-            return ids;
+            const socketIds = [];
+            const sockets = (await io.fetchSockets())
+                .filter(other => other.connected === true)
+                .filter(other => other.searching === true)
+                .filter(other => other.id !== socket.id)
+                .map(other => other.id);
+            sockets.map(socket => socketIds.push(socket));
+            return socketIds;
         };
-
-        getSockets().then((res) => {
-            socket.emit('sockets', res);
-            // console.log('sockets');
-        });
-
-
-        //Set duration for search to last
-
-        // console.log(`endtime: ${endSearch}\n startTime: ${startSearch}`);
-        //If time is up and a room was created
-
-    });
-
-    //Listen for connection request
-    socket.on('toConnect', (arg) => {
-        async function getOtherSocket() {
-            // console.log(`I want to connect to ${arg}`);
-            const connectedSocketsList = [];
-            const connectedSockets = await io.fetchSockets();
-            // console.log(`get other sockets just ran ${connectedSockets}`);
-            for (single of connectedSockets) {
-                if (single.search && single.id !== socket.id) {
-                    connectedSocketsList.push(single);
-                }
+        // Create a room and add both sockets to it 
+        getSockets().then(sockets => {
+            if (sockets.length > 0) {
+                const socketToConnect = sockets[0];
+                const opponentSocket = io.sockets.sockets.get(socketToConnect);
+                opponentSocket.searching = false;
+                socket.searching = false;
+                // console.log(opponentSocket);
+                // opponentSocket.emit('joined');
+                // socket.emit('joined');
+                opponentSocket.searching = false;
+                socket.searching = false;
+                room = `${socket.id.slice(0, socket.id.length/2)}+${opponentSocket.id.slice(opponentSocket.id.length/2)}`
+                console.log(`${socket.id}\n${opponentSocket.id}\n${room}`);
+                opponentSocket.join(room);
+                socket.join(room);
+                io.to(room).emit('joined');
             }
-            return connectedSocketsList;
-        };
-
-        getOtherSocket().then((connectedSockets) => {
-            // console.log(`Then method of getOtherSockets promise ${connectedSockets}`);
-            for (const connectedSocket of connectedSockets) {
-                // console.log(connectedSocket.id, arg);
-                if (connectedSocket.id === arg && arg.search && socket.search) {
-                    room = `${socket.id.split('').slice(0, 10)}++${arg.split('').slice(10)}`;
-                    // console.log(`This is the room ${room}`);
-                    otherPlayer = connectedSocket;
-                    if (!socket.rooms.has(room)) {
-                        otherPlayer.search = false;
-                        socket.search = false;
-                        socket.join(room);
-                        otherPlayer.join(room);
-                        me.id = socket.id;
-                        opponent.id = otherPlayer.id;
-                        // console.log('both joined');
-                        io.to(room).emit('joined');
-                        // console.log(`${socket.id} and ${otherPlayer.id} joined room ${room}`);
-                        let timerToShuffle = setTimeout(() => {
-                            deck.push(...shuffle(cards));
-                            io.to(room).emit('shuffled', deck);
-                            // console.log(`cards have been shuffled: ${deck}`)
-                            clearTimeout(timerToShuffle);
-                        }, 500);
-                    };
-                    break;
-                }
-            }
-        }).then(() => {
-
-            let timerToDeal = setTimeout(() => {
-                if (otherPlayer.rooms.has(room) && socket.rooms.has(room) && !otherPlayer.search && !socket.search) {
-                    for (let i = 0; i < 2; i++) {
-                        dealer.push(deck.pop());
-                        // console.log(dealerCards)
-                        me.cards.push(deck.pop());
-                        // console.log(myCards);
-                        opponent.cards.push(deck.pop());
-                        // console.log(opponentCards);
-                        // console.log(shuffled);
-                    };
-
-                    console.log(`before emitting to the room:`);
-                    console.log(game);
-                    io.to(room).emit("game state", game);
-                    //socket.emit("game state", game);
-                    for (const player of game.players) {
-                        // console.log(game);
-                        if (player.id !== socket.id) {
-                            io.sockets.sockets.get(player.id).emit("hide buttons");
-                        }
-                    }
-                    clearTimeout(timerToDeal);
-                }
-            }, 2000);
         });
 
     });
 
-    //socket receives player 21 and socket id from client
-    socket.on('player 21', (arg) => {
-        if (arg === socket.id) {
-            game.dealer.push(game.deck.pop());
-            for (const player of game.players) {
-                if (player.id !== socket.id) {
-                    player.cards = [];
-                    break;
-                }
-            }
-            io.to(room).emit('game state', game);
-        }
-    });
-
-    socket.on('both stand', () => {
-        game.dealer.push(game.deck.pop());
-        io.to(room).emit('game state', game);
-    });
-
-
-    //player hits
-    socket.on('hit', (arg) => {
-        for (const player of game.players) {
-            if (player.id === socket.id) {
-                player.cards.push(game.deck.pop());
-                break;
-            }
-        }
-        io.to(room).emit('game state', game);
-        for (const player of game.players) {
-            if (player.id === socket.id) {
-                player.lastPlay = 'hit';
-            }
-            if (player.id !== socket.id) {
-                io.sockets.sockets.get(player.id).emit('show buttons');
-            }
-        }
-        // console.log(`game: ${game}`);
-    });
-
-    //player stands
-    socket.on('stand', () => { //If the other player's last play is stand or the other player has no cards, emit game state
-        io.to(room).emit('game state', game);
-        console.log('stand');
-        for (const player of game.players) {
-            if (player.id === socket.id) {
-                player.lastPlay = 'stand';
-            }
-            if (player.id !== socket.id) {
-                if (player.lastPlay === 'stand' || player.cards.length === 0) {
-                    io.to(room).emit('game state', game);
-                }
-                io.sockets.sockets.get(player.id).emit('show buttons');
-            }
-        }
-    });
-
-    socket.on('over 21', () => {
-        for (const player of game.players) {
-            if (player.id === socket.id) {
-                player.cards = [];
-                break;
-            }
-        }
-        io.to(room).emit('game state', game);
-    });
-
-    socket.on('both bust', () => {
-        game.dealer.push(game.deck.pop());
-        io.to(room).emit('game state', game);
-    });
-
-
-
-}); //End of socket obj
-
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, './client/build', 'index.html'), (err) => {
-        res.status(500).send(err);
-    });
 });
+
+
+
 
 
 server.listen(PORT, () => {
-    console.log(`Listening on port: 5000`);
+    console.log(`A connection has been made with the server on port: ${PORT}`);
 });
-
-
-function shuffle(cards) { //This shuffles the deck
-    let shuffled = cards
-        .map(value => ({ value, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort)
-        .map(({ value }) => value);
-
-    return shuffled;
-};
-
-// function dealCards(){//Draw two cards for the player and one for the dealer
-//   setToDeal(false);
-//   setNumInDeck(imageList.length);
-//   let dealerCardList = [...dealerCards]; //Holds the dealer cards for use in loop
-//   for(let i=0; i<2; i++){
-//     dealerCardList.push(deck.pop());
-//     setDeck(deck.slice(0, deck.length));
-//     setNumInDeck(deck.length);
-//   };
-//   // console.log(`DealerCardList: ${dealerCardList}`);
-//   setDealerCards([...dealerCardList]);
-//   setBackCard(true);
-//   // setNumOfDealerCards(dealerCardList.length);
-
-//   let playerCardList = [...playerCards]; //Holds the player cards for use in loop
-//   for (let i=0; i<2; i++){
-//     playerCardList.push(deck.pop());
-//     setDeck(deck.slice(0, deck.length));
-//     setNumInDeck(deck.length);
-//   };
-//   // console.log(`PlayerCardList: ${playerCardList}`);
-//   setPlayerCards([...playerCardList]);
-//   // setNumOfPlayerCards(playerCardList.length);
-
-/* 
-                        THIS SHOULD BE THE STRUCTURE OF THE PAYLOAD DURING THE GAME
-                    */
-// game = {
-//     deck: shuffled,
-//     dealer: dealerCards,
-//     players: [{
-//             id: socket.id,
-//             cards: myCards,
-//             lastPlay: null
-//         },
-//         {
-//             id: otherPlayer.id,
-//             cards: opponentCards,
-//             lastPlay: null
-//         }
-//     ]
-// }

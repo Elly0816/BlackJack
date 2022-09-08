@@ -1,5 +1,6 @@
 import './App.css';
-import Game from './components/Game';
+// import Game from './components/Game';
+import Table from './components/Table';
 import Home from './components/Home';
 import {useState, useEffect} from 'react';
 import axios from 'axios';
@@ -76,7 +77,7 @@ function App() {
 
   return (
     <div className="App">
-      {startGame ? <Game timer={timer} socket={socket} start={startGame}/> : <Home 
+      {startGame ? <Table timer={timer} socket={socket} start={startGame}/> : <Home 
                                           socketSearch={socketSearch} 
                                           searching={searching}/>}
     </div>
