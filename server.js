@@ -109,18 +109,29 @@ io.on('connection', (socket) => {
                                         setTimeout(() => {
                                             opponent.cards.push(game.deck.pop());
                                             io.to(room).emit('game state', game);
+                                            socket.emit('show buttons');
+                                            opponentSocket.emit('hide buttons');
                                             clearTimeout(dealCards);
                                         }, 1000);
                                     }, 1000);
                                 }, 1000);
                             }, 1000);
-                        }, 5000);
+                        }, 2000);
                     });
                 });
             };
         });
     });
-    //Handle sending the shuffled cards to the room
+
+
+    //Handle user hits and stand
+    socket.on('stand', () => {
+        socket.emit('hide buttons');
+        me.lastPlay = 'stand';
+        if (opponent.lastPlay === 'stand') {
+
+        }
+    });
 
 
 });

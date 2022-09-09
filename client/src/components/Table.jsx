@@ -18,7 +18,7 @@ export default function Table(props){
     const [backCard, setBackCard] = useState(true);
     const [gameOver, setGameOver] = useState();
     // const [startGame, setStartGame] = useState();
-    const [showButtons, setShowButtons] = useState(true);
+    const [showButtons, setShowButtons] = useState(false);
     const [result, setResult] = useState();
     const [lastPlay, setLastPlay] = useState();
     const [player2LastPlay, setPlayer2LastPlay] = useState();
@@ -45,25 +45,40 @@ export default function Table(props){
         });
     }, []);
 
-    props.socket.on('game state', game => {
-        setGame(game);
-        console.log(game);
-        let {deck, dealer, players} = game;
-        setDeck(deck);
-        setNumInDeck(deck.length);
-        setDealerCards(dealer);
-        for (const player of players){
-            if (player.id === props.socket.id){
-                setPlayerCards([...player.cards]);
-                setLastPlay(player.lastPlay);
-            } else {
-                setPlayer2Cards([...player.cards]);
-                setPlayer2LastPlay(player.lastPlay);
-            }
-        }
-    });
+  props.socket.on('game state', game => {
+      setGame(game);
+      console.log(game);
+      let {deck, dealer, players} = game;
+      setDeck(deck);
+      setNumInDeck(deck.length);
+      setDealerCards(dealer);
+      for (const player of players){
+          if (player.id === props.socket.id){
+              setPlayerCards([...player.cards]);
+              setLastPlay(player.lastPlay);
+          } else {
+              setPlayer2Cards([...player.cards]);
+              setPlayer2LastPlay(player.lastPlay);
+          }
+      }
+  });
 
-    
+  props.socket.on('show buttons', () => {
+    setShowButtons(true);
+  });
+
+  props.socket.on('hide buttons', () => {
+    setShowButtons(false);
+  })
+
+    //Stand and hit functions
+  function stand() {
+    props.socket.emit('stand');
+  };
+
+  function hit() {
+    props.socket.emit('hit');
+  };
 
 
 
@@ -79,12 +94,14 @@ export default function Table(props){
                                     <Player name={'Opponent total'} cards={player2Cards} countCards={countCards}/>
                             </div>
 
-                            {/* { showButtons && <div className='buttons'>
+                            { showButtons && <div className='buttons'>
                                                   <Stand stand={stand}/>
                                                   <Hit hit={hit}/>
-                                              </div>} */}
+                                              </div>}
                                             </div>
 };
+
+
 
 function countCards(cardList, firstBack=false){
   let cardsToCount = [...cardList];
@@ -122,3 +139,4 @@ function countCards(cardList, firstBack=false){
   };
   return total;
 };
+
