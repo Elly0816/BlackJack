@@ -2,7 +2,7 @@ import './App.css';
 // import Game from './components/Game';
 import Table from './components/Table';
 import Home from './components/Home';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, createContext} from 'react';
 import axios from 'axios';
 import {io} from 'socket.io-client';
 
@@ -20,7 +20,7 @@ function App() {
   const [socket, setSocket] = useState();
   const [startGame, setStartGame] = useState(false);
   const [searching, setSearching] = useState(false);
-  let socketSet;
+  // let socketSet;
 
   useEffect(()=>{
     const connectedSocket = io(endpoint);
@@ -49,22 +49,22 @@ function App() {
     
   // };
 
-  if (socket){
-    socket.on('sockets', (sockets) => {
-      if(searching){
-        let socketSet = new Set (sockets); //This includes all sockets excluding client's socket
-        // console.log(socketSet);
-        // console.log(socketSet.size);
-        if (socketSet.size > 0){
-          for (let other of socketSet){
-            socket.emit('toConnect', other);
-        };
-      }
-      }
+  // if (socket){
+  //   socket.on('sockets', (sockets) => {
+  //     if(searching){
+  //       let socketSet = new Set (sockets); //This includes all sockets excluding client's socket
+  //       // console.log(socketSet);
+  //       // console.log(socketSet.size);
+  //       if (socketSet.size > 0){
+  //         for (let other of socketSet){
+  //           socket.emit('toConnect', other);
+  //       };
+  //     }
+  //     }
       
       
-    });
-  };
+  //   });
+  // };
 
   if (socket){
     socket.on('joined', () => {
@@ -76,14 +76,16 @@ function App() {
   }
 
   return (
-    <div className="App">
-      {startGame ? <Table timer={timer} socket={socket} start={startGame}/> : <Home 
-                                          socketSearch={socketSearch} 
-                                          searching={searching}/>}
-    </div>
+    <GameContext.Provider value={{startGame, setStartGame}}>
+      <div className="App">
+        {startGame ? <Table timer={timer} socket={socket} start={startGame}/> : <Home 
+                                            socketSearch={socketSearch} 
+                                            searching={searching}/>}
+      </div>
+    </GameContext.Provider>
   );
 }
 
 export default App;
 
-
+export const GameContext = createContext();

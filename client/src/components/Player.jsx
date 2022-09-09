@@ -1,7 +1,10 @@
 import Card from './Card';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext} from 'react';
+import { GameContext } from '../App'
 
 export default function Player(props){
+
+    const {start, setStart} = useContext(GameContext);
 
     
     const [cardFaces, setCardFaces] = useState([]);
@@ -19,7 +22,7 @@ export default function Player(props){
 
     return <div className='player'>
             <span>{props.name}: {total}</span>
-            {(total === 0 && props.start) ? <h1>BUST</h1> : 
+            {(total === 0 && start) ? <h1>BUST</h1> : 
             <div className="flex-container">
                 { Array.from({length: numOfCards}, ((item, index) => <Card face={cardFaces[index]} key={index}/>))}
             </div>
@@ -27,5 +30,4 @@ export default function Player(props){
             
         </div>
 };
-
 

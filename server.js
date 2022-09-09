@@ -36,6 +36,14 @@ const cards = ['10_C.png', '10_D.png', '10_H.png', '10_S.png', '2_C.png', '2_D.p
 io.on('connection', (socket) => {
     let room;
     console.log(`A connection has been made with socket id: ${socket.id}`);
+    const game = {
+        deck: [],
+        dealer: [],
+        players: [{ id: null, cards: [], lastPlay: null },
+            { id: null, cards: [], lastPlay: null }
+        ]
+    };
+    let [me, opponent] = game.players;
 
     //When the socket has been disconnected
     socket.on('disconnect', () => {
@@ -74,11 +82,46 @@ io.on('connection', (socket) => {
                 console.log(`${socket.id}\n${opponentSocket.id}\n${room}`);
                 opponentSocket.join(room);
                 socket.join(room);
-                io.to(room).emit('joined');
-            }
-        });
+                io.to(room).emit('joined', game);
+                game.deck = [...shuffle(cards)];
+                me.id = socket.id;
+                opponent.id = opponentSocket.id;
+                console.log(game);
+                io.to(room).emit('game', game);
 
+                //Set timer to seal cards to player and dealer
+                const dealCards = setTimeout(() => {
+                    setTimeout(() => {
+                        game.dealer.push(game.deck.pop());
+                        io.to(room).emit('game state', game);
+                        setTimeout(() => {
+                            me.cards.push(game.deck.pop());
+                            io.to(room).emit('game state', game);
+                            setTimeout(() => {
+                                opponent.cards.push(game.deck.pop());
+                                io.to(room).emit('game state', game);
+                                setTimeout(() => {
+                                    game.dealer.push(game.deck.pop());
+                                    io.to(room).emit('game state', game);
+                                    setTimeout(() => {
+                                        me.cards.push(game.deck.pop());
+                                        io.to(room).emit('game state', game);
+                                        setTimeout(() => {
+                                            opponent.cards.push(game.deck.pop());
+                                            io.to(room).emit('game state', game);
+                                            clearTimeout(dealCards);
+                                        }, 1000);
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000);
+                        }, 5000);
+                    });
+                });
+            };
+        });
     });
+    //Handle sending the shuffled cards to the room
+
 
 });
 
@@ -89,3 +132,13 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => {
     console.log(`A connection has been made with the server on port: ${PORT}`);
 });
+
+
+function shuffle(cards) { //This shuffles the deck
+    let shuffled = cards
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+
+    return shuffled;
+};
