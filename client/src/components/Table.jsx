@@ -15,7 +15,7 @@ export default function Table(props){
     const [playerCards, setPlayerCards] = useState([]);
     const [player2Cards, setPlayer2Cards] = useState([]);
     // const [numOfPlayerCards, setNumOfPlayerCards] = useState(playerCards.length);
-    const [backCard, setBackCard] = useState(true);
+    const [backCard, setBackCard] = useState();
     const [gameOver, setGameOver] = useState();
     // const [startGame, setStartGame] = useState();
     const [showButtons, setShowButtons] = useState(false);
@@ -23,7 +23,10 @@ export default function Table(props){
     const [lastPlay, setLastPlay] = useState();
     const [player2LastPlay, setPlayer2LastPlay] = useState();
     const [game, setGame] = useState();
-
+    const [dealerTotal, setDealerTotal] = useState(0);
+    const [PlayerTotal, setPlayerTotal] = useState(0);
+    const [player2Total, setPlayer2Total] = useState(0);
+    
     //On mount, get the shuffled cards.
     useEffect(() => {
         props.socket.on('game', game => {
@@ -32,14 +35,18 @@ export default function Table(props){
             let {deck, dealer, players} = game;
             setDeck(deck);
             setNumInDeck(deck.length);
-            setDealerCards(dealer);
+            setDealerCards(dealer.cards);
+            setDealerTotal(dealer.total);
+            setBackCard(dealer.backCard);
             for (const player of players){
                 if (player.id === props.socket.id){
                     setPlayerCards([...player.cards]);
                     setLastPlay(player.lastPlay);
+                    setPlayerTotal(player.total);
                 } else {
                     setPlayer2Cards([...player.cards]);
                     setPlayer2LastPlay(player.lastPlay);
+                    setPlayer2Total(player.total);
                 }
             }
         });
@@ -51,14 +58,18 @@ export default function Table(props){
       let {deck, dealer, players} = game;
       setDeck(deck);
       setNumInDeck(deck.length);
-      setDealerCards(dealer);
+      setDealerCards(dealer.cards);
+      setDealerTotal(dealer.total);
+      setBackCard(dealer.backCard);
       for (const player of players){
           if (player.id === props.socket.id){
               setPlayerCards([...player.cards]);
               setLastPlay(player.lastPlay);
+              setPlayerTotal(player.total);
           } else {
               setPlayer2Cards([...player.cards]);
               setPlayer2LastPlay(player.lastPlay);
+              setPlayer2Total(player.total);
           }
       }
   });
@@ -86,12 +97,12 @@ export default function Table(props){
                       <div className='game'>
                           <Dealer cards={dealerCards}
                           backCard={backCard}
-                            countCards={countCards}
+                            total={dealerTotal}
                               numInDeck={numInDeck}
                             />
                             <div className='players-container'>
-                                    <Player name={'My total'} cards={playerCards} countCards={countCards}/>
-                                    <Player name={'Opponent total'} cards={player2Cards} countCards={countCards}/>
+                                    <Player name={'My total'} cards={playerCards} total={PlayerTotal}/>
+                                    <Player name={'Opponent total'} cards={player2Cards} total={player2Total}/>
                             </div>
 
                             { showButtons && <div className='buttons'>
@@ -103,40 +114,40 @@ export default function Table(props){
 
 
 
-function countCards(cardList, firstBack=false){
-  let cardsToCount = [...cardList];
-  const values = { //Object that holds the values of each card
-    ace: 11,
-    2: 2,
-    3: 3,
-    4: 4,
-    5: 5,
-    6: 6,
-    7: 7,
-    8: 8,
-    9: 9,
-    10: 10,
-    jack: 10,
-    queen: 10,
-    king: 10
-  };
-  let cardValues = []; //Array that holds the value on each card
-  if (firstBack){
-      cardsToCount = cardsToCount.splice(1, 1);  
-  };
-  for (const card of cardsToCount){
-    const value = card.split('_')[0];
-    cardValues.push(value);
-  };
-  let total = 0;
-  for (const value of cardValues){
-    total += values[value];
-  };
-  if (total > 21 && cardValues.includes('ace')){
-    total -= 10;
-  } else if (total + 11 <= 21 && cardValues.includes('ace')){
-    total += 10;
-  };
-  return total;
-};
+// function countCards(cardList, firstBack=false){
+//   let cardsToCount = [...cardList];
+//   const values = { //Object that holds the values of each card
+//     ace: 11,
+//     2: 2,
+//     3: 3,
+//     4: 4,
+//     5: 5,
+//     6: 6,
+//     7: 7,
+//     8: 8,
+//     9: 9,
+//     10: 10,
+//     jack: 10,
+//     queen: 10,
+//     king: 10
+//   };
+//   let cardValues = []; //Array that holds the value on each card
+//   if (firstBack){
+//       cardsToCount = cardsToCount.splice(1, 1);  
+//   };
+//   for (const card of cardsToCount){
+//     const value = card.split('_')[0];
+//     cardValues.push(value);
+//   };
+//   let total = 0;
+//   for (const value of cardValues){
+//     total += values[value];
+//   };
+//   if (total > 21 && cardValues.includes('ace')){
+//     total -= 10;
+//   } else if (total + 11 <= 21 && cardValues.includes('ace')){
+//     total += 10;
+//   };
+//   return total;
+// };
 

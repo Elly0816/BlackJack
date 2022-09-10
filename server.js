@@ -38,9 +38,9 @@ io.on('connection', (socket) => {
     console.log(`A connection has been made with socket id: ${socket.id}`);
     const game = {
         deck: [],
-        dealer: [],
-        players: [{ id: null, cards: [], lastPlay: null },
-            { id: null, cards: [], lastPlay: null }
+        dealer: { cards: [], backCard: true, total: null },
+        players: [{ id: null, cards: [], lastPlay: null, total: null },
+            { id: null, cards: [], lastPlay: null, total: null }
         ]
     };
     let [me, opponent] = game.players;
@@ -92,22 +92,28 @@ io.on('connection', (socket) => {
                 //Set timer to seal cards to player and dealer
                 const dealCards = setTimeout(() => {
                     setTimeout(() => {
-                        game.dealer.push(game.deck.pop());
+                        game.dealer.cards.push(game.deck.pop());
+                        game.dealer.total = countCards(game.dealer.cards, game.dealer.backCard);
                         io.to(room).emit('game state', game);
                         setTimeout(() => {
                             me.cards.push(game.deck.pop());
+                            me.total = countCards(me.cards);
                             io.to(room).emit('game state', game);
                             setTimeout(() => {
                                 opponent.cards.push(game.deck.pop());
+                                opponent.total = countCards(opponent.cards);
                                 io.to(room).emit('game state', game);
                                 setTimeout(() => {
-                                    game.dealer.push(game.deck.pop());
+                                    game.dealer.cards.push(game.deck.pop());
+                                    game.dealer.total = countCards(game.dealer.cards, game.dealer.backCard);
                                     io.to(room).emit('game state', game);
                                     setTimeout(() => {
                                         me.cards.push(game.deck.pop());
+                                        me.total = countCards(me.cards);
                                         io.to(room).emit('game state', game);
                                         setTimeout(() => {
                                             opponent.cards.push(game.deck.pop());
+                                            opponent.total = countCards(opponent.cards);
                                             io.to(room).emit('game state', game);
                                             socket.emit('show buttons');
                                             opponentSocket.emit('hide buttons');
@@ -129,6 +135,7 @@ io.on('connection', (socket) => {
         socket.emit('hide buttons');
         me.lastPlay = 'stand';
         if (opponent.lastPlay === 'stand') {
+            dealer.backCard = false;
 
         }
     });
@@ -152,4 +159,42 @@ function shuffle(cards) { //This shuffles the deck
         .map(({ value }) => value);
 
     return shuffled;
+};
+
+
+function countCards(cardList, firstBack = false) {
+    let cardsToCount = [...cardList];
+    const values = { //Object that holds the values of each card
+        ace: 11,
+        2: 2,
+        3: 3,
+        4: 4,
+        5: 5,
+        6: 6,
+        7: 7,
+        8: 8,
+        9: 9,
+        10: 10,
+        jack: 10,
+        queen: 10,
+        king: 10
+    };
+    let cardValues = []; //Array that holds the value on each card
+    if (firstBack) {
+        cardsToCount = cardsToCount.splice(1, 1);
+    };
+    for (const card of cardsToCount) {
+        const value = card.split('_')[0];
+        cardValues.push(value);
+    };
+    let total = 0;
+    for (const value of cardValues) {
+        total += values[value];
+    };
+    if (total > 21 && cardValues.includes('ace')) {
+        total -= 10;
+    } else if (total + 11 <= 21 && cardValues.includes('ace')) {
+        total += 10;
+    };
+    return total;
 };

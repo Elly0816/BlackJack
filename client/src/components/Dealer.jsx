@@ -8,18 +8,16 @@ export default function Dealer(props){
 
     const [numCards, setNumCards] = useState();
 
-    const [total, setTotal] = useState();
 
     useEffect(() => {
         if (props.cards.length !== numCards){
             setCardFaces(props.cards);
             setNumCards(props.cards.length);
-            setTotal(props.countCards(props.cards, props.backCard));
         }
     }, [props.cards]);
 
     return <div className='dealer'>
-            <span>Dealer: {total}</span>
+            <span>Dealer: {props.total}</span>
             <div className='flex-container'>
                 {Array.from({ length: numCards}, ((item, index) => (props.backCard && index === 0) ? 
                 <Card face={'back.png'} key={index}/>
