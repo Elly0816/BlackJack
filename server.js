@@ -134,8 +134,26 @@ io.on('connection', (socket) => {
     socket.on('stand', () => {
         socket.emit('hide buttons');
         me.lastPlay = 'stand';
+        //If other player also stands
         if (opponent.lastPlay === 'stand') {
-            dealer.backCard = false;
+            setTimeout(() => {
+                game.dealer.backCard = false;
+                game.dealer.total = countCards(game.dealer.cards, game.dealer.backCard);
+                io.to(room).emit('game state', game);
+                const dealerDeal = setInterval(() => {
+                    if (game.dealer.total < 17) {
+                        game.dealer.cards.push(deck.pop());
+                        game.dealer.total = countCards(game.dealer.cards);
+                        io.to(room).emit('game state', game);
+                    } else {
+                        //Create a function to check the win
+                        clearInterval(dealerDeal);
+                    }
+                }, 1000);
+            }, 1000);
+
+            //If other player does not stand
+        } else {
 
         }
     });
@@ -161,6 +179,9 @@ function shuffle(cards) { //This shuffles the deck
     return shuffled;
 };
 
+function checkWin(dealer, playerOne, playerTwo) {
+
+}
 
 function countCards(cardList, firstBack = false) {
     let cardsToCount = [...cardList];
