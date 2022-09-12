@@ -75,7 +75,9 @@ export default function Table(props){
   });
 
   props.socket.on('show buttons', () => {
-    setShowButtons(true);
+    if (PlayerTotal !== 'BlackJack' || PlayerTotal !== 'Bust'){
+      setShowButtons(true);
+    }
   });
 
   props.socket.on('hide buttons', () => {

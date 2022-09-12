@@ -32,25 +32,38 @@ const cards = ['10_C.png', '10_D.png', '10_H.png', '10_S.png', '2_C.png', '2_D.p
 
 
 //Websocket
+let room;
+let opponentSocket;
+let game = {
+    deck: [],
+    dealer: { cards: [], backCard: true, total: null },
+    players: [{ id: null, cards: [], lastPlay: null, total: null },
+        { id: null, cards: [], lastPlay: null, total: null }
+    ]
+};
+let [me, opponent] = game.players;
 
 io.on('connection', (socket) => {
-    let room;
     console.log(`A connection has been made with socket id: ${socket.id}`);
-    const game = {
-        deck: [],
-        dealer: { cards: [], backCard: true, total: null },
-        players: [{ id: null, cards: [], lastPlay: null, total: null },
-            { id: null, cards: [], lastPlay: null, total: null }
-        ]
-    };
+    room = room;
+    game = game;
     let [me, opponent] = game.players;
 
     //When the socket has been disconnected
     socket.on('disconnect', () => {
         console.log(`${socket.id} has disconnected.`);
+        room = null;
+        opponentSocket = null;
+        game = {
+            deck: [],
+            dealer: { cards: [], backCard: true, total: null },
+            players: [{ id: null, cards: [], lastPlay: null, total: null },
+                { id: null, cards: [], lastPlay: null, total: null }
+            ]
+        };
     });
 
-
+    let currentPlayers = [];
     //When the user searches for another socket to connect to 
     socket.on('search', () => {
         //Set the socket's searching property to true
@@ -70,7 +83,8 @@ io.on('connection', (socket) => {
         getSockets().then(sockets => {
             if (sockets.length > 0) {
                 const socketToConnect = sockets[0];
-                const opponentSocket = io.sockets.sockets.get(socketToConnect);
+                opponentSocket = io.sockets.sockets.get(socketToConnect);
+                currentPlayers = [socket, opponentSocket];
                 opponentSocket.searching = false;
                 socket.searching = false;
                 // console.log(opponentSocket);
@@ -79,14 +93,14 @@ io.on('connection', (socket) => {
                 opponentSocket.searching = false;
                 socket.searching = false;
                 room = `${socket.id.slice(0, socket.id.length/2)}+${opponentSocket.id.slice(opponentSocket.id.length/2)}`
-                console.log(`${socket.id}\n${opponentSocket.id}\n${room}`);
+                    // console.log(`${socket.id}\n${opponentSocket.id}\n${room}`);
                 opponentSocket.join(room);
                 socket.join(room);
                 io.to(room).emit('joined', game);
                 game.deck = [...shuffle(cards)];
                 me.id = socket.id;
                 opponent.id = opponentSocket.id;
-                console.log(game);
+                // console.log(game);
                 io.to(room).emit('game', game);
 
                 //Set timer to seal cards to player and dealer
@@ -110,10 +124,18 @@ io.on('connection', (socket) => {
                                     setTimeout(() => {
                                         me.cards.push(game.deck.pop());
                                         me.total = countCards(me.cards);
+                                        if (me.total === 21) {
+                                            me.total = 'BlackJack';
+                                            socket.emit('hide buttons');
+                                        }
                                         io.to(room).emit('game state', game);
                                         setTimeout(() => {
                                             opponent.cards.push(game.deck.pop());
                                             opponent.total = countCards(opponent.cards);
+                                            if (opponent.total === 21) {
+                                                opponent.total = 'BlackJack';
+                                                opponentSocket.emit('hide buttons');
+                                            }
                                             io.to(room).emit('game state', game);
                                             socket.emit('show buttons');
                                             opponentSocket.emit('hide buttons');
@@ -133,28 +155,65 @@ io.on('connection', (socket) => {
     //Handle user hits and stand
     socket.on('stand', () => {
         socket.emit('hide buttons');
+        console.log(game);
+        console.log(game.players);
+        for (const player of game.players) {
+            if (player.id === socket.id) {
+                me = player;
+                console.log('me');
+                // console.log(me);
+            } else {
+                opponent = player;
+                console.log(`opponent`);
+                // console.log(opponent);
+            };
+        };
+        for (const player of currentPlayers) {
+            if (player.id !== socket.id) {
+                opponentSocket = player;
+            };
+        };
         me.lastPlay = 'stand';
+        // console.log("Game: ", game);
         //If other player also stands
-        if (opponent.lastPlay === 'stand') {
+        if (opponent.lastPlay === 'stand' || opponent.total === 'BlackJack' || opponent.total === 'Bust') {
             setTimeout(() => {
                 game.dealer.backCard = false;
                 game.dealer.total = countCards(game.dealer.cards, game.dealer.backCard);
                 io.to(room).emit('game state', game);
+                io.to(room).emit('hide buttons');
                 const dealerDeal = setInterval(() => {
                     if (game.dealer.total < 17) {
-                        game.dealer.cards.push(deck.pop());
+                        game.dealer.cards.push(game.deck.pop());
                         game.dealer.total = countCards(game.dealer.cards);
                         io.to(room).emit('game state', game);
                     } else {
-                        //Create a function to check the win
+                        //Create a function to check the win (Dealers' cards are over 17)
+                        if (game.dealer.total > 21) {
+                            game.dealer.total = 'Bust';
+                            io.to(room).emit('game state', game);
+                        } else if (game.dealer.total === 21) {
+                            game.dealer.total = 'BlackJack';
+                            io.to(room).emit('game state', game);
+                        } else if (game.dealer.total < me.total && game.dealer.total < opponent.total) {
+                            if (me.total > opponent.total) {
+                                socket.emit('you win');
+                                opponentSocket.emit('other player wins');
+                            } else if (me.total < opponent.total) {
+                                socket.emit('other player wins');
+                                opponentSocket.emit('you win');
+                            } else {
+                                io.to(room).emit('house looses');
+                            };
+                        };
                         clearInterval(dealerDeal);
-                    }
+                    };
                 }, 1000);
             }, 1000);
-
-            //If other player does not stand
+            //If other player did not stand
         } else {
-
+            // console.log(opponentSocket);
+            opponentSocket.emit('show buttons');
         }
     });
 
@@ -166,7 +225,7 @@ io.on('connection', (socket) => {
 
 
 server.listen(PORT, () => {
-    console.log(`A connection has been made with the server on port: ${PORT}`);
+    console.log(`The server has been started on port: ${PORT}`);
 });
 
 
