@@ -217,6 +217,108 @@ io.on('connection', (socket) => {
         }
     });
 
+    //When a player hits
+    socket.on('hit', () => {
+        for (const player of game.players) {
+            if (player.id === socket.id) {
+                me = player;
+            } else {
+                opponent = player;
+            };
+        };
+
+        for (const player of currentPlayers) {
+            if (player.id !== socket.player) {
+                opponentSocket = player;
+            };
+        };
+        me.lastPlay = 'hit';
+        me.cards.push(game.deck.pop());
+        total = countCards(me.cards);
+        if (total === 21) {
+            socket.emit('hide buttons');
+            me.total = 'BlackJack';
+            io.to(room).emit('game state', game);
+            if (opponent.total === 'Bust' || opponent.total === 'BlackJack' || opponent.lastPlay === 'stand') {
+                setTimeout(() => {
+                    game.dealer.backCard = false;
+                    game.dealer.total = countCards(game.dealer.cards, game.dealer.backCard);
+                    io.to(room).emit('game state', game);
+                    io.to(room).emit('hide buttons');
+                    const dealerDeal = setInterval(() => {
+                        if (game.dealer.total < 17) {
+                            game.dealer.cards.push(game.deck.pop());
+                            game.dealer.total = countCards(game.dealer.cards);
+                            io.to(room).emit('game state', game);
+                        } else {
+                            //Create a function to check the win (Dealers' cards are over 17)
+                            if (game.dealer.total > 21) {
+                                game.dealer.total = 'Bust';
+                                io.to(room).emit('game state', game);
+                            } else if (game.dealer.total === 21) {
+                                game.dealer.total = 'BlackJack';
+                                io.to(room).emit('game state', game);
+                            } else if (game.dealer.total < me.total && game.dealer.total < opponent.total) {
+                                if (me.total > opponent.total) {
+                                    socket.emit('you win');
+                                    opponentSocket.emit('other player wins');
+                                } else if (me.total < opponent.total) {
+                                    socket.emit('other player wins');
+                                    opponentSocket.emit('you win');
+                                } else {
+                                    io.to(room).emit('house looses');
+                                };
+                            };
+                            clearInterval(dealerDeal);
+                        };
+                    }, 1000);
+                }, 1000);
+            }
+
+        } else if (total > 21) {
+            socket.emit('hide buttons');
+            me.total = 'Bust';
+            io.to(room).emit('game state', game);
+            setTimeout(() => {
+                game.dealer.backCard = false;
+                game.dealer.total = countCards(game.dealer.cards, game.dealer.backCard);
+                io.to(room).emit('game state', game);
+                io.to(room).emit('hide buttons');
+                const dealerDeal = setInterval(() => {
+                    if (game.dealer.total < 17) {
+                        game.dealer.cards.push(game.deck.pop());
+                        game.dealer.total = countCards(game.dealer.cards);
+                        io.to(room).emit('game state', game);
+                    } else {
+                        //Create a function to check the win (Dealers' cards are over 17)
+                        if (game.dealer.total > 21) {
+                            game.dealer.total = 'Bust';
+                            io.to(room).emit('game state', game);
+                        } else if (game.dealer.total === 21) {
+                            game.dealer.total = 'BlackJack';
+                            io.to(room).emit('game state', game);
+                        } else if (game.dealer.total < me.total && game.dealer.total < opponent.total) {
+                            if (me.total > opponent.total) {
+                                socket.emit('you win');
+                                opponentSocket.emit('other player wins');
+                            } else if (me.total < opponent.total) {
+                                socket.emit('other player wins');
+                                opponentSocket.emit('you win');
+                            } else {
+                                io.to(room).emit('house looses');
+                            };
+                        };
+                        clearInterval(dealerDeal);
+                    };
+                }, 1000);
+            }, 1000);
+        } else {
+            me.total = total;
+            io.to(room).emit('game state', game);
+        };
+
+    });
+
 
 });
 
