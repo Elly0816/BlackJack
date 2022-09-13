@@ -4,6 +4,7 @@ import Player from './Player';
 import Hit from './Hit';
 import Stand from './Stand';
 import Results from './Results';
+import GoHome from './GoHome';
 
 
 export default function Table(props){
@@ -26,6 +27,7 @@ export default function Table(props){
     const [dealerTotal, setDealerTotal] = useState(0);
     const [PlayerTotal, setPlayerTotal] = useState(0);
     const [player2Total, setPlayer2Total] = useState(0);
+    const [ goHomeButton, setGoHomeButton] = useState(false);
     
     //On mount, get the shuffled cards.
     useEffect(() => {
@@ -93,6 +95,11 @@ export default function Table(props){
     props.socket.emit('hit');
   };
 
+  props.socket.on('go home', () => {
+    console.log('go home');
+    setShowButtons(false);
+    setGoHomeButton(true);
+  });
 
 
     return result ? <Results result={result}/> : 
@@ -110,6 +117,9 @@ export default function Table(props){
                             { showButtons && <div className='buttons'>
                                                   <Stand stand={stand}/>
                                                   <Hit hit={hit}/>
+                                              </div>}
+                            { goHomeButton && <div className='='buttons>
+                                                <GoHome/>
                                               </div>}
                                             </div>
 };
