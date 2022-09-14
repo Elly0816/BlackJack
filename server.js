@@ -51,15 +51,15 @@ io.on('connection', (socket) => {
     game = game;
     let [me, opponent] = game.players;
 
-    function showGoHome(socket1, socket2, room, io = io) {
-        setTimeout(() => {
-            io.to(room).emit('go home');
-            // socket1.leave(room);
-            // socket2.leave(room);
-            // room = null
-            console.log('go home');
-        }, 5000);
-    };
+    // function showGoHome(players) {
+    //     console.log('about to emit go hoome to both sockets');
+    //     setTimeout(() => {
+    //         for (const player of players) {
+    //             player.emit('go home');
+    //             console.log('go home');
+    //         }
+    //     }, 5000);
+    // };
 
     //When the socket has been disconnected
     socket.on('disconnect', () => {
@@ -205,26 +205,38 @@ io.on('connection', (socket) => {
                         if (game.dealer.total > 21) {
                             game.dealer.total = 'Bust';
                             io.to(room).emit('game state', game);
-                            showGoHome(room = room, io = io);
+                            setTimeout(() => {
+                                io.to(room).emit('go home');
+                            }, 3000);
                         } else if (game.dealer.total === 21) {
                             game.dealer.total = 'BlackJack';
                             io.to(room).emit('game state', game);
-                            showGoHome(room = room, io = io);
+                            setTimeout(() => {
+                                io.to(room).emit('go home');
+                            }, 3000);
                         } else if (game.dealer.total < me.total && game.dealer.total < opponent.total) {
                             if (me.total > opponent.total) {
                                 socket.emit('you win');
                                 opponentSocket.emit('other player wins');
-                                showGoHome(room = room, io = io);
+                                setTimeout(() => {
+                                    io.to(room).emit('go home');
+                                }, 3000);
                             } else if (me.total < opponent.total) {
                                 socket.emit('other player wins');
                                 opponentSocket.emit('you win');
-                                showGoHome(room = room, io = io);
+                                setTimeout(() => {
+                                    io.to(room).emit('go home');
+                                }, 3000);
                             } else {
                                 io.to(room).emit('house looses');
-                                showGoHome(room = room, io = io);
+                                setTimeout(() => {
+                                    io.to(room).emit('go home');
+                                }, 3000);
                             };
                         } else {
-                            showGoHome(room = room, io = io);
+                            setTimeout(() => {
+                                io.to(room).emit('go home');
+                            }, 3000);
                         }
                         clearInterval(dealerDeal);
                     };
@@ -270,29 +282,41 @@ io.on('connection', (socket) => {
                             game.dealer.cards.push(game.deck.pop());
                             game.dealer.total = countCards(game.dealer.cards);
                             io.to(room).emit('game state', game);
-                            showGoHome(room = room, io = io);
+                            setTimeout(() => {
+                                io.to(room).emit('go home');
+                            }, 3000);
                         } else {
                             //Create a function to check the win (Dealers' cards are over 17)
                             if (game.dealer.total > 21) {
                                 game.dealer.total = 'Bust';
                                 io.to(room).emit('game state', game);
-                                showGoHome(room = room, io = io);
+                                setTimeout(() => {
+                                    io.to(room).emit('go home');
+                                }, 3000);
                             } else if (game.dealer.total === 21) {
                                 game.dealer.total = 'BlackJack';
                                 io.to(room).emit('game state', game);
-                                showGoHome(room = room, io = io);
+                                setTimeout(() => {
+                                    io.to(room).emit('go home');
+                                }, 3000);
                             } else if (game.dealer.total < me.total && game.dealer.total < opponent.total) {
                                 if (me.total > opponent.total) {
                                     socket.emit('you win');
                                     opponentSocket.emit('other player wins');
-                                    showGoHome(room = room, io = io);
+                                    setTimeout(() => {
+                                        io.to(room).emit('go home');
+                                    }, 3000);
                                 } else if (me.total < opponent.total) {
                                     socket.emit('other player wins');
                                     opponentSocket.emit('you win');
-                                    showGoHome(room = room, io = io);
+                                    setTimeout(() => {
+                                        io.to(room).emit('go home');
+                                    }, 3000);
                                 } else {
                                     io.to(room).emit('house looses');
-                                    showGoHome(room = room, io = io);
+                                    setTimeout(() => {
+                                        io.to(room).emit('go home');
+                                    }, 3000);
                                 };
                             };
                             clearInterval(dealerDeal);
@@ -331,20 +355,28 @@ io.on('connection', (socket) => {
                                 if (me.total > opponent.total) {
                                     socket.emit('you win');
                                     opponentSocket.emit('other player wins');
-                                    showGoHome(room = room, io = io);
+                                    setTimeout(() => {
+                                        io.to(room).emit('go home');
+                                    }, 3000);
 
                                 } else if (me.total < opponent.total) {
                                     socket.emit('other player wins');
                                     opponentSocket.emit('you win');
-                                    showGoHome(room = room), io = io;
+                                    setTimeout(() => {
+                                        io.to(room).emit('go home');
+                                    }, 3000);
 
                                 } else {
                                     io.to(room).emit('house looses');
-                                    showGoHome(room = room, io = io);
+                                    setTimeout(() => {
+                                        io.to(room).emit('go home');
+                                    }, 3000);
 
                                 };
                             } else {
-                                showGoHome(room = room, io = io);
+                                setTimeout(() => {
+                                    io.to(room).emit('go home');
+                                }, 3000);
                             };
                             clearInterval(dealerDeal);
                         };

@@ -118,7 +118,7 @@ export default function Table(props){
                                                   <Stand stand={stand}/>
                                                   <Hit hit={hit}/>
                                               </div>}
-                            { goHomeButton && <div className='='buttons>
+                            { goHomeButton && <div className='buttons'>
                                                 <GoHome/>
                                               </div>}
                                             </div>
