@@ -5,6 +5,7 @@ const socketIO = require('socket.io');
 const cors = require('cors');
 
 const path = require('path');
+const e = require('express');
 
 
 app.use(cors());
@@ -49,7 +50,7 @@ io.on('connection', (socket) => {
     console.log(`A connection has been made with socket id: ${socket.id}`);
     room = room;
     game = game;
-    let [me, opponent] = game.players;
+
 
     // function showGoHome(players) {
     //     console.log('about to emit go hoome to both sockets');
@@ -81,6 +82,7 @@ io.on('connection', (socket) => {
         //Set the socket's searching property to true
         game = game;
         socket.searching = true;
+        let [me, opponent] = game.players;
         //Get all the connected and searching sockets
         async function getSockets() {
             const socketIds = [];
@@ -109,6 +111,7 @@ io.on('connection', (socket) => {
                     // console.log(`${socket.id}\n${opponentSocket.id}\n${room}`);
                 opponentSocket.join(room);
                 socket.join(room);
+                console.log('joined');
                 io.to(room).emit('joined', game);
                 game.deck = [...shuffle(cards)];
                 me.id = socket.id;
@@ -140,6 +143,7 @@ io.on('connection', (socket) => {
                                         if (me.total === 21) {
                                             me.total = 'BlackJack';
                                             socket.emit('hide buttons');
+                                            opponentSocket.emit('show buttons');
                                         }
                                         io.to(room).emit('game state', game);
                                         setTimeout(() => {
@@ -148,6 +152,7 @@ io.on('connection', (socket) => {
                                             if (opponent.total === 21) {
                                                 opponent.total = 'BlackJack';
                                                 opponentSocket.emit('hide buttons');
+                                                socket.emit('show buttons');
                                             }
                                             io.to(room).emit('game state', game);
                                             socket.emit('show buttons');
@@ -392,6 +397,27 @@ io.on('connection', (socket) => {
 
     });
 
+    socket.on('game over', () => {
+        // socket.leave(room);
+        // opponentSocket.leave(room);
+        // room = null;
+        // opponentSocket = null;
+        if (room.length > 0) {
+            socket.leave(room);
+            opponentSocket = null;
+        } else {
+            room = null;
+            currentPlayers = [];
+        }
+        game = {
+            deck: [],
+            dealer: { cards: [], backCard: true, total: null },
+            players: [{ id: null, cards: [], lastPlay: null, total: null },
+                { id: null, cards: [], lastPlay: null, total: null }
+            ]
+        };
+        [me, opponent] = game.players;
+    });
 
 });
 
@@ -415,9 +441,9 @@ function shuffle(cards) { //This shuffles the deck
     return shuffled;
 };
 
-function checkWin(dealer, playerOne, playerTwo) {
+// function checkWin(dealer, playerOne, playerTwo) {
 
-}
+// }
 
 function countCards(cardList, firstBack = false) {
     let cardsToCount = [...cardList];

@@ -78,7 +78,7 @@ function App() {
   return (
     <GameContext.Provider value={{startGame, setStartGame}}>
       <div className="App">
-        {startGame ? <Table timer={timer} socket={socket} start={startGame}/> : <Home 
+        {startGame ? <Table socket={socket} start={startGame}/> : <Home 
                                             socketSearch={socketSearch} 
                                             searching={searching}/>}
       </div>

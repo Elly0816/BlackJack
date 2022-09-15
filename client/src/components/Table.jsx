@@ -1,14 +1,17 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useContext} from 'react';
 import Dealer from './Dealer';
 import Player from './Player';
 import Hit from './Hit';
 import Stand from './Stand';
 import Results from './Results';
 import GoHome from './GoHome';
+import { GameContext } from '../App';
 
 
 export default function Table(props){
 
+    const {startGame, setStartGame} = useContext(GameContext);
+  
     const [deck, setDeck] = useState([]);
     const [numInDeck, setNumInDeck] = useState(deck.length);
     const [dealerCards, setDealerCards] = useState([]);
@@ -101,6 +104,11 @@ export default function Table(props){
     setGoHomeButton(true);
   });
 
+  function goHome(){
+    setStartGame(false);
+    props.socket.emit('game over');
+  }
+
 
     return result ? <Results result={result}/> : 
                       <div className='game'>
@@ -119,7 +127,7 @@ export default function Table(props){
                                                   <Hit hit={hit}/>
                                               </div>}
                             { goHomeButton && <div className='buttons'>
-                                                <GoHome/>
+                                                <GoHome goHome={goHome}/>
                                               </div>}
                                             </div>
 };
