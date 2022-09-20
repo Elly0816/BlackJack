@@ -402,9 +402,11 @@ io.on('connection', (socket) => {
         // opponentSocket.leave(room);
         // room = null;
         // opponentSocket = null;
-        if (room.length > 0) {
+        currentPlayers.pop(socket);
+        opponentSocket = null;
+        if (currentPlayers.length > 0) {
             socket.leave(room);
-            opponentSocket = null;
+            currentPlayers.pop(socket);
         } else {
             room = null;
             currentPlayers = [];

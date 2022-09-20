@@ -39,6 +39,12 @@ function App() {
         }
       }, 200);
       setSearching(true);
+      setTimeout(() => {
+        if (!startGame){
+          clearInterval(timer);
+          setSearching(false);
+        }
+      }, 20000);
       // console.log(endpoint);
     }; 
   };
