@@ -12,7 +12,6 @@ const {
     reverseString,
     roomsWithoutgameRoom
 } = require('./functions');
-const { reverse } = require('dns');
 
 
 app.use(cors());
