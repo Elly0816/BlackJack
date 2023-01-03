@@ -3,7 +3,6 @@ import './App.css';
 import Table from './components/Table';
 import Home from './components/Home';
 import {useState, useEffect, createContext} from 'react';
-import axios from 'axios';
 import {io} from 'socket.io-client';
 
 function App() {
@@ -25,6 +24,9 @@ function App() {
   useEffect(()=>{
     const connectedSocket = io(endpoint);
     setSocket(connectedSocket);
+    return () => {
+      setSocket();
+    }
   }, []);
 
   let timer;
@@ -79,6 +81,13 @@ function App() {
       setSearching(false);
       setStartGame(true);
     });
+
+
+    if (socket){
+      socket.on('waiting', () => {
+        clearInterval(timer);
+      })
+    }
   }
 
   return (
