@@ -66,11 +66,6 @@ let gameRooms = [];
 
 */
 
-// setInterval(() => {
-//     console.log(`This is the length of the gameRooms ${gameRooms.length}`);
-// }, 5000);
-
-
 io.on('connection', (socket) => {
     console.log(`A connection has been made with socket id: ${socket.id}`);
     let currentGameRoom = null;
@@ -174,8 +169,6 @@ io.on('connection', (socket) => {
                 // console.log(opponent);
             };
         };
-        // console.log('This is the game state');
-        // console.log(game);
         /*
         Set the opponent socket to socket that belongs to the other player 
         */
@@ -218,8 +211,6 @@ io.on('connection', (socket) => {
                 opponentSocket = getSocket(io, player.id);
             };
         };
-        // console.log('This is the game state');
-        // console.log(game);
         /*
         Set the opponent socket to socket that belongs to the other player 
         */

@@ -155,28 +155,6 @@ async function dealCards(io, gameRoom) {
             break;
         }
     }
-
-    // if (players.every((player) => {
-    //         player.total < 21;
-    //     })) {
-    //     getSocket(io, players[0].id).emit('show buttons');
-    //     console.log('show buttons');
-    //     for (let i = 1; i < players.length; i++) {
-    //         getSocket(io, players[i].emit('hide buttons'));
-    //     }
-    // } else {
-    //     players.forEach(async player => {
-    //         if (player.total === 21) {
-    //             player.total = 'BlackJack';
-    //             getSocket(io, player.id).emit('hide buttons');
-    //         } else if (player.total > 21) {
-    //             player.total = 'Bust';
-    //             console.log(player);
-    //             getSocket(io, player.id).emit('hide buttons');
-    //         };
-    //     });
-    //     io.to(room).emit('game state', game);
-    // }
 };
 
 
@@ -203,7 +181,6 @@ function roomsWithoutgameRoom(socket, currentRooms) {
     }
     return gameRooms;
 }
-
 
 module.exports = {
     shuffle,
