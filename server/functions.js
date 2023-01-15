@@ -114,44 +114,69 @@ function getSocket(io, id) {
 
 
 async function dealCards(io, gameRoom) {
-    console.log('This is the game room in the deal cards function');
-    console.log(gameRoom);
+    // console.log('This is the game room in the deal cards function');
+    // console.log(gameRoom);
     let { game } = gameRoom;
     let room = gameRoom.roomSocket;
     let { dealer, deck, players } = game;
-    for (i = 0; i < 2; i++) {
+    for (let i = 0; i < 2; i++) {
         dealer.cards.push(deck.pop());
         dealer.total = countCards(dealer.cards, dealer.backCard);
-        await sleep(1000);
+        await sleep(1000)
+            .then(() => {
+                io.to(room).emit('game state', game);
+            });
+
         players.forEach(async player => {
-            await sleep(1000);
             player.cards.push(deck.pop());
             player.total = countCards(player.cards);
-            io.to(room).emit('game state', game);
+            await sleep(1000)
+                .then(() => {
+                    io.to(room).emit('game state', game);
+                });
         });
     }
-    let playerToPlay;
+    /*
+        Let the first player in the array
+        whose total is less than 21 play
+        all players who's total is 21 or over 
+        should be permanently on have hide buttons 
+        emitted
+    */
 
-    if (players.every((player) => {
-            player.total < 21;
-        })) {
-        await getSocket(io, players[0].id).emit('show buttons');
-        for (let i = 1; i < players.length; i++) {
-            await getSocket(io, players[i].emit('hide buttons'));
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].total < 21) {
+            getSocket(io, players[i].id).emit('show buttons');
+            players.slice(i, players.length - 1).map(
+                (player) => {
+                    getSocket(io, player.id).emit('show buttons');
+                }
+            )
+            break;
         }
-    } else {
-        players.forEach(async player => {
-            if (player.total === 21) {
-                player.total = 'BlackJack';
-                await getSocket(io, player.id).emit('hide buttons');
-            } else if (player.total > 21) {
-                player.total = 'Bust';
-                console.log(player);
-                await getSocket(io, player.id).emit('hide buttons');
-            };
-        });
-        io.to(room).emit('game state', game);
     }
+
+    // if (players.every((player) => {
+    //         player.total < 21;
+    //     })) {
+    //     getSocket(io, players[0].id).emit('show buttons');
+    //     console.log('show buttons');
+    //     for (let i = 1; i < players.length; i++) {
+    //         getSocket(io, players[i].emit('hide buttons'));
+    //     }
+    // } else {
+    //     players.forEach(async player => {
+    //         if (player.total === 21) {
+    //             player.total = 'BlackJack';
+    //             getSocket(io, player.id).emit('hide buttons');
+    //         } else if (player.total > 21) {
+    //             player.total = 'Bust';
+    //             console.log(player);
+    //             getSocket(io, player.id).emit('hide buttons');
+    //         };
+    //     });
+    //     io.to(room).emit('game state', game);
+    // }
 };
 
 
@@ -186,5 +211,6 @@ module.exports = {
     calculateWinner,
     dealCards,
     reverseString,
-    roomsWithoutgameRoom
+    roomsWithoutgameRoom,
+    getSocket
 };

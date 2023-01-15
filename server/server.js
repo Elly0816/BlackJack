@@ -16,7 +16,8 @@ const {
     calculateWinner,
     dealCards,
     reverseString,
-    roomsWithoutgameRoom
+    roomsWithoutgameRoom,
+    getSocket
 } = require('./functions');
 
 
@@ -65,9 +66,9 @@ let gameRooms = [];
 
 */
 
-setInterval(() => {
-    console.log(`This is the length of the gameRooms ${gameRooms.length}`);
-}, 5000);
+// setInterval(() => {
+//     console.log(`This is the length of the gameRooms ${gameRooms.length}`);
+// }, 5000);
 
 
 io.on('connection', (socket) => {
@@ -96,17 +97,12 @@ io.on('connection', (socket) => {
             for (const gameRoom of gameRooms) {
                 if (gameRoom.numOfPlayers < 2 && gameRoom.roomSocket.id !== reverseString(socket.id)) {
                     socket.join(gameRoom.roomSocket);
+                    currentGameRoom = gameRoom;
                     // socket.searching = false;
-                    gameRoom.idsInRoom.push(socket.id);
-                    gameRoom.numOfPlayers = gameRoom.numOfPlayers.length;
-                    room = gameRoom.roomSocket;
-                    game = gameRoom.game;
-                    // console.log('This is my socket id');
-                    // console.log(socket.id);
-                    // console.log('This is the game room');
-                    // console.log(gameRoom);
-                    // console.log('This is the game');
-                    // console.log(game);
+                    currentGameRoom.idsInRoom.push(socket.id);
+                    currentGameRoom.numOfPlayers = currentGameRoom.idsInRoom.length;
+                    room = currentGameRoom.roomSocket;
+                    game = currentGameRoom.game;
                     me = {...gamePlayer };
                     me.id = socket.id;
                     me.cards = [];
@@ -121,11 +117,6 @@ io.on('connection', (socket) => {
                         }
                     }
                     game.deck = shuffle(cards);
-                    // console.log('This is the opponent');
-                    // console.log(opponent);
-                    // console.log('This is the game after pushing');
-                    // console.log(game);
-                    // opponentSocket = io.sockets.sockets.get(opponent.id);
                     dealCards(io, gameRoom)
                         .then(() => {
                             // console.log(gameRoom.game);
@@ -139,19 +130,15 @@ io.on('connection', (socket) => {
         } else { //There is no room in the game Rooms array
             currentGameRoom = {...gameRoom };
             currentGameRoom.idsInRoom = [];
-            console.log('This is the imported game room state on spread');
-            console.log({...gameRoom });
-            console.log('This is the current game room when the first user joins');
-            console.log(currentGameRoom);
-            // game = {...gameState };
-            // console.log("This is the first socket's id");
-            // console.log(typeof socket.id);
             currentGameRoom.roomSocket = reverseString(socket.id);
             currentGameRoom.idsInRoom.push(socket.id);
+            currentGameRoom.numOfPlayers = currentGameRoom.idsInRoom.length;
             currentGameRoom.game = {...gameState };
             currentGameRoom.game.deck = [];
             currentGameRoom.game.players = [];
             currentGameRoom.game.dealer.cards = [];
+            currentGameRoom.game.dealer.backCard = true;
+            game = currentGameRoom.game;
             room = currentGameRoom.roomSocket;
             // socket.searching = false;
             me = {...gamePlayer };
@@ -221,11 +208,14 @@ io.on('connection', (socket) => {
         /*
          Set me and opponent to their respective player objects in the game object 
         */
+        console.log('This is the current game room');
+        console.log(currentGameRoom);
         for (const player of game.players) {
             if (player.id === socket.id) {
                 me = player;
             } else {
                 opponent = player;
+                opponentSocket = getSocket(io, player.id);
             };
         };
         // console.log('This is the game state');
@@ -233,11 +223,6 @@ io.on('connection', (socket) => {
         /*
         Set the opponent socket to socket that belongs to the other player 
         */
-        for (const player of currentPlayers) {
-            if (player.id !== socket.id) {
-                opponentSocket = player;
-            };
-        };
         me.lastPlay = 'hit';
         console.log('This is the game in server in line 180');
         console.log(game);
