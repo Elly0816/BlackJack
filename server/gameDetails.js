@@ -23,7 +23,6 @@ const gamePlayer = {
     total: null
 }
 
-
 module.exports = {
     cards,
     gameState,
