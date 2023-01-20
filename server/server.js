@@ -138,9 +138,9 @@ io.on('connection', (socket) => {
             game = currentGameRoom.game;
             room = currentGameRoom.roomSocket;
             // socket.searching = false;
-            me = {...gamePlayer };
-            me.id = socket.id;
-            me.cards = [];
+            me = _.cloneDeep(gamePlayer);
+            // me.id = socket.id;
+            // me.cards = [];
             currentGameRoom.game.players.push(me);
             socket.join(room);
             currentGameRoom.numOfPlayers = currentGameRoom.idsInRoom.length;
