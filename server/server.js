@@ -20,6 +20,8 @@ const {
     getSocket
 } = require('./functions');
 
+const _ = require('lodash');
+
 
 app.use(cors());
 
@@ -98,7 +100,7 @@ io.on('connection', (socket) => {
                     currentGameRoom.numOfPlayers = currentGameRoom.idsInRoom.length;
                     room = currentGameRoom.roomSocket;
                     game = currentGameRoom.game;
-                    me = {...gamePlayer };
+                    me = _.cloneDeep(gamePlayer);
                     me.id = socket.id;
                     me.cards = [];
                     game.players.push(me);
@@ -123,16 +125,16 @@ io.on('connection', (socket) => {
                 }
             }
         } else { //There is no room in the game Rooms array
-            currentGameRoom = {...gameRoom };
-            currentGameRoom.idsInRoom = [];
+            currentGameRoom = _.cloneDeep(gameRoom);
+            // currentGameRoom.idsInRoom = [];
             currentGameRoom.roomSocket = reverseString(socket.id);
             currentGameRoom.idsInRoom.push(socket.id);
             currentGameRoom.numOfPlayers = currentGameRoom.idsInRoom.length;
-            currentGameRoom.game = {...gameState };
-            currentGameRoom.game.deck = [];
-            currentGameRoom.game.players = [];
-            currentGameRoom.game.dealer.cards = [];
-            currentGameRoom.game.dealer.backCard = true;
+            currentGameRoom.game = _.cloneDeep(gameState);
+            // currentGameRoom.game.deck = [];
+            // currentGameRoom.game.players = [];
+            // currentGameRoom.game.dealer.cards = [];
+            // currentGameRoom.game.dealer.backCard = true;
             game = currentGameRoom.game;
             room = currentGameRoom.roomSocket;
             // socket.searching = false;
