@@ -102,7 +102,7 @@ io.on('connection', (socket) => {
                     game = currentGameRoom.game;
                     me = _.cloneDeep(gamePlayer);
                     me.id = socket.id;
-                    me.cards = [];
+                    // me.cards = [];
                     game.players.push(me);
                     io.to(room).emit('joined', game);
                     // joined = true;
@@ -139,7 +139,7 @@ io.on('connection', (socket) => {
             room = currentGameRoom.roomSocket;
             // socket.searching = false;
             me = _.cloneDeep(gamePlayer);
-            // me.id = socket.id;
+            me.id = socket.id;
             // me.cards = [];
             currentGameRoom.game.players.push(me);
             socket.join(room);

@@ -13,7 +13,8 @@ function countCards(cardList, firstBack = false) {
     let cardsToCount = [...cardList];
     // console.log('These are the cards');
     // console.log(cardsToCount);
-    const values = { //Object that holds the values of each card
+    const values = {
+        //Object that holds the values of each card
         ace: 11,
         2: 2,
         3: 3,
@@ -63,6 +64,7 @@ async function calculateWinner(game, me, opponent, socket, opponentSocket, room,
     let myTotal = countCards(me.cards);
     let opponentTotal = countCards(opponent.cards);
     let dealerTotal = countCards(game.dealer.cards, game.dealer.backCard);
+    game.dealer.total = countCards(game.dealer.cards, game.dealer.backCard);
     await sleep(1000);
     io.to(room).emit('game state', game);
     io.to(room).emit('hide buttons');

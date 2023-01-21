@@ -13,24 +13,14 @@ export default function Table(props){
     const {startGame, setStartGame} = useContext(GameContext);
   
     const [deck, setDeck] = useState([]);
-    const [numInDeck, setNumInDeck] = useState(deck.length);
-    const [dealerCards, setDealerCards] = useState([]);
-    // const [numOfDealerCards, setNumOfDealerCards] = useState(dealerCards.length);
-    const [playerCards, setPlayerCards] = useState([]);
-    const [player2Cards, setPlayer2Cards] = useState([]);
-    // const [numOfPlayerCards, setNumOfPlayerCards] = useState(playerCards.length);
-    const [backCard, setBackCard] = useState();
-    const [gameOver, setGameOver] = useState();
-    // const [startGame, setStartGame] = useState();
     const [showButtons, setShowButtons] = useState(false);
     const [result, setResult] = useState();
-    const [lastPlay, setLastPlay] = useState();
-    const [player2LastPlay, setPlayer2LastPlay] = useState();
     const [game, setGame] = useState();
-    const [dealerTotal, setDealerTotal] = useState(0);
-    const [PlayerTotal, setPlayerTotal] = useState(0);
-    const [player2Total, setPlayer2Total] = useState(0);
     const [ goHomeButton, setGoHomeButton] = useState(false);
+    const [players, setPlayers ] = useState();
+    const [dealer, setDealer] = useState();
+    const [myTotal, setMyTotal] = useState();
+
     
     //On mount, get the shuffled cards.
     useEffect(() => {
@@ -39,21 +29,30 @@ export default function Table(props){
             console.log(game);
             let {deck, dealer, players} = game;
             setDeck(deck);
-            setNumInDeck(deck.length);
-            setDealerCards(dealer.cards);
-            setDealerTotal(dealer.total);
-            setBackCard(dealer.backCard);
-            for (const player of players){
-                if (player.id === props.socket.id){
-                    setPlayerCards([...player.cards]);
-                    setLastPlay(player.lastPlay);
-                    setPlayerTotal(player.total);
-                } else {
-                    setPlayer2Cards([...player.cards]);
-                    setPlayer2LastPlay(player.lastPlay);
-                    setPlayer2Total(player.total);
-                }
+            setDealer(dealer);
+            setPlayers(players);
+            for (let player of players){
+              if (player.id === props.socket.id){
+                setMyTotal(player.total);
+                break;
+              }
             }
+            // setDeck(deck);
+            // setNumInDeck(deck.length);
+            // setDealerCards(dealer.cards);
+            // setDealerTotal(dealer.total);
+            // setBackCard(dealer.backCard);
+            // for (const player of players){
+            //     if (player.id === props.socket.id){
+            //         setPlayerCards([...player.cards]);
+            //         setLastPlay(player.lastPlay);
+            //         setPlayerTotal(player.total);
+            //     } else {
+            //         setPlayer2Cards([...player.cards]);
+            //         setPlayer2LastPlay(player.lastPlay);
+            //         setPlayer2Total(player.total);
+            //     }
+            // }
         });
     }, []);
 
@@ -62,27 +61,44 @@ export default function Table(props){
       console.log(game);
       let {deck, dealer, players} = game;
       setDeck(deck);
-      setNumInDeck(deck.length);
-      setDealerCards(dealer.cards);
-      setDealerTotal(dealer.total);
-      setBackCard(dealer.backCard);
-      for (const player of players){
-          if (player.id === props.socket.id){
-              setPlayerCards([...player.cards]);
-              setLastPlay(player.lastPlay);
-              setPlayerTotal(player.total);
-          } else {
-              setPlayer2Cards([...player.cards]);
-              setPlayer2LastPlay(player.lastPlay);
-              setPlayer2Total(player.total);
-          }
+      setDealer(dealer);
+      setPlayers(players);
+      for (let player of players){
+        if (player.id === props.socket.id){
+          setMyTotal(player.total);
+          break;
+        }
       }
+      // setDeck(deck);
+      // setNumInDeck(deck.length);
+      // setDealerCards(dealer.cards);
+      // setDealerTotal(dealer.total);
+      // setBackCard(dealer.backCard);
+      // for (const player of players){
+      //     if (player.id === props.socket.id){
+      //         setPlayerCards([...player.cards]);
+      //         setLastPlay(player.lastPlay);
+      //         setPlayerTotal(player.total);
+      //     } else {
+      //         setPlayer2Cards([...player.cards]);
+      //         setPlayer2LastPlay(player.lastPlay);
+      //         setPlayer2Total(player.total);
+      //     }
+      // }
   });
 
   props.socket.on('show buttons', () => {
-    if (PlayerTotal !== 'BlackJack' || PlayerTotal !== 'Bust'){
+    if (myTotal !== 'BlackJack' || myTotal !== 'Bust'){
       setShowButtons(true);
     }
+    // for (let player of players){
+    //   if(player.id === props.socket.id){
+    //     if (player.total !== 'BlackJack' || player.total !== 'Bust'){
+    //       setShowButtons(true);
+    //     }
+    //     break;
+    //   }
+    // }
   });
 
   props.socket.on('hide buttons', () => {
@@ -110,16 +126,21 @@ export default function Table(props){
   }
 
 
-    return result ? <Results result={result}/> : 
+    return game && (result ? <Results result={result}/> : 
                       <div className='game'>
-                          <Dealer cards={dealerCards}
-                          backCard={backCard}
-                            total={dealerTotal}
-                              numInDeck={numInDeck}
+                          <Dealer cards={dealer.cards}
+                          backCard={dealer.backCard}
+                            total={dealer.total}
+                              numInDeck={deck.length}
                             />
                             <div className='players-container'>
-                                    <Player name={'My total'} cards={playerCards} total={PlayerTotal}/>
-                                    <Player name={'Opponent total'} cards={player2Cards} total={player2Total}/>
+                              {players.map((player, index) => <Player name={player.id === props.socket.id ? 'My Total' : 'Opponent total'}
+                                cards={player.cards}
+                                total={player.total}
+                                key = {index}
+                              />)}
+                                    {/* <Player name={'My total'} cards={playerCards} total={PlayerTotal}/>
+                                    <Player name={'Opponent total'} cards={player2Cards} total={player2Total}/> */}
                             </div>
 
                             { showButtons && <div className='buttons'>
@@ -129,7 +150,7 @@ export default function Table(props){
                             { goHomeButton && <div className='buttons'>
                                                 <GoHome goHome={goHome}/>
                                               </div>}
-                                            </div>
+                                            </div>)
 };
 
 
