@@ -37,22 +37,6 @@ export default function Table(props){
                 break;
               }
             }
-            // setDeck(deck);
-            // setNumInDeck(deck.length);
-            // setDealerCards(dealer.cards);
-            // setDealerTotal(dealer.total);
-            // setBackCard(dealer.backCard);
-            // for (const player of players){
-            //     if (player.id === props.socket.id){
-            //         setPlayerCards([...player.cards]);
-            //         setLastPlay(player.lastPlay);
-            //         setPlayerTotal(player.total);
-            //     } else {
-            //         setPlayer2Cards([...player.cards]);
-            //         setPlayer2LastPlay(player.lastPlay);
-            //         setPlayer2Total(player.total);
-            //     }
-            // }
         });
     }, []);
 
@@ -69,36 +53,12 @@ export default function Table(props){
           break;
         }
       }
-      // setDeck(deck);
-      // setNumInDeck(deck.length);
-      // setDealerCards(dealer.cards);
-      // setDealerTotal(dealer.total);
-      // setBackCard(dealer.backCard);
-      // for (const player of players){
-      //     if (player.id === props.socket.id){
-      //         setPlayerCards([...player.cards]);
-      //         setLastPlay(player.lastPlay);
-      //         setPlayerTotal(player.total);
-      //     } else {
-      //         setPlayer2Cards([...player.cards]);
-      //         setPlayer2LastPlay(player.lastPlay);
-      //         setPlayer2Total(player.total);
-      //     }
-      // }
   });
 
   props.socket.on('show buttons', () => {
     if (myTotal !== 'BlackJack' || myTotal !== 'Bust'){
       setShowButtons(true);
     }
-    // for (let player of players){
-    //   if(player.id === props.socket.id){
-    //     if (player.total !== 'BlackJack' || player.total !== 'Bust'){
-    //       setShowButtons(true);
-    //     }
-    //     break;
-    //   }
-    // }
   });
 
   props.socket.on('hide buttons', () => {
@@ -134,13 +94,12 @@ export default function Table(props){
                               numInDeck={deck.length}
                             />
                             <div className='players-container'>
-                              {players.map((player, index) => <Player name={player.id === props.socket.id ? 'My Total' : 'Opponent total'}
+                              {players.map((player, index) => <Player 
+                                name={player.id === props.socket.id ? 'My Total' : 'Opponent total'}
                                 cards={player.cards}
                                 total={player.total}
                                 key = {index}
                               />)}
-                                    {/* <Player name={'My total'} cards={playerCards} total={PlayerTotal}/>
-                                    <Player name={'Opponent total'} cards={player2Cards} total={player2Total}/> */}
                             </div>
 
                             { showButtons && <div className='buttons'>
@@ -152,43 +111,3 @@ export default function Table(props){
                                               </div>}
                                             </div>)
 };
-
-
-
-// function countCards(cardList, firstBack=false){
-//   let cardsToCount = [...cardList];
-//   const values = { //Object that holds the values of each card
-//     ace: 11,
-//     2: 2,
-//     3: 3,
-//     4: 4,
-//     5: 5,
-//     6: 6,
-//     7: 7,
-//     8: 8,
-//     9: 9,
-//     10: 10,
-//     jack: 10,
-//     queen: 10,
-//     king: 10
-//   };
-//   let cardValues = []; //Array that holds the value on each card
-//   if (firstBack){
-//       cardsToCount = cardsToCount.splice(1, 1);  
-//   };
-//   for (const card of cardsToCount){
-//     const value = card.split('_')[0];
-//     cardValues.push(value);
-//   };
-//   let total = 0;
-//   for (const value of cardValues){
-//     total += values[value];
-//   };
-//   if (total > 21 && cardValues.includes('ace')){
-//     total -= 10;
-//   } else if (total + 11 <= 21 && cardValues.includes('ace')){
-//     total += 10;
-//   };
-//   return total;
-// };
-
