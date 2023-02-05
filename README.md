@@ -1,6 +1,6 @@
 # **BLACKJACK**
 
-## 2 player BlackJack game with socket.io, nodeJs, express and React
+## Multiplayer online BlackJack game implemented with socket.io, nodeJs, express and React
 
 
 ### **To clone project, Run:** 
