@@ -22,6 +22,13 @@ function App() {
   // let socketSet;
 
   useEffect(()=>{
+    fetch(endpoint)
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      console.log(`The request has been sent and received`);
+    });
+    
     const connectedSocket = io(endpoint);
     setSocket(connectedSocket);
     return () => {
