@@ -9,7 +9,7 @@ const app = initializeServer();
 
 const httpServer = new Server(app);
 
-const io = initializeSocket(httpServer);
+initializeSocket(httpServer);
 
 
 app.use(homeRoutes);
