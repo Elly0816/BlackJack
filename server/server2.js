@@ -8,7 +8,7 @@ const {
     gameState,
     gameRoom,
     gamePlayer
-} = require('./gameDetails');
+} = require('./gameDetails2');
 
 const {
     shuffle,

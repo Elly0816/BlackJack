@@ -1,5 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import {Server, Socket} from 'socket.io';
+import { socketSearchHandler } from './controllers/socketEventHandlers';
+import { createPlayer } from './controllers/playerController';
 
 export function initializeSocket(server:Server<typeof IncomingMessage, typeof ServerResponse>|any){
     const io = new Server(server, {cors: {
@@ -9,10 +11,14 @@ export function initializeSocket(server:Server<typeof IncomingMessage, typeof Se
     }});
 
     io.on('connection', (socket:Socket) => {
-        console.log(`IO connected successfully`);
+        const player = createPlayer(socket.id, socket);
 
-        socket.on('seaarch', () => {
-            console.log('Client is searching');
+        // socket.on('disconnect', () => {
+        //     player
+        // });
+
+        socket.on('search', async (arg) => {
+            await socketSearchHandler(arg, player, io);
         });
     });
 

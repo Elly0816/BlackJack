@@ -6,14 +6,21 @@ export default class BlackJack {
     private players: Player[];
     private deck: Card[];
     static numberOfGames:number = 0;
-    private id:number;
+    private id:string;
     private dealer:Dealer;
+    static games: BlackJack[] = [];
 
-    constructor(players:Player[], deck:Card[], dealer:Dealer){
+    constructor(players:Player[], deck:Card[], id:string,){
         this.players = players;
-        this.dealer = dealer;
+        this.dealer = new Dealer('Dealer');
         this.deck = deck;
-        this.id = ++BlackJack.numberOfGames
+        this.id = id;
+        BlackJack.games.push(this);
+        BlackJack.numberOfGames += BlackJack.games.length;
+    };
+
+    getGameId():string{
+        return this.id;
     }
 
 
@@ -54,6 +61,19 @@ export default class BlackJack {
         }
         
     }
+
+
+    getDealer():Dealer{
+        return this.dealer;
+    };
+
+    getPlayers():Player[]{
+        return this.players;
+    };
+
+    getDeck():Card[]{
+        return this.deck;
+    };
 
 
 }

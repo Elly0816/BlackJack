@@ -1,25 +1,43 @@
+import { Socket } from "socket.io";
 import Card from "./cardClass";
+
+export type playerStatusType = 'inGame'|'searching'|'notInGame';
 
 export class Player {
 
     private playerName:string;
     private playerCards: Card[];
     private playerTotal: number;
+    protected readonly playerSocket:Socket|null;
+    static players: Player[] = [];
+    protected status:playerStatusType;
 
 
-    constructor (playerName:string){
+    constructor (playerName:string, socket:Socket|null){
         this.playerName = playerName;
         this.playerCards = [];
         this.playerTotal = 0;
+        this.playerSocket = socket;
+        this.status = "notInGame";
+        Player.players.push(this);
     };
+
+    getStatus():playerStatusType{
+        return this.status;
+    }
+
+    
+    setStatus(status:playerStatusType):void{
+        this.status = status;
+    }
 
     addCard(card:Card):Card[]{
         this.playerCards.push(card);
-        this.updatePlayerTotal();
+        this.updateTotal();
         return this.getCards();
     };
 
-    updatePlayerTotal():void {
+    private updateTotal():void {
         let total:number = 0;   
         for(let i:number=0; i<this.playerCards.length; i++){
             total += this.playerCards[i].getCardDetails().number;
@@ -34,7 +52,11 @@ export class Player {
 
     };
 
-    getCardsTotal():number{
+    getSocket():Socket|null{
+        return this.playerSocket;
+    }
+
+    getTotal():number{
         return this.playerTotal;
     }
 
@@ -42,9 +64,13 @@ export class Player {
         return this.playerCards;
     };
 
-    getPlayerName():string {
+    getName():string {
         return this.playerName;
     };
+
+    setName(name:string):void {
+        this.playerName = name;
+    }
 
 
 
@@ -53,8 +79,11 @@ export class Player {
 
 export class Dealer extends Player {
 
+    
+
     constructor (playerName:string){
-        super(playerName);
+        super(playerName, null);
+        this.status = "inGame";
     }
 
     shuffleCards(cards:Card[]):void{
