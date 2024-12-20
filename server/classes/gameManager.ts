@@ -2,7 +2,7 @@ import { Player } from "./playerClass";
 
 export default class gameManager {
 
-    static searchingPlayers:Player[] = [];
+    private static searchingPlayers:Player[] = [];
 
     // constructor(){
     //     for(const p of Player.players){

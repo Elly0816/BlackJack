@@ -3,7 +3,6 @@ import BlackJack from "../classes/gameClass";
 import { parseDeck } from "../utilities/utilities";
 import gameManager from "../classes/gameManager";
 
-// const TIMEOUTFORSEARCH = 100;
 
 
 
@@ -19,29 +18,34 @@ export async function createdGameAndReturnId(player:Player, arg:string):Promise<
     player.setName(name);
     player.setStatus('searching');
 
-    const searchingPlayers:Player[] = gameManager.getSearchingPlayers();
-    const desiredNumberOfPlayers = 2;
-    const playersToAddToGame: Player[] = [player];
-    let i = 0;
-    
-    while(playersToAddToGame.length < desiredNumberOfPlayers && searchingPlayers.length >= desiredNumberOfPlayers && i < searchingPlayers.length){
-        if(searchingPlayers[i].getSocket()?.id != player.getSocket()?.id){
-            playersToAddToGame.push(searchingPlayers[i]);
+    const desiredNumberOfPlayers = 3;
+    let playersToAddToGame: Player[] = [player];
+
+    for(const p of gameManager.getSearchingPlayers()
+        .filter(p => p.getSocket()?.id != player.getSocket()?.id)){
+            playersToAddToGame.push(p);
+        if(new Set(playersToAddToGame).size == desiredNumberOfPlayers){
+            break;
         }
-        i++;
     }
    
 
-    if(playersToAddToGame.filter(p => p.getSocket()?.id != player.getSocket()?.id).length > 0){
-        console.log(`Creating new BlackJack game`);
-        newGame = new BlackJack(playersToAddToGame, await parseDeck(), player.getSocket()?.id as string);
+    if(new Set(playersToAddToGame).size != desiredNumberOfPlayers){
+        player.setStatus('notInGame');
+        return newGame;
     }
-
+    
+    
+    console.log(`Creating new BlackJack game`);
+    newGame = new BlackJack(Array.from(new Set(playersToAddToGame)), await parseDeck(), player.getSocket()?.id as string);
 
     
     if (newGame){
-        playersToAddToGame.forEach(p => p.setStatus('inGame')); 
-        playersToAddToGame.forEach(p => p.getSocket()?.join(String(newGame?.getGameId())));
+        player.setStatus('inGame');
+        playersToAddToGame.forEach(p => {
+            p.setStatus('inGame');
+            p.getSocket()?.join(String(newGame?.getGameId()));
+        }); 
         console.log('A new game has been created');
     } else {
         console.log('A new game was not created');
