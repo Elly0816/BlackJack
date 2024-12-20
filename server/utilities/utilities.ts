@@ -21,7 +21,7 @@ export async function parseDeck():Promise<Card[]>{
         .map((card) => card.replace(".png'", "").split("'")[1]);  
 
         for(let i=0; i<cardsFromFile.length; i++) {
-            cards.push(new Card(cardsFromFile[i].split('.')[0]));
+            cards.push(new Card(cardsFromFile[i]));
         }
     } catch(e) {
         console.log(`There was an error parsing the deck`);
