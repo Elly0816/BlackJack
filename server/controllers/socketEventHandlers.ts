@@ -38,14 +38,14 @@ export async function socketSearchHandler(arg:string, player:Player, io:Server){
                     cleanupTimers([interval, timeout_]);
                 } else {
                     console.log('Failed to create game');
-                    player.setStatus('notInGame');
+                    // player.setStatus('notInGame');
                     // cleanupTimers([interval, timeout_]);
                 }
     
             } catch(e){
                 console.log(`There was an error creating the game.`);
-                player.setStatus('notInGame');
-                cleanupTimers([interval, timeout_]);
+                // player.setStatus('notInGame');
+                // cleanupTimers([interval, timeout_]);
             }
         } else {
             cleanupTimers([interval, timeout_]);

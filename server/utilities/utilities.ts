@@ -38,4 +38,9 @@ export function cleanupTimers(timeout:NodeJS.Timeout[]):void{
     for(const t of timeout){
         clearTimeout(t);
     }
+};
+
+
+export function checkIfObjectIsOfClass(obj:any, cls:any):boolean{
+    return obj instanceof cls && obj.constructor == cls;
 }

@@ -18,19 +18,28 @@ export async function createdGameAndReturnId(player:Player, arg:string):Promise<
     player.setName(name);
     player.setStatus('searching');
 
-    const desiredNumberOfPlayers = 3;
+    const desiredNumberOfPlayers = 2;
     let playersToAddToGame: Player[] = [player];
 
-    for(const p of gameManager.getSearchingPlayers()
-        .filter(p => p.getSocket()?.id != player.getSocket()?.id)){
-            playersToAddToGame.push(p);
-        if(new Set(playersToAddToGame).size == desiredNumberOfPlayers){
-            break;
-        }
+
+    const availablePlayers = gameManager.getSearchingPlayers()
+    .filter(p => 
+        p.getSocket()?.id != player.getSocket()?.id && p.getStatus() != 'inGame'
+    )
+
+    for(const p of availablePlayers){
+        if(playersToAddToGame.length >= desiredNumberOfPlayers) break;
+        playersToAddToGame.push(p);
     }
+        // .filter(p => (p.getSocket()?.id != player.getSocket()?.id))){
+        //     playersToAddToGame.push(p);
+        // if(new Set(playersToAddToGame).size == desiredNumberOfPlayers){
+        //     break;
+        // }
+    // }
    
 
-    if(new Set(playersToAddToGame).size != desiredNumberOfPlayers){
+    if(new Set(playersToAddToGame).size < desiredNumberOfPlayers){
         player.setStatus('notInGame');
         return newGame;
     }
@@ -41,16 +50,18 @@ export async function createdGameAndReturnId(player:Player, arg:string):Promise<
 
     
     if (newGame){
-        player.setStatus('inGame');
+        // player.setStatus('inGame');
         playersToAddToGame.forEach(p => {
+            console.log(`${p.getName()}:\n has a status of ${p.getStatus()}`)
             p.setStatus('inGame');
+            gameManager.removeSearchingPlayers(p);
             p.getSocket()?.join(String(newGame?.getGameId()));
         }); 
         console.log('A new game has been created');
     } else {
         console.log('A new game was not created');
     }
-
+    playersToAddToGame = [];
     return newGame?.getGameId();
 
     

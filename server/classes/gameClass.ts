@@ -12,7 +12,7 @@ export default class BlackJack {
 
     constructor(players:Player[], deck:Card[], id:string,){
         this.players = players;
-        this.dealer = new Dealer('Dealer');
+        this.dealer = new Dealer('Dealer: '+id);
         this.deck = deck;
         this.id = id;
         BlackJack.games.push(this);

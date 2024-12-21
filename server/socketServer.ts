@@ -1,7 +1,8 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import {Server, Socket} from 'socket.io';
 import { socketSearchHandler } from './controllers/socketEventHandlers';
-import { createPlayer } from './controllers/playerController';
+import { createPlayer, removePlayerOnDisconnect } from './controllers/playerController';
+import { Player } from './classes/playerClass';
 
 export function initializeSocket(server:Server<typeof IncomingMessage, typeof ServerResponse>|any){
     const io = new Server(server, {cors: {
@@ -24,6 +25,13 @@ export function initializeSocket(server:Server<typeof IncomingMessage, typeof Se
                 socket.emit('search error');
             }
         });
+
+        socket.on('disconnect', () => {
+            console.log(`Disconnected: ${player.getName()}`);
+            removePlayerOnDisconnect(player);
+            console.log(`Remaining players are:\n`);
+            Player.players.forEach(p => console.log(`${p.getName()}\n`));
+        })
     });
 
     

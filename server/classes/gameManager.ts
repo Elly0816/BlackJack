@@ -20,4 +20,12 @@ export default class gameManager {
         }
         return gameManager.searchingPlayers;
     }
+
+    static removeSearchingPlayers(player:Player):void{
+        const  indexOfPlayerToRemove = this.searchingPlayers.indexOf(player);
+        if (indexOfPlayerToRemove > -1){
+            console.log(`Removing ${player.getName()}`);
+            this.searchingPlayers.splice(indexOfPlayerToRemove, 1);
+        }
+    }
 }

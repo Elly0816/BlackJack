@@ -19,8 +19,10 @@ export class Player {
         this.playerTotal = 0;
         this.playerSocket = socket;
         this.status = "notInGame";
-        Player.players.push(this);
-    };
+        if (this.constructor === Player){
+            Player.players.push(this);
+        }
+}
 
     getStatus():playerStatusType{
         return this.status;
@@ -87,6 +89,7 @@ export class Dealer extends Player {
     }
 
     shuffleCards(cards:Card[]):void{
+        if(!cards||cards.length <=1 ) return;
         for(let i= cards.length-1; i>0; i--){
             let j = Math.floor(Math.random() * cards.length);
             [cards[i], cards[j]] = [cards[j], cards[i]];

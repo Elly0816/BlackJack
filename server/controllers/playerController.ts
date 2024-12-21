@@ -7,3 +7,12 @@ export function createPlayer(playerName:string, socket:Socket):Player{
 
     return player;
 }
+
+
+export function removePlayerOnDisconnect(player:Player):void{
+    const indexOfPlayer = Player.players.indexOf(player);
+    if(indexOfPlayer > -1){
+        // console.log(`Removing ${Player.players[indexOfPlayer].getName()}`);
+        Player.players.splice(indexOfPlayer, 1);
+    }
+}
