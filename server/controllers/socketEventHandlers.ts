@@ -1,8 +1,9 @@
 import { Server } from "socket.io";
 import BlackJack from "../classes/gameClass";
-import { cleanupTimers } from "../utilities/utilities";
+import { cleanupTimers, getGameAsString } from "../utilities/utilities";
 import { createdGameAndReturnId } from "./gameController";
 import { Player } from "../classes/playerClass";
+import gameManager from "../classes/gameManager";
 
 export async function socketSearchHandler(arg:string, player:Player, io:Server){
 
@@ -29,11 +30,7 @@ export async function socketSearchHandler(arg:string, player:Player, io:Server){
                     io.
                     to(String(createdGameid)).
                     emit('game', 
-                        JSON.stringify({
-                            deck:game.getDeck(), 
-                            players: game.getPlayers().map(player => player.getName()),
-                            dealer:game.getDealer().getName()
-                        })
+                        getGameAsString(game)
                     );
                     cleanupTimers([interval, timeout_]);
                 } else {
@@ -59,4 +56,17 @@ export async function socketSearchHandler(arg:string, player:Player, io:Server){
         cleanupTimers([interval, timeout_]);
         player.setStatus('notInGame');
     }, timeout);
+};
+
+
+
+
+export function socketReadyHandler(socketId:string, gameId:string, io:Server):void {
+    const gameAndAllPlayersReady = gameManager.checkIfAllPlayersAreReady(socketId, gameId);
+    if (gameAndAllPlayersReady){
+        const {game} = gameAndAllPlayersReady;
+        game.shuffleCards();
+        game.dealCards(2);
+        io.to(gameId).emit('shuffle', getGameAsString(game));
+    }
 }

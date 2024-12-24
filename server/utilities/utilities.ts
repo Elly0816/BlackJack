@@ -1,6 +1,7 @@
 import { clearInterval } from "timers";
 import Card from "../classes/cardClass";
 import fs from "fs/promises";
+import BlackJack from "../classes/gameClass";
 
 export function getNumberFromCard(card:ReturnType<Card['getCardDetails']>['face']):number {
     const cardNumber = card.toUpperCase();
@@ -43,4 +44,25 @@ export function cleanupTimers(timeout:NodeJS.Timeout[]):void{
 
 export function checkIfObjectIsOfClass(obj:any, cls:any):boolean{
     return obj instanceof cls && obj.constructor == cls;
+}
+
+
+export function getGameAsString(game:BlackJack):string{
+    return JSON.stringify({
+        id: game.getGameId(),
+        deck: game.getDeck(),
+        players: game.getPlayers().map(p => {
+            return {
+                id: p.getSocket()?.id,
+                name: p.getName(),
+                cards: p.getCards(),
+                total: p.getTotal()
+            }
+        }),
+        dealer: {
+            cards: game.getDealer().getCards(),
+            total:game.getDealer().getTotal(),
+            name: game.getDealer().getName()
+        }
+    })
 }

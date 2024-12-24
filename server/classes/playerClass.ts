@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import Card from "./cardClass";
+import BlackJack from "./gameClass";
 
 export type playerStatusType = 'inGame'|'searching'|'notInGame';
 
@@ -99,4 +100,36 @@ export class Dealer extends Player {
     dealCards(cards:Card[], player:Player):void{
         player.addCard(cards.pop() as unknown as Card);
     }
+}
+
+
+export class PlayerReadyTracker {
+
+    private game:BlackJack;
+    private static readyPlayersId:string[];
+
+    constructor(player:Player, game:BlackJack){
+        this.game = game;
+        if(!(PlayerReadyTracker.readyPlayersId.includes(player.getSocket()?.id as unknown as string))){
+            if (player.getSocket()){
+                PlayerReadyTracker.readyPlayersId.push(player.getSocket()?.id as unknown as string)
+            }
+        }
+    }
+
+    removePlayersFromTracker():void{
+        const playersToRemove   = this.game.getPlayers().map(p => p.getSocket()?.id);
+        PlayerReadyTracker.readyPlayersId = PlayerReadyTracker.readyPlayersId.filter(p => !playersToRemove.includes(p));
+    }
+
+    checkIfAllPlayersAreReady():boolean {
+        const currentReady = new Set(PlayerReadyTracker.readyPlayersId);
+        const gamePlayersIds = this.game.getPlayers().map(p => p.getSocket()?.id);
+        if (gamePlayersIds.every(p => currentReady.has(p as string))){
+            this.removePlayersFromTracker();
+            return true;
+        }
+        return false;
+    }
+
 }

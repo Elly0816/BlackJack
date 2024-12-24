@@ -11,8 +11,8 @@ function App() {
   //When a connection is found, startgame is set to true
 
 
-  const development = 'http://localhost:5000/';
-  const production = 'https://polar-harbor-23442.herokuapp.com/';
+  // const development = 'http://localhost:5000/';
+  // const production = 'https://polar-harbor-23442.herokuapp.com/';
 
   // const endpoint = process.env.NODE_ENV ? production : development;
   const endpoint = 'http://localhost:5000/';
@@ -38,11 +38,11 @@ function App() {
 
   let timer;
 
-  function socketSearch (){
+  function socketSearch (name){
     if (socket){
       setSearching(true);
       timer = setInterval(() => {
-        socket.emit('search');
+        socket.emit('search', name);
         if (startGame){
           clearInterval(timer);
         }
@@ -82,7 +82,7 @@ function App() {
   // };
 
   if (socket){
-    socket.on('joined', () => {
+    socket.on('game', () => {
       // console.log('joined Room');
       clearInterval(timer);
       setSearching(false);

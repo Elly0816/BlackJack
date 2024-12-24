@@ -5,8 +5,6 @@ import gameManager from "../classes/gameManager";
 
 
 
-
-
 // Create a game with the player and return the gameID
 export async function createdGameAndReturnId(player:Player, arg:string):Promise<BlackJack['id']|undefined> 
 {
@@ -66,3 +64,4 @@ export async function createdGameAndReturnId(player:Player, arg:string):Promise<
 
     
 }
+
