@@ -1,6 +1,5 @@
 import { Socket } from "socket.io-client";
 import { connectedSocket } from "../Socket";
-import { GameFromServerType } from "../../types/gameType/gameFromServerType";
 
 export default class Listener {
 

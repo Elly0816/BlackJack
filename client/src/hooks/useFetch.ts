@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Endpoint } from "../constants/Constants";
+import { CONSTANTS } from "../constants/Constants";
 
 
 export default function useFetch():{loading:boolean, data:string|undefined, error:string|undefined} {
@@ -44,7 +44,7 @@ async function getData(): Promise<{finalData:string|null, errorMessage:string|un
     let data:string;
     let errorMessage:unknown|string;
     try {
-        const res = await fetch(Endpoint.development) as Response;
+        const res = await fetch(CONSTANTS.developmentEndpoint) as Response;
         if(res.ok){
             data = await res.text() as string;
             console.log(`Data has been gotten successfully`);
