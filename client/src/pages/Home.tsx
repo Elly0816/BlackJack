@@ -10,6 +10,7 @@ export default function Home():ReactElement{
     
     let toReturn:ReactElement;
 
+
     if(!searching){
         toReturn = <div className="home-item">
         <h2>WELCOME TO BLACKJACK</h2>

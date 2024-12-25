@@ -1,5 +1,6 @@
 import { Socket } from "socket.io-client";
 import { connectedSocket } from "../Socket";
+import { GameFromServerType } from "../../types/gameType/gameFromServerType";
 
 export default class Listener {
 
@@ -18,8 +19,12 @@ export default class Listener {
 
     searchError(){}
 
-    game(){}
+    game(cb:(game:string) => void):void{
+        this.socket.on('game', cb);
+    }
 
-    shuffle(){}
+    shuffle(cb:() => void):void{
+        this.socket.on('shuffle', cb)
+    }
 
 }
