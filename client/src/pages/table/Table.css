@@ -1,0 +1,14 @@
+.table {
+    background-color: #367c2b;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.players-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

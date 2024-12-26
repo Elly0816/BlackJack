@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
-import { CardType } from "../types/gameType/gameFromServerType";
-import Card from "./Card";
+import { CardType } from "../../types/gameType/gameFromServerType";
+import Card from "../card/Card";
 
 
 export default function Deck({cards}:{cards:CardType[]}):ReactElement{

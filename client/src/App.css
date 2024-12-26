@@ -9,21 +9,26 @@ h6 {
     margin: 0;
 }
 
+body, html, div {
+    height: 100%;
+}
+
+
 
 /* .App {
     position: relative;
 } */
 
-.table {
+/* .table {
     background-color: green;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
+} */
 
-.dealer {
+/* .dealer {
     color: white;
     padding: 10% 2% 5%;
     font-weight: bold;
@@ -46,21 +51,21 @@ h6 {
     align-items: center;
     flex-wrap: wrap;
     padding-top: 2%;
-}
+} */
 
-.players-container {
+/* .players-container {
     display: flex;
     justify-content: center;
     align-items: center;
-}
+} */
 
-.card {
+/* .card {
     border-style: outline;
     width: 50px;
     height: 72.6px;
-}
+} */
 
-.face,
+/* .face,
 .back {
     width: 100px;
     height: 145.2px;
@@ -179,4 +184,4 @@ h6 {
     to {
         transform: rotate(360deg);
     }
-}
+} */

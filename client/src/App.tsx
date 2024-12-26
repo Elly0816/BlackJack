@@ -1,12 +1,12 @@
 import './App.css';
 import useFetch from "./hooks/useFetch";
 import React, { ReactElement, useState } from 'react';
-import Home from "./pages/Home";
+import Home from "./pages/home/Home";
 import { searchingContext } from "./contexts/searchingContext";
 import Listener from "./socket/listeners/Listeners";
 import { GameFromServerType } from "./types/gameType/gameFromServerType";
 import { gameContext } from "./contexts/gameContext";
-import Table from "./pages/Table";
+import Table from "./pages/table/Table";
 
 export default function App():ReactElement{
     const [searching, setSearching] = useState<boolean>(false);

@@ -1,4 +1,4 @@
-import Card from './Card';
+import Card from './card/Card';
 import { useEffect, useState, useContext} from 'react';
 import { GameContext } from '../App'
 

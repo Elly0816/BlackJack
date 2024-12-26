@@ -3,8 +3,8 @@ import './App.css';
 import Table from './components/Table';
 import Home from './components/Home';
 import {useState, useEffect, createContext} from 'react';
-import {io} from 'socket.io-client';
-
+import {connectedSocket} from './socket';
+import useFetch from './hooks/useFetch'
 function App() {
   //When the user clicks to start a game, 
   //io opens a connection on the server and connects to another free connection
@@ -15,27 +15,18 @@ function App() {
   // const production = 'https://polar-harbor-23442.herokuapp.com/';
 
   // const endpoint = process.env.NODE_ENV ? production : development;
-  const endpoint = 'http://localhost:5000/';
   const [socket, setSocket] = useState();
   const [startGame, setStartGame] = useState(false);
   const [searching, setSearching] = useState(false);
   // let socketSet;
 
-  useEffect(()=>{
-    fetch(endpoint)
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-      console.log(`The request has been sent and received`);
-    });
-    
-    const connectedSocket = io(endpoint);
-    setSocket(connectedSocket);
-    return () => {
-      setSocket();
-    }
-  }, []);
+  const {loading, data, error} = useFetch();
 
+  useEffect(() => {
+    if(data){
+      setSocket(connectedSocket);
+    }
+  }, [data]);
   let timer;
 
   function socketSearch (name){

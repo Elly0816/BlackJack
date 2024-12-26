@@ -1,4 +1,4 @@
-import Card from './Card';
+import Card from './card/Card';
 import { useState, useEffect } from 'react';
 
 export default function Dealer(props){

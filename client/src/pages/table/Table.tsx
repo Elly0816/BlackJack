@@ -1,10 +1,12 @@
 import { ReactElement } from "react";
-import { GameFromServerType } from "../types/gameType/gameFromServerType";
+import { GameFromServerType } from "../../types/gameType/gameFromServerType";
 import React from "react";
-import Deck from "../components/Deck";
+import Deck from "../../components/deck/Deck";
+import Dealer from "../../components/dealer/Dealer";
+import './Table.css';
 
 export default function Table(props:GameFromServerType):ReactElement{
-    const {deck, players, id, dealer} = props;
+    const {deck, dealer} = props;
 
     console.log({...props});
 
@@ -19,7 +21,11 @@ export default function Table(props:GameFromServerType):ReactElement{
     return <div className="table">
     {//Dealer, deck and players should be on here
     }
+    <Dealer dealer={dealer}/>
     <Deck cards={deck}/>
+    <div className="players-container">
+
+    </div>
 
     </div>
 }

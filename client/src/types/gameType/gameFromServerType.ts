@@ -14,9 +14,9 @@ export type GameDealerType = {
 type cardSuite = 'S'|'C'|'D'|'H';
 
 export type CardType = {
-    suite: cardSuite,
-    face: string,
-    number:number
+    cardFace: string,
+    cardSuite: cardSuite,
+    cardNumber:number
 }
 
 export type GameFromServerType = {
