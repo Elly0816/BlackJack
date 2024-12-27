@@ -31,3 +31,44 @@ input {
     padding: 5px;
     border-radius: 20px;
 }
+
+.search-button {
+    width: 15em;
+    padding:15px;
+    border-radius: 30px;
+}
+
+.search-button:hover {
+    cursor: pointer;
+    box-shadow: 3px 3px 0 0 snow;
+    color: snow;
+    background-color: gray;
+}
+
+.main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.main img {
+    border-radius: 50%;
+    overflow: hidden;
+    height: 50px;
+    width: 50px;
+    animation-name: rotate;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    border-radius: 50%; 
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(-360deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

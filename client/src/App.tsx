@@ -42,7 +42,7 @@ export default function App():ReactElement{
         game as GameFromServerType:game as unknown as null}>
         <searchingContext.Provider value={{searching, setSearching}}>
             {divToReturn}
-            {data? `This is the data: ${data}`:`The data is not available`}
+            {/* {data? `This is the data: ${data}`:`The data is not available`} */}
         </searchingContext.Provider>
         </gameContext.Provider>
         </div>

@@ -35,7 +35,7 @@ export function initializeSocket(server:Server<typeof IncomingMessage, typeof Se
         */
         socket.on('ready', ({socketId, gameId}:{socketId:string, gameId:string}) => {
             // Check if all the players in the room is ready
-            if(!socketId && gameId){
+            if(!socketId && !gameId){
                 console.log(`You did not give any arguments`);
             }
             socketReadyHandler(socketId, gameId, io);
@@ -44,6 +44,7 @@ export function initializeSocket(server:Server<typeof IncomingMessage, typeof Se
 
         socket.on('disconnect', () => {
             console.log(`Disconnected: ${player.getName()}`);
+            socket.disconnect(true);
             removePlayerOnDisconnect(player);
             /*
                 TODO

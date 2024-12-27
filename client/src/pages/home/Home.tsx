@@ -24,25 +24,41 @@ export default function Home():ReactElement{
     // let casino = new Audio(CONSTANTS.CasinoAudio);
     // casino.play();
 
+    const AudioDiv = ({children, style}:{children:ReactElement, style?: React.CSSProperties}):ReactElement => {
+        
+        let toReturn:ReactElement;
+        
+        if(style){
+            toReturn = <div className='main' style={style}>{children}</div> 
+        } else {
+                toReturn = <div className='main'>{children}</div> 
+        }
+        
+        return  <div className="home-item" onClick={clickToPlayAudio}>{toReturn}</div>
+    }
+
 
     if(!searching){
-        toReturn = <div className="home-item" onClick={clickToPlayAudio}>
-        <h2>WELCOME TO BLACKJACK</h2>
-        <audio loop ref={audioRef} src='/Casino_ambience.mp3'/>
-        <form className='form'>
-        <input placeholder="Type your name here" type="text" name="name" value={name} onChange={(e) => {
-            console.log(`This is the current name ${name}`);
-            setName(e.target.value)}}/>
-        <button type='submit' onClick={ (e) => {
-            e.preventDefault();
-            searchButtonHandler(name, setSearching)
-            }} className="search-button">Search for a game and join</button>
-        </form>
-    </div>
+        toReturn = <AudioDiv style={{'flexDirection': 'column'}}>
+                    <>
+                    <h2>WELCOME TO BLACKJACK</h2>
+                    <audio loop ref={audioRef} src='/Casino_ambience.mp3'/>
+                    <form className='form'>
+                    <input placeholder="Type your name here" type="text" name="name" value={name} onChange={(e) => {
+                        console.log(`This is the current name ${name}`);
+                        setName(e.target.value)}}/>
+                    <button type='submit' onClick={ (e) => {
+                        e.preventDefault();
+                        searchButtonHandler(name, setSearching)
+                        }} className="search-button">Search for a game and join</button>
+                    </form>
+                </>
+        </AudioDiv>
+    
     } else {
-        toReturn = <div className='main'>
+        toReturn = <AudioDiv>
                         <span>Searching<img src={process.env.PUBLIC_URL+"back.png"} alt="circle"/></span>
-                    </div>
+                    </AudioDiv>
     }
 
 
