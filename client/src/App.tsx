@@ -20,6 +20,11 @@ export default function App():ReactElement{
         setSearching(false);
     });
 
+    gameListener.searchError(() => {
+        console.log('There was an error with searching for a game to join');
+        setGame(undefined);
+    })
+
     
     
 

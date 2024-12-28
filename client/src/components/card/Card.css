@@ -1,5 +1,27 @@
-.card {
-    border-style: outline;
-    width: 50px;
-    height: 72.6px;
+.card img{
+    /* border-style: outline;
+    width: 50%;*/
+    height: 50%; 
+}
+
+.card-amount {
+    position: absolute;
+    top: 45px;
+    left: 30%;
+    /* transform: translate(-50%, -50%); */
+    z-index: 1;
+    font-size: large;
+    font-weight: bold;
+    background-color: snow;
+    border-radius: 50%;
+    width: fit-content;
+    height: fit-content;
+    padding: 10px;
+}
+
+.back {
+    position: relative;
+    display: flex;
+    align-self: flex-end;
+    margin-right: 20px;
 }

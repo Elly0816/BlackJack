@@ -25,3 +25,8 @@ export type GameFromServerType = {
     players: GamePlayerType[];
     dealer: GameDealerType;
 }
+
+export type DeckType = {
+    type: 'deck';
+    numberOfCards: number;
+}

@@ -72,3 +72,7 @@ input {
         transform: rotate(360deg);
     }
 }
+
+.audio-div {
+    flex-direction: column;
+}

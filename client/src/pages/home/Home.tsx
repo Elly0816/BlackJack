@@ -24,22 +24,18 @@ export default function Home():ReactElement{
     // let casino = new Audio(CONSTANTS.CasinoAudio);
     // casino.play();
 
-    const AudioDiv = ({children, style}:{children:ReactElement, style?: React.CSSProperties}):ReactElement => {
+    const AudioDiv = ({children}:{children:ReactElement}):ReactElement => {
         
-        let toReturn:ReactElement;
         
-        if(style){
-            toReturn = <div className='main' style={style}>{children}</div> 
-        } else {
-                toReturn = <div className='main'>{children}</div> 
-        }
+        let toReturn = <div className='main audio-div'>{children}</div> 
+        
         
         return  <div className="home-item" onClick={clickToPlayAudio}>{toReturn}</div>
     }
 
 
     if(!searching){
-        toReturn = <AudioDiv style={{'flexDirection': 'column'}}>
+        toReturn = <AudioDiv >
                     <>
                     <h2>WELCOME TO BLACKJACK</h2>
                     <audio loop ref={audioRef} src='/Casino_ambience.mp3'/>

@@ -5,7 +5,9 @@ import Card from "../card/Card";
 
 export default function Deck({cards}:{cards:CardType[]}):ReactElement{
 
-    return <div className="deck">
-        {cards.map(c => <Card cardFace={c.cardFace} cardNumber={c.cardNumber} cardSuite={c.cardSuite}/>)}
+    
+
+    return <div className='deck'>
+        return {cards.map(c => <Card cardFace={c.cardFace} cardNumber={c.cardNumber} cardSuite={c.cardSuite}/>)}
     </div>
 }
