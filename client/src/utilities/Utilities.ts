@@ -1,12 +1,10 @@
 import { CardType } from "../types/gameType/gameFromServerType";
-import {CONSTANTS} from '../constants/Constants'
+import { CONSTANTS } from "../constants/Constants";
 
+export default function getNameFromCard(card: CardType): string {
+  let cardName: string = `${CONSTANTS.cardImageURL}/`;
 
-export default function getNameFromCard(card:CardType):string{
+  cardName += `${card.cardFace.toLowerCase()}_${card.cardSuite}.png`;
 
-    let cardName:string = `${CONSTANTS.cardImageURL}/`;
-
-    cardName += `${card.cardFace.toLowerCase()}_${card.cardSuite}.png`;
-
-    return cardName;
+  return cardName;
 }
