@@ -12,6 +12,8 @@ import Table from './pages/table/Table';
 export default function App(): ReactElement {
   const [searching, setSearching] = useState<boolean>(false);
   const [game, setGame] = useState<GameFromServerType>();
+  const [isTurn, setIsTurn] = useState<boolean>();
+
   const { data } = useFetch();
   let divToReturn: ReactElement;
 
@@ -32,10 +34,12 @@ export default function App(): ReactElement {
 
   gameListener.show(() => {
     console.log(`Socket heard a show event`);
+    setIsTurn(true);
   });
 
   gameListener.hide(() => {
     console.log(`Socket heard a hide event`);
+    setIsTurn(false);
   });
 
   if (!data) {

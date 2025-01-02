@@ -5,11 +5,7 @@ import { createdGameAndReturnId } from './gameController';
 import { Player } from '../classes/playerClass';
 import gameManager from '../classes/gameManager';
 
-export async function socketSearchHandler(
-  arg: string,
-  player: Player,
-  io: Server
-) {
+export async function socketSearchHandler(arg: string, player: Player, io: Server) {
   if (!arg) {
     console.log('No arguments provided');
     return;
@@ -28,9 +24,7 @@ export async function socketSearchHandler(
           console.log(
             `Game created successfully by ${player.getName()} and the game id is ${createdGameid}`
           );
-          const game = BlackJack.games.filter(
-            (game) => game.getGameId() == createdGameid
-          )[0];
+          const game = BlackJack.games.filter((game) => game.getGameId() == createdGameid)[0];
           console.log(`The players in the game are:\n\ `);
           game.getPlayers().forEach((p) => console.log(`${p.getName()}\n`));
 
@@ -55,14 +49,15 @@ export async function socketSearchHandler(
     }
   }, duration);
   // while (player.getStatus() == 'online'){
-  console.log(
-    `Client is searching and the argument given was:\n ${JSON.stringify(arg)}`
-  );
+  console.log(`Client is searching and the argument given was:\n ${JSON.stringify(arg)}`);
 
   timeout_ = setTimeout(() => {
-    cleanupTimers([interval, timeout_]);
+    gameManager.removeSearchingPlayers(player);
+    console.log(`Player was removed from the searching list\n`);
+    gameManager.getSearchingPlayers().forEach((p) => console.log(p.getName()));
     player.getSocket()?.emit('search error');
     player.setStatus('notInGame');
+    cleanupTimers([interval, timeout_]);
   }, timeout);
 }
 
@@ -71,10 +66,11 @@ export async function socketReadyHandler(
   gameId: string,
   io: Server
 ): Promise<void> {
-  const gameAndAllPlayersReady = gameManager.checkIfAllPlayersAreReady(
-    socketId,
-    gameId
-  );
+  if (!socketId || !gameId || !io) {
+    return;
+  }
+
+  const gameAndAllPlayersReady = gameManager.checkIfAllPlayersAreReady(socketId, gameId);
   if (gameAndAllPlayersReady) {
     const { game } = gameAndAllPlayersReady;
     game.shuffleCards();
