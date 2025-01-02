@@ -1,12 +1,13 @@
-import "./App.css";
-import useFetch from "./hooks/useFetch";
-import React, { ReactElement, useState } from "react";
-import Home from "./pages/home/Home";
-import { searchingContext } from "./contexts/searchingContext";
-import Listener from "./socket/listeners/Listeners";
-import { GameFromServerType } from "./types/gameType/gameFromServerType";
-import { gameContext } from "./contexts/gameContext";
-import Table from "./pages/table/Table";
+import './output.css';
+import './App.css';
+import useFetch from './hooks/useFetch';
+import React, { ReactElement, useState } from 'react';
+import Home from './pages/home/Home';
+import { searchingContext } from './contexts/searchingContext';
+import Listener from './socket/listeners/Listeners';
+import { GameFromServerType } from './types/gameType/gameFromServerType';
+import { gameContext } from './contexts/gameContext';
+import Table from './pages/table/Table';
 
 export default function App(): ReactElement {
   const [searching, setSearching] = useState<boolean>(false);
@@ -21,8 +22,20 @@ export default function App(): ReactElement {
   });
 
   gameListener.searchError(() => {
-    console.log("There was an error with searching for a game to join");
+    console.log('There was an error with searching for a game to join');
     setSearching(false);
+  });
+
+  gameListener.shuffle((gameFromServer) => {
+    setGame(JSON.parse(gameFromServer));
+  });
+
+  gameListener.show(() => {
+    console.log(`Socket heard a show event`);
+  });
+
+  gameListener.hide(() => {
+    console.log(`Socket heard a hide event`);
   });
 
   if (!data) {
@@ -39,7 +52,7 @@ export default function App(): ReactElement {
   }
 
   return (
-    <div>
+    <div className="h-full">
       <gameContext.Provider
         value={game ? (game as GameFromServerType) : (game as unknown as null)}
       >

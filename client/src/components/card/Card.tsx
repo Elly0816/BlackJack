@@ -14,7 +14,7 @@ export default function Card(props: CardProps): ReactElement {
     const imgURL = getNameFromCard(props);
 
     return (
-      <div className="card">
+      <div className="card max-h-fit max-w-fit">
         <img src={imgURL} alt={imgURL} />
       </div>
     );
@@ -25,7 +25,7 @@ export default function Card(props: CardProps): ReactElement {
   const { numberOfCards } = props;
 
   return (
-    <div className="card back">
+    <div className="card back max-h-fit max-w-fit flex-shrink flex-grow">
       <img src="./back.png" alt="./back.png" />
       <div className="card-amount">
         {/* <h1> */}

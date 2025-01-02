@@ -1,7 +1,7 @@
 .card img {
-  /* border-style: outline;
-    width: 50%;*/
-  height: 50%;
+  /* border-style: outline;*/
+  aspect-ratio: auto;
+  height: 150px;
 }
 
 .card-amount {

@@ -1,5 +1,5 @@
-import { Socket } from "socket.io-client";
-import { connectedSocket } from "../Socket";
+import { Socket } from 'socket.io-client';
+import { connectedSocket } from '../Socket';
 
 export default class Listener {
   private socket: Socket = connectedSocket;
@@ -16,14 +16,24 @@ export default class Listener {
   }
 
   game(cb: (game: string) => void): void {
-    this.socket.on("game", cb);
+    this.socket.on('game', cb);
   }
 
-  shuffle(cb: () => void): void {
-    this.socket.on("shuffle", cb);
+  shuffle(cb: (game: string) => void): void {
+    this.socket.on('shuffle', cb);
   }
 
   searchError(cb: () => void): void {
-    this.socket.on("search error", cb);
+    this.socket.on('search error', cb);
+  }
+
+  show(cb: () => void): void {
+    this.socket.on('show', cb);
+    // console.log(`Socket heard a show event`);
+  }
+
+  hide(cb: () => void): void {
+    this.socket.on('hide', cb);
+    // console.log(`Socket heard a hide event`);
   }
 }

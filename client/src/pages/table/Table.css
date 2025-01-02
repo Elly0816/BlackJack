@@ -1,9 +1,9 @@
 .table {
   background-color: #367c2b;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
 }
 
@@ -11,4 +11,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.player-button {
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: center;
+  max-height: fit-content;
+}
+
+.ready-button {
+  background-color: gray;
+  padding: 5px;
+  border-radius: 10px;
+  margin-top: 10%;
 }

@@ -1,8 +1,8 @@
-import React, { ReactElement } from "react";
-import { GamePlayerType } from "../../types/gameType/gameFromServerType";
-import { connectedSocket } from "../../socket/Socket";
-import "./Player.css";
-import Deck from "../deck/Deck";
+import React, { ReactElement } from 'react';
+import { GamePlayerType } from '../../types/gameType/gameFromServerType';
+import { connectedSocket } from '../../socket/Socket';
+import './Player.css';
+import Deck from '../deck/Deck';
 
 export default function Player({
   player,
@@ -14,7 +14,8 @@ export default function Player({
   const { id } = connectedSocket;
 
   return (
-    <div className="player">
+    // <div className="player">
+    <div className="max-w-fit mx-2 max-h-fit">
       {/*
             3 divs in a flex col
             first div should contain the name 
@@ -23,13 +24,12 @@ export default function Player({
             third div should contain the buttons {hit or stand }
           */}
       <h2>{name}</h2>
-      <div className="cards-total-container">
-        <div className="cards">
-          <Deck cards={cards} />
-        </div>
-        <h3>{total}</h3>
+      {/* <div className="cards-total-container"> */}
+      <div className="cards">
+        <Deck cards={cards} />
       </div>
-      {id === playerID && <span>Buttons</span>}
+      {/* <h3>{total}</h3> */}
+      {/* </div> */}
     </div>
   );
 }

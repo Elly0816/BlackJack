@@ -1,12 +1,12 @@
 .home-item h2 {
   color: snow;
-  font: bolder;
-  font-size: x-large;
+  /* font: bolder;
+  font-size: x-large; */
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .home-item {
-  background-image: url("../../../public/blackJack.jpg");
+  background-image: url('../../../public/blackJack.jpg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

@@ -20,12 +20,10 @@ export default function AudioDiv({
     }
   };
 
-  let toReturn = <div className="main audio-div">{children}</div>;
-
   return (
     <div className="home-item" onClick={clickToPlayAudio}>
       <audio loop ref={audioRef} src="/Casino_ambience.mp3" />
-      {toReturn}
+      <div className="main audio-div w-full flex items-center">{children}</div>
     </div>
   );
 }

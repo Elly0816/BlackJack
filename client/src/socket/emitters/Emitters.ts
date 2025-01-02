@@ -1,7 +1,7 @@
-import { Socket } from "socket.io-client";
-import { connectedSocket } from "../Socket";
+import { Socket } from 'socket.io-client';
+import { connectedSocket } from '../Socket';
 
-export type EventsToEmit = "search" | "ready";
+export type EventsToEmit = 'search' | 'ready';
 
 export default class Emitter {
   private socket: Socket = connectedSocket;
@@ -19,10 +19,10 @@ export default class Emitter {
   }
 
   search(name: string): void {
-    this.socket.emit("search", name);
+    this.socket.emit('search', name);
   }
 
-  ready(): void {
-    this.socket.emit("ready");
+  ready(gameId: string): void {
+    this.socket.emit('ready', { socketId: this.socket.id, gameId: gameId });
   }
 }

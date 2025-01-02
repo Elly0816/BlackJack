@@ -1,8 +1,8 @@
-import { Socket } from "socket.io";
-import Card from "./cardClass";
-import BlackJack from "./gameClass";
+import { Socket } from 'socket.io';
+import Card from './cardClass';
+import BlackJack from './gameClass';
 
-export type playerStatusType = "inGame" | "searching" | "notInGame";
+export type playerStatusType = 'inGame' | 'searching' | 'notInGame';
 
 export class Player {
   private playerName: string;
@@ -17,7 +17,7 @@ export class Player {
     this.playerCards = [];
     this.playerTotal = 0;
     this.playerSocket = socket;
-    this.status = "notInGame";
+    this.status = 'notInGame';
     if (this.constructor === Player) {
       Player.players.push(this);
     }
@@ -46,8 +46,8 @@ export class Player {
     if (
       total + 10 <= 21 &&
       this.playerCards
-        .map((card) => card.getCardDetails()["face"].toLowerCase())
-        .includes("ace")
+        .map((card) => card.getCardDetails()['face'].toLowerCase())
+        .includes('ace')
     ) {
       total += 10;
     }
@@ -79,7 +79,7 @@ export class Player {
 export class Dealer extends Player {
   constructor(playerName: string) {
     super(playerName, null);
-    this.status = "inGame";
+    this.status = 'inGame';
   }
 
   shuffleCards(cards: Card[]): void {
@@ -97,18 +97,18 @@ export class Dealer extends Player {
 
 export class PlayerReadyTracker {
   private game: BlackJack;
-  private static readyPlayersId: string[];
+  private static readyPlayersId: string[] = [];
 
   constructor(player: Player, game: BlackJack) {
     this.game = game;
     if (
       !PlayerReadyTracker.readyPlayersId.includes(
-        player.getSocket()?.id as unknown as string,
+        player.getSocket()?.id as unknown as string
       )
     ) {
       if (player.getSocket()) {
         PlayerReadyTracker.readyPlayersId.push(
-          player.getSocket()?.id as unknown as string,
+          player.getSocket()?.id as unknown as string
         );
       }
     }
@@ -120,7 +120,7 @@ export class PlayerReadyTracker {
       .map((p) => p.getSocket()?.id);
     PlayerReadyTracker.readyPlayersId =
       PlayerReadyTracker.readyPlayersId.filter(
-        (p) => !playersToRemove.includes(p),
+        (p) => !playersToRemove.includes(p)
       );
   }
 

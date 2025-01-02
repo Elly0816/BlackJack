@@ -66,11 +66,11 @@ export async function socketSearchHandler(
   }, timeout);
 }
 
-export function socketReadyHandler(
+export async function socketReadyHandler(
   socketId: string,
   gameId: string,
   io: Server
-): void {
+): Promise<void> {
   const gameAndAllPlayersReady = gameManager.checkIfAllPlayersAreReady(
     socketId,
     gameId
@@ -80,5 +80,16 @@ export function socketReadyHandler(
     game.shuffleCards();
     game.dealCards(2);
     io.to(gameId).emit('shuffle', getGameAsString(game));
+
+    let playerTurns = gameManager.decidePlayerTurn(gameId);
+    let players = playerTurns.playerTurn;
+    let sockets = await io.in(gameId).fetchSockets();
+    for (const p of players) {
+      if (p.isTurn) {
+        io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('show');
+      } else {
+        io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('hide');
+      }
+    }
   }
 }

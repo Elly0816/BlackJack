@@ -20,9 +20,10 @@ export default function Home(): ReactElement {
         </span>
       ) : (
         <>
-          <h2>WELCOME TO BLACKJACK</h2>
-          <form className="form">
+          <h2 className="md:text-5xl">WELCOME TO BLACKJACK</h2>
+          <form className="form w-6/12">
             <input
+              className="w-5/6"
               autoFocus
               placeholder="Type your name here"
               type="text"
@@ -39,7 +40,7 @@ export default function Home(): ReactElement {
                 e.preventDefault();
                 searchButtonHandler(name, setSearching);
               }}
-              className="search-button"
+              className="search-button bg-gray-500 text-white hover:shadow-md shadow-slate-50 w-5/6 py-10"
             >
               Search for a game and join
             </button>

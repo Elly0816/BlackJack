@@ -1,38 +1,38 @@
-import { IncomingMessage, ServerResponse } from "http";
-import { Server, Socket } from "socket.io";
+import { IncomingMessage, ServerResponse } from 'http';
+import { Server, Socket } from 'socket.io';
 import {
   socketReadyHandler,
   socketSearchHandler,
-} from "./controllers/socketEventHandlers";
+} from './controllers/socketEventHandlers';
 import {
   createPlayer,
   removePlayerOnDisconnect,
-} from "./controllers/playerController";
-import { Player } from "./classes/playerClass";
+} from './controllers/playerController';
+import { Player } from './classes/playerClass';
 
 export function initializeSocket(
-  server: Server<typeof IncomingMessage, typeof ServerResponse> | any,
+  server: Server<typeof IncomingMessage, typeof ServerResponse> | any
 ) {
   const io = new Server(server, {
     cors: {
-      origin: "*",
-      methods: ["GET", "POST"],
+      origin: '*',
+      methods: ['GET', 'POST'],
     },
   });
 
-  io.on("connection", (socket: Socket) => {
+  io.on('connection', (socket: Socket) => {
     const player = createPlayer(socket.id, socket);
 
     // socket.on('disconnect', () => {
     //     player
     // });
 
-    socket.on("search", async (arg: string) => {
+    socket.on('search', async (arg: string) => {
       try {
         await socketSearchHandler(arg as string, player, io);
       } catch (e) {
-        player.setStatus("notInGame");
-        socket.emit("search error");
+        player.setStatus('notInGame');
+        socket.emit('search error');
       }
     });
 
@@ -44,17 +44,20 @@ export function initializeSocket(
         
         */
     socket.on(
-      "ready",
-      ({ socketId, gameId }: { socketId: string; gameId: string }) => {
+      'ready',
+      async ({ socketId, gameId }: { socketId: string; gameId: string }) => {
         // Check if all the players in the room is ready
+        console.log(
+          `Listened to the ready event and the socketid is: ${socketId}\nAnd the gameId is:${gameId}`
+        );
         if (!socketId && !gameId) {
           console.log(`You did not give any arguments`);
         }
-        socketReadyHandler(socketId, gameId, io);
-      },
+        await socketReadyHandler(socketId, gameId, io);
+      }
     );
 
-    socket.on("disconnect", () => {
+    socket.on('disconnect', () => {
       console.log(`Disconnected: ${player.getName()}`);
       socket.disconnect(true);
       removePlayerOnDisconnect(player);
