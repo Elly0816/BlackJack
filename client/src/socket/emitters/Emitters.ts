@@ -25,4 +25,12 @@ export default class Emitter {
   ready(gameId: string): void {
     this.socket.emit('ready', { socketId: this.socket.id, gameId: gameId });
   }
+
+  hit(gameId: string): void {
+    this.socket.emit('hit', gameId);
+  }
+
+  stand(gameId: string): void {
+    this.socket.emit('stand', gameId);
+  }
 }

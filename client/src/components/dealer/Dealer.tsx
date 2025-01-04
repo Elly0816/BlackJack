@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { GameDealerType } from '../../types/gameType/gameFromServerType';
 // import Card from "../card/Card";
 import './Dealer.css';
@@ -11,12 +11,14 @@ export default function Dealer({
 }): ReactElement {
   const { cards, name } = dealer;
 
+  const [secondCardBack, setSecondCardBack] = useState<boolean>(true);
+
   return (
     <div className="max-h-fit max-w-fit">
       {/* // <div className="flex flex-col justify-center align-middle w-screen h-full"> */}
       <h2>{name.split(':')[0]}</h2>
       <div className="cards">
-        <Deck cards={cards} />
+        <Deck cards={cards} secondCardBack={secondCardBack} />
         {/* {cards.map((c, i) => (
             <Card
               cardFace={c.cardFace}

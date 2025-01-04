@@ -1,10 +1,10 @@
-.table {
+.my-table {
   background-color: #367c2b;
   /* min-height: 100vh; */
-  display: flex;
+  /* display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  align-items: center;
+  align-items: center; */
 }
 
 .players-container {

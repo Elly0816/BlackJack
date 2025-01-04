@@ -3,7 +3,12 @@ import { Player, PlayerReadyTracker } from './playerClass';
 
 type getPlayerTurnType = {
   gameId: string;
-  playerTurn: { playerId: string; isTurn: boolean }[];
+  playerTurn: {
+    playerId: string;
+    isTurn: boolean;
+    lastMove: 'hit' | 'stand' | null;
+    currentRound: number;
+  }[];
 };
 
 export default class gameManager {
@@ -83,6 +88,8 @@ export default class gameManager {
           return {
             playerId: p.getSocket()?.id as unknown as string,
             isTurn: i === 0 ? true : false,
+            currentRound: 0,
+            lastMove: null,
           };
         }),
       };
@@ -133,5 +140,32 @@ export default class gameManager {
     return gameToCheckForTurn;
     // }
     // }
+  }
+
+  static gameCanContinue(playerId: string, gameId: string, choice: 'hit' | 'stand'): boolean {
+    const playerObject = Player.players.filter((p) => p.getSocket()?.id === playerId)[0];
+
+    if (playerObject.getTotal() >= 21 && playerObject.getCards().length > 2) {
+      return false;
+    }
+
+    /*
+        Implement checking player win in here, define functions in game Controller to check for the game state
+        
+        HINT: Along with all below, check if all players have played for that round and that everyone hit;
+        Only then should this return true. 
+        
+        
+        
+        
+        */
+
+    const gameFromManager = gameManager.getPlayerTurn.filter((p) => p.gameId === gameId)[0];
+    const player = gameFromManager.playerTurn.filter((p) => p.playerId === playerId)[0];
+
+    player.lastMove = choice;
+    player.currentRound++;
+
+    return true;
   }
 }

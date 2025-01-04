@@ -3,7 +3,7 @@ import getNameFromCard from '../../utilities/Utilities';
 import React, { ReactElement } from 'react';
 import './Card.css';
 
-type CardProps = CardType | DeckType;
+type CardProps = CardType | DeckType | Omit<DeckType, 'numberOfCards'>;
 
 export default function Card(props: CardProps): ReactElement {
   const isDeckType = (props: CardProps): props is DeckType => {
@@ -11,7 +11,7 @@ export default function Card(props: CardProps): ReactElement {
   };
 
   if (!isDeckType(props)) {
-    const imgURL = getNameFromCard(props);
+    const imgURL = getNameFromCard(props as CardType);
 
     return (
       <div className="card max-h-fit max-w-fit">
@@ -27,11 +27,13 @@ export default function Card(props: CardProps): ReactElement {
   return (
     <div className="card back max-h-fit max-w-fit flex-shrink flex-grow">
       <img src="./back.png" alt="./back.png" />
-      <div className="card-amount">
-        {/* <h1> */}
-        {numberOfCards}
-        {/* </h1> */}
-      </div>
+      {numberOfCards && (
+        <div className="card-amount">
+          {/* <h1> */}
+          {numberOfCards}
+          {/* </h1> */}
+        </div>
+      )}
       {/* </img> */}
     </div>
   );

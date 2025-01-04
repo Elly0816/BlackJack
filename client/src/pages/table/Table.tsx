@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useContext } from 'react';
 import { GameFromServerType } from '../../types/gameType/gameFromServerType';
 import React from 'react';
 import Dealer from '../../components/dealer/Dealer';
@@ -6,12 +6,16 @@ import './Table.css';
 import Player from '../../components/player/Player';
 import Card from '../../components/card/Card';
 import Emitter from '../../socket/emitters/Emitters';
+import { gameContext, gameContextAndTurn } from '../../contexts/gameContext';
+import HitAndStandButtons from '../../components/hitAndStandButtons/HitAndStandButtons';
 
 export default function Table(props: GameFromServerType): ReactElement {
   const { id, deck, dealer, players } = props;
   const [ready, setReady] = useState<boolean>(false);
 
   console.log({ ...props });
+
+  const { isTurn } = useContext(gameContext) as gameContextAndTurn;
 
   /*
 
@@ -22,7 +26,7 @@ export default function Table(props: GameFromServerType): ReactElement {
   //     are playing a game with ${deck.length} cards.
   // `}</>
   return (
-    <div className="table h-screen">
+    <div className="my-table h-screen flex flex-col justify-evenly items-center">
       {/* // <div className="min-h-screen"> */}
       {
         //Dealer, deck and players should be on here
@@ -30,7 +34,7 @@ export default function Table(props: GameFromServerType): ReactElement {
       <Dealer dealer={dealer} />
       <Card numberOfCards={deck.length} type="deck" />
       <div className="flex player-button">
-        <div className="flex flex-row h-fit max-h-fit flex-wrap">
+        <div className="flex flex-row h-fit max-h-fit">
           {players.map((p, i) => (
             <Player player={p} key={i} />
           ))}
@@ -48,6 +52,7 @@ export default function Table(props: GameFromServerType): ReactElement {
           </button>
         )}
       </div>
+      {isTurn && <HitAndStandButtons />}
     </div>
   );
 }

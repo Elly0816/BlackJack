@@ -1,9 +1,10 @@
 import { Server } from 'socket.io';
 import BlackJack from '../classes/gameClass';
 import { cleanupTimers, getGameAsString } from '../utilities/utilities';
-import { createdGameAndReturnId } from './gameController';
+import { createdGameAndReturnId, nextPlayerTurn } from './gameController';
 import { Player } from '../classes/playerClass';
 import gameManager from '../classes/gameManager';
+import Card from '../classes/cardClass';
 
 export async function socketSearchHandler(arg: string, player: Player, io: Server) {
   if (!arg) {
@@ -77,15 +78,29 @@ export async function socketReadyHandler(
     game.dealCards(2);
     io.to(gameId).emit('shuffle', getGameAsString(game));
 
-    let playerTurns = gameManager.decidePlayerTurn(gameId);
-    let players = playerTurns.playerTurn;
-    let sockets = await io.in(gameId).fetchSockets();
-    for (const p of players) {
-      if (p.isTurn) {
-        io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('show');
-      } else {
-        io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('hide');
-      }
-    }
+    await nextPlayerTurn(gameId, io);
+
+    // let playerTurns = gameManager.decidePlayerTurn(gameId);
+    // let players = playerTurns.playerTurn;
+    // let sockets = await io.in(gameId).fetchSockets();
+    // for (const p of players) {
+    //   if (p.isTurn) {
+    //     io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('show');
+    //   } else {
+    //     io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('hide');
+    //   }
+    // }
   }
 }
+
+export async function socketHitHandler(gameId: string, socketId: string, io: Server) {
+  const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
+  const player = game.getPlayers().filter((p) => p.getSocket()?.id === socketId)[0];
+  if (gameManager.gameCanContinue(socketId, gameId, 'hit')) {
+    player.addCard(game.getDeck().pop() as unknown as Card);
+    await nextPlayerTurn(gameId, io);
+  }
+  io.to(gameId).emit('game', getGameAsString(game));
+}
+
+export function socketStandHandler(gameId: string, socketId: string, io: Server) {}

@@ -23,7 +23,7 @@ export default function Player({
             the second div should also have a flex row 
             third div should contain the buttons {hit or stand }
           */}
-      <h2>{name}</h2>
+      <h2>{playerID === id ? 'Me' : name}</h2>
       {/* <div className="cards-total-container"> */}
       <div className="cards">
         <Deck cards={cards} />

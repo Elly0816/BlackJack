@@ -11,7 +11,7 @@ export type GameDealerType = {
   name: string;
 };
 
-type cardSuite = "S" | "C" | "D" | "H";
+type cardSuite = 'S' | 'C' | 'D' | 'H';
 
 export type CardType = {
   cardFace: string;
@@ -27,6 +27,6 @@ export type GameFromServerType = {
 };
 
 export type DeckType = {
-  type: "deck";
+  type: 'deck';
   numberOfCards: number;
 };

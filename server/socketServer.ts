@@ -1,13 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { Server, Socket } from 'socket.io';
 import {
+  socketHitHandler,
   socketReadyHandler,
   socketSearchHandler,
 } from './controllers/socketEventHandlers';
-import {
-  createPlayer,
-  removePlayerOnDisconnect,
-} from './controllers/playerController';
+import { createPlayer, removePlayerOnDisconnect } from './controllers/playerController';
 import { Player } from './classes/playerClass';
 
 export function initializeSocket(
@@ -22,10 +20,6 @@ export function initializeSocket(
 
   io.on('connection', (socket: Socket) => {
     const player = createPlayer(socket.id, socket);
-
-    // socket.on('disconnect', () => {
-    //     player
-    // });
 
     socket.on('search', async (arg: string) => {
       try {
@@ -43,19 +37,31 @@ export function initializeSocket(
             ready even to the server, this should also have the game Id
         
         */
-    socket.on(
-      'ready',
-      async ({ socketId, gameId }: { socketId: string; gameId: string }) => {
-        // Check if all the players in the room is ready
-        console.log(
-          `Listened to the ready event and the socketid is: ${socketId}\nAnd the gameId is:${gameId}`
-        );
-        if (!socketId && !gameId) {
-          console.log(`You did not give any arguments`);
-        }
-        await socketReadyHandler(socketId, gameId, io);
+    socket.on('ready', async ({ socketId, gameId }: { socketId: string; gameId: string }) => {
+      // Check if all the players in the room is ready
+      console.log(
+        `Listened to the ready event and the socketid is: ${socketId}\nAnd the gameId is:${gameId}`
+      );
+      if (!socketId && !gameId) {
+        console.log(`You did not give any arguments`);
       }
-    );
+      await socketReadyHandler(socketId, gameId, io);
+    });
+
+    socket.on('hit', async (gameId: string) => {
+      if (!gameId) {
+        console.log(`You need to ass a game Id`);
+      }
+      console.log('The socket heard a hit event');
+      await socketHitHandler(gameId, socket.id, io);
+      //Logic for handling hits
+    });
+
+    socket.on('stand', (gameId: string) => {
+      console.log('The socket heard a stand event');
+
+      //Logic for handling stand
+    });
 
     socket.on('disconnect', () => {
       console.log(`Disconnected: ${player.getName()}`);

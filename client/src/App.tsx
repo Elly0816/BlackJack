@@ -1,7 +1,7 @@
 import './output.css';
 import './App.css';
 import useFetch from './hooks/useFetch';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useState, useMemo } from 'react';
 import Home from './pages/home/Home';
 import { searchingContext } from './contexts/searchingContext';
 import Listener from './socket/listeners/Listeners';
@@ -17,7 +17,12 @@ export default function App(): ReactElement {
   const { data } = useFetch();
   let divToReturn: ReactElement;
 
-  const gameListener = Listener.getInstance();
+  // const gameListener = Listener.getInstance();
+
+  const gameListener = useMemo(() => {
+    return Listener.getInstance();
+  }, []);
+
   gameListener.game((gameFromServer) => {
     setGame(JSON.parse(gameFromServer));
     setSearching(false);
@@ -58,7 +63,11 @@ export default function App(): ReactElement {
   return (
     <div className="h-full">
       <gameContext.Provider
-        value={game ? (game as GameFromServerType) : (game as unknown as null)}
+        value={
+          game
+            ? { ...(game as GameFromServerType), isTurn: isTurn as boolean }
+            : (game as unknown as null)
+        }
       >
         <searchingContext.Provider value={{ searching, setSearching }}>
           {divToReturn}

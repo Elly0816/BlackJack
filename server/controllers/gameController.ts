@@ -2,6 +2,7 @@ import { Player } from '../classes/playerClass';
 import BlackJack from '../classes/gameClass';
 import { parseDeck } from '../utilities/utilities';
 import gameManager from '../classes/gameManager';
+import { Server } from 'socket.io';
 
 // Create a game with the player and return the gameID
 export async function createdGameAndReturnId(
@@ -62,4 +63,17 @@ export async function createdGameAndReturnId(
   }
   playersToAddToGame = [];
   return newGame?.getGameId();
+}
+
+export async function nextPlayerTurn(gameId: string, io: Server): Promise<void> {
+  let playerTurns = gameManager.decidePlayerTurn(gameId);
+  let players = playerTurns.playerTurn;
+  let sockets = await io.in(gameId).fetchSockets();
+  for (const p of players) {
+    if (p.isTurn) {
+      io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('show');
+    } else {
+      io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('hide');
+    }
+  }
 }
