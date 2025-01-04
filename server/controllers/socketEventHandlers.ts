@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import BlackJack from '../classes/gameClass';
 import { cleanupTimers, getGameAsString } from '../utilities/utilities';
-import { createdGameAndReturnId, nextPlayerTurn } from './gameController';
+import { createdGameAndReturnId, nextPlayerTurn, playerChoiceController } from './gameController';
 import { Player } from '../classes/playerClass';
 import gameManager from '../classes/gameManager';
 import Card from '../classes/cardClass';
@@ -94,13 +94,30 @@ export async function socketReadyHandler(
 }
 
 export async function socketHitHandler(gameId: string, socketId: string, io: Server) {
-  const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
-  const player = game.getPlayers().filter((p) => p.getSocket()?.id === socketId)[0];
-  if (gameManager.gameCanContinue(socketId, gameId, 'hit')) {
-    player.addCard(game.getDeck().pop() as unknown as Card);
-    await nextPlayerTurn(gameId, io);
-  }
-  io.to(gameId).emit('game', getGameAsString(game));
+  await playerChoiceController(gameId, socketId, io, 'hit');
+  // const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
+  // const player = game.getPlayers().filter((p) => p.getSocket()?.id === socketId)[0];
+  // gameManager.setPlayerGameChoice(socketId, gameId, 'hit');
+  // if (gameManager.gameCanContinue(socketId, gameId)) {
+  //   player.addCard(game.getDeck().pop() as unknown as Card);
+  //   await nextPlayerTurn(gameId, io);
+  //   io.to(gameId).emit('game', getGameAsString(game));
+  // } else {
+  //   console.log(`Should deal to the dealer and check for the winner`);
+  //   //Logic for fully dealing to the dealer and checking for the winner
+  // }
 }
 
-export function socketStandHandler(gameId: string, socketId: string, io: Server) {}
+export async function socketStandHandler(gameId: string, socketId: string, io: Server) {
+  await playerChoiceController(gameId, socketId, io, 'stand');
+
+  // const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
+  // gameManager.setPlayerGameChoice(socketId, gameId, 'stand');
+  // if (gameManager.gameCanContinue(socketId, gameId)) {
+  //   await nextPlayerTurn(gameId, io);
+  //   io.to(gameId).emit('game', getGameAsString(game));
+  // } else {
+  //   console.log(`Should deal to the dealer and check for the winner`);
+  //   //Logic for fully dealing to the dealer and checking for the winner
+  // }
+}

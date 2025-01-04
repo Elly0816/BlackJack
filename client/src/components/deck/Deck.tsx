@@ -14,7 +14,7 @@ export default function Deck({
       <div className="deck flex flex-row">
         {cards.map((c, i) => {
           if (i === 1) {
-            return <Card type="deck" />;
+            return <Card key={i} type="deck" />;
           }
           return (
             <Card

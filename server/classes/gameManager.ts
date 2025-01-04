@@ -96,8 +96,8 @@ export default class gameManager {
       gameManager.getPlayerTurn.push(gameToCheckForTurn);
 
       // gameToCheckForTurn = gameManager.getPlayerTurn.filter(g => g.gameId === gameID)[0]
-      console.log(`Game to check for turn\n`);
-      console.log(gameToCheckForTurn);
+      // console.log(`Game to check for turn\n`);
+      // console.log(gameToCheckForTurn);
       return gameToCheckForTurn;
       // gameToCheckForTurn.playerTurn.forEach((p, i) => {
       //   if(p.isTurn){
@@ -142,16 +142,33 @@ export default class gameManager {
     // }
   }
 
-  static gameCanContinue(playerId: string, gameId: string, choice: 'hit' | 'stand'): boolean {
-    const playerObject = Player.players.filter((p) => p.getSocket()?.id === playerId)[0];
+  static setPlayerGameChoice(playerId: string, gameId: string, choice: 'hit' | 'stand'): void {
+    const gameFromManager = gameManager.getPlayerTurn.filter((p) => p.gameId === gameId)[0];
+    const player = gameFromManager.playerTurn.filter((p) => p.playerId === playerId)[0];
+    player.lastMove = choice;
+    player.currentRound++;
+  }
+
+  static gameCanContinue(
+    playerId: string,
+    gameId: string
+    //  choice: 'hit' | 'stand'
+  ): boolean {
+    const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
+    const playersFromGame = game.getPlayers();
+
+    const playerObject = playersFromGame.filter((p) => p.getSocket()?.id === playerId)[0];
+
+    console.log(`The current state while checking if the game can continue is:\n`);
+    console.log(gameManager.getPlayerTurn.filter((t) => t.gameId === gameId)[0]);
 
     if (playerObject.getTotal() >= 21 && playerObject.getCards().length > 2) {
       return false;
     }
 
     /*
-        Implement checking player win in here, define functions in game Controller to check for the game state
-        
+    Implement checking player win in here, define functions in game Controller to check for the game state
+    
         HINT: Along with all below, check if all players have played for that round and that everyone hit;
         Only then should this return true. 
         
@@ -160,12 +177,32 @@ export default class gameManager {
         
         */
 
-    const gameFromManager = gameManager.getPlayerTurn.filter((p) => p.gameId === gameId)[0];
-    const player = gameFromManager.playerTurn.filter((p) => p.playerId === playerId)[0];
+    // const gameFromManager = gameManager.getPlayerTurn.filter((p) => p.gameId === gameId)[0];
+    // const player = gameFromManager.playerTurn.filter((p) => p.playerId === playerId)[0];
 
-    player.lastMove = choice;
-    player.currentRound++;
+    const playerTurnsFromManager = gameManager.getPlayerTurn.filter((t) => t.gameId === gameId)[0]
+      .playerTurn;
 
+    const maxTurn = Math.max(...playerTurnsFromManager.map((p) => p.currentRound));
+    for (const p of playersFromGame) {
+      if (
+        p.getTotal() >= 21 &&
+        maxTurn > 0 &&
+        playerTurnsFromManager.every((p) => p.currentRound === maxTurn)
+      ) {
+        return false;
+      }
+    }
+
+    if (
+      playerTurnsFromManager.filter((t) => t.currentRound !== maxTurn).length === 0 &&
+      playerTurnsFromManager.filter((t) => t.lastMove === 'stand').length > 0
+    ) {
+      return false;
+    }
+
+    // player.lastMove = choice;
+    // player.currentRound++;
     return true;
   }
 }

@@ -9,12 +9,15 @@ import { GameFromServerType } from './types/gameType/gameFromServerType';
 import { gameContext } from './contexts/gameContext';
 import Table from './pages/table/Table';
 
+type scoreType = 'BlackJack' | 'lose' | null;
+
 export default function App(): ReactElement {
   const [searching, setSearching] = useState<boolean>(false);
   const [game, setGame] = useState<GameFromServerType>();
   const [isTurn, setIsTurn] = useState<boolean>();
+  const [score, setScore] = useState<scoreType>(null);
 
-  const { data } = useFetch();
+  const { data, error } = useFetch();
   let divToReturn: ReactElement;
 
   // const gameListener = Listener.getInstance();
@@ -47,11 +50,25 @@ export default function App(): ReactElement {
     setIsTurn(false);
   });
 
+  gameListener.score(() => {
+    console.log(`Socket heard a score event`);
+    setIsTurn(false);
+    setScore('BlackJack');
+  });
+
+  divToReturn = <Home />;
+
+  if (score) {
+    divToReturn = <div>The game should be scored now</div>;
+  }
+
   if (!data) {
     divToReturn = <div>The data is not available</div>;
   }
 
-  divToReturn = <Home />;
+  if (error) {
+    divToReturn = <div>There was an network error: {`\n` + error}</div>;
+  }
 
   if (game) {
     const { id, deck, players, dealer } = game;

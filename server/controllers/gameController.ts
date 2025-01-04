@@ -1,8 +1,9 @@
 import { Player } from '../classes/playerClass';
 import BlackJack from '../classes/gameClass';
-import { parseDeck } from '../utilities/utilities';
+import { getGameAsString, parseDeck } from '../utilities/utilities';
 import gameManager from '../classes/gameManager';
 import { Server } from 'socket.io';
+import Card from '../classes/cardClass';
 
 // Create a game with the player and return the gameID
 export async function createdGameAndReturnId(
@@ -75,5 +76,32 @@ export async function nextPlayerTurn(gameId: string, io: Server): Promise<void> 
     } else {
       io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('hide');
     }
+  }
+}
+
+export async function playerChoiceController(
+  gameId: string,
+  socketId: string,
+  io: Server,
+  choice: 'hit' | 'stand'
+): Promise<void> {
+  const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
+  let player: Player | null = null;
+
+  if (choice === 'hit') {
+    player = game.getPlayers().filter((p) => p.getSocket()?.id === socketId)[0];
+  }
+
+  gameManager.setPlayerGameChoice(socketId, gameId, choice);
+  if (gameManager.gameCanContinue(socketId, gameId)) {
+    if (choice === 'hit') {
+      player?.addCard(game.getDeck().pop() as unknown as Card);
+    }
+    await nextPlayerTurn(gameId, io);
+    io.to(gameId).emit('game', getGameAsString(game));
+  } else {
+    console.log(`Should deal to the dealer and check for the winner`);
+    io.to(gameId).emit('scoreGame');
+    //Logic for fully dealing to the dealer and checking for the winner
   }
 }

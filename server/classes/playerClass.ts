@@ -45,9 +45,7 @@ export class Player {
 
     if (
       total + 10 <= 21 &&
-      this.playerCards
-        .map((card) => card.getCardDetails()['face'].toLowerCase())
-        .includes('ace')
+      this.playerCards.map((card) => card.getCardDetails()['face'].toLowerCase()).includes('ace')
     ) {
       total += 10;
     }
@@ -101,27 +99,18 @@ export class PlayerReadyTracker {
 
   constructor(player: Player, game: BlackJack) {
     this.game = game;
-    if (
-      !PlayerReadyTracker.readyPlayersId.includes(
-        player.getSocket()?.id as unknown as string
-      )
-    ) {
+    if (!PlayerReadyTracker.readyPlayersId.includes(player.getSocket()?.id as unknown as string)) {
       if (player.getSocket()) {
-        PlayerReadyTracker.readyPlayersId.push(
-          player.getSocket()?.id as unknown as string
-        );
+        PlayerReadyTracker.readyPlayersId.push(player.getSocket()?.id as unknown as string);
       }
     }
   }
 
   removePlayersFromTracker(): void {
-    const playersToRemove = this.game
-      .getPlayers()
-      .map((p) => p.getSocket()?.id);
-    PlayerReadyTracker.readyPlayersId =
-      PlayerReadyTracker.readyPlayersId.filter(
-        (p) => !playersToRemove.includes(p)
-      );
+    const playersToRemove = this.game.getPlayers().map((p) => p.getSocket()?.id);
+    PlayerReadyTracker.readyPlayersId = PlayerReadyTracker.readyPlayersId.filter(
+      (p) => !playersToRemove.includes(p)
+    );
   }
 
   checkIfAllPlayersAreReady(): boolean {

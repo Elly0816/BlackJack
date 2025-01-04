@@ -36,4 +36,8 @@ export default class Listener {
     this.socket.on('hide', cb);
     // console.log(`Socket heard a hide event`);
   }
+
+  score(cb: () => void): void {
+    this.socket.on('scoreGame', cb);
+  }
 }

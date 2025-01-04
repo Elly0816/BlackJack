@@ -4,6 +4,7 @@ import {
   socketHitHandler,
   socketReadyHandler,
   socketSearchHandler,
+  socketStandHandler,
 } from './controllers/socketEventHandlers';
 import { createPlayer, removePlayerOnDisconnect } from './controllers/playerController';
 import { Player } from './classes/playerClass';
@@ -57,8 +58,12 @@ export function initializeSocket(
       //Logic for handling hits
     });
 
-    socket.on('stand', (gameId: string) => {
+    socket.on('stand', async (gameId: string) => {
+      if (!gameId) {
+        console.log(`You need to ass a game Id`);
+      }
       console.log('The socket heard a stand event');
+      await socketStandHandler(gameId, socket.id, io);
 
       //Logic for handling stand
     });
