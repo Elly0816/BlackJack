@@ -51,6 +51,10 @@ export default function App(): ReactElement {
     setIsTurn(false);
   });
 
+  gameListener.dealer((game) => {
+    setGame(JSON.parse(game));
+  });
+
   gameListener.score((game) => {
     const parsedGame: GameFromServerType = JSON.parse(game);
     console.log(`Socket heard a score event`);

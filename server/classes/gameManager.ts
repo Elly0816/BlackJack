@@ -42,18 +42,20 @@ export default class gameManager {
     let game: BlackJack | null = null;
     let player: Player | null = null;
     let tracker: PlayerReadyTracker | null = null;
-    for (const g of BlackJack.getGames()) {
-      if (g.getGameId() == gameId) {
-        game = g;
-        for (const p of game.getPlayers()) {
-          if (p.getSocket()?.id == playerId) {
-            player = p;
-            break;
-          }
-        }
+    game = BlackJack.getGame(gameId);
+    for (const p of game.getPlayers()) {
+      if (p.getSocket()?.id == playerId) {
+        player = p;
         break;
       }
     }
+
+    // for (const g of BlackJack.getGames()) {
+    //   if (g.getGameId() == gameId) {
+    //     game = g;
+    //     break;
+    //   }
+    // }
     if (game && player) {
       tracker = new PlayerReadyTracker(player, game);
       const playersReady = tracker.checkIfAllPlayersAreReady();

@@ -109,4 +109,5 @@ export async function playerChoiceController(
 
 function checkForWinner(game: BlackJack, io: Server) {
   const gameWinner = new CheckWinner(game, io);
+  gameWinner.dealerUntilBust();
 }
