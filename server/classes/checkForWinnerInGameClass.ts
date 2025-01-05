@@ -43,5 +43,12 @@ export default class CheckWinner {
       // this.io.to(this.game.getGameId()).emit('')
       this.io.to(this.game.getGameId()).emit('dealer', getGameAsString(this.game));
     }
+
+    /**
+     *
+     * Check to see who the winner is
+     *
+     *
+     */
   }
 }
