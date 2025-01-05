@@ -4,7 +4,7 @@ import { cleanupTimers, getGameAsString } from '../utilities/utilities';
 import { createdGameAndReturnId, nextPlayerTurn, playerChoiceController } from './gameController';
 import { Player } from '../classes/playerClass';
 import gameManager from '../classes/gameManager';
-import Card from '../classes/cardClass';
+import CheckWinner from '../classes/checkForWinnerInGameClass';
 
 export async function socketSearchHandler(arg: string, player: Player, io: Server) {
   if (!arg) {
@@ -25,7 +25,7 @@ export async function socketSearchHandler(arg: string, player: Player, io: Serve
           console.log(
             `Game created successfully by ${player.getName()} and the game id is ${createdGameid}`
           );
-          const game = BlackJack.games.filter((game) => game.getGameId() == createdGameid)[0];
+          const game = BlackJack.getGame(createdGameid);
           console.log(`The players in the game are:\n\ `);
           game.getPlayers().forEach((p) => console.log(`${p.getName()}\n`));
 
@@ -33,17 +33,9 @@ export async function socketSearchHandler(arg: string, player: Player, io: Serve
           cleanupTimers([interval, timeout_]);
         } else {
           console.log('Failed to create game');
-          // player.getSocket()?.emit('search error');
-
-          // player.setStatus('notInGame');
-          // cleanupTimers([interval, timeout_]);
         }
       } catch (e) {
         console.log(`There was an error creating the game.`);
-        // player.getSocket()?.emit('search error');
-
-        // player.setStatus('notInGame');
-        // cleanupTimers([interval, timeout_]);
       }
     } else {
       cleanupTimers([interval, timeout_]);
@@ -77,47 +69,20 @@ export async function socketReadyHandler(
     game.shuffleCards();
     game.dealCards(2);
     io.to(gameId).emit('shuffle', getGameAsString(game));
-
     await nextPlayerTurn(gameId, io);
-
-    // let playerTurns = gameManager.decidePlayerTurn(gameId);
-    // let players = playerTurns.playerTurn;
-    // let sockets = await io.in(gameId).fetchSockets();
-    // for (const p of players) {
-    //   if (p.isTurn) {
-    //     io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('show');
-    //   } else {
-    //     io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('hide');
-    //   }
-    // }
   }
 }
 
 export async function socketHitHandler(gameId: string, socketId: string, io: Server) {
   await playerChoiceController(gameId, socketId, io, 'hit');
-  // const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
-  // const player = game.getPlayers().filter((p) => p.getSocket()?.id === socketId)[0];
-  // gameManager.setPlayerGameChoice(socketId, gameId, 'hit');
-  // if (gameManager.gameCanContinue(socketId, gameId)) {
-  //   player.addCard(game.getDeck().pop() as unknown as Card);
-  //   await nextPlayerTurn(gameId, io);
-  //   io.to(gameId).emit('game', getGameAsString(game));
-  // } else {
-  //   console.log(`Should deal to the dealer and check for the winner`);
-  //   //Logic for fully dealing to the dealer and checking for the winner
-  // }
 }
 
 export async function socketStandHandler(gameId: string, socketId: string, io: Server) {
   await playerChoiceController(gameId, socketId, io, 'stand');
+}
 
-  // const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
-  // gameManager.setPlayerGameChoice(socketId, gameId, 'stand');
-  // if (gameManager.gameCanContinue(socketId, gameId)) {
-  //   await nextPlayerTurn(gameId, io);
-  //   io.to(gameId).emit('game', getGameAsString(game));
-  // } else {
-  //   console.log(`Should deal to the dealer and check for the winner`);
-  //   //Logic for fully dealing to the dealer and checking for the winner
-  // }
+export function socketShowHandler(gameId: string, io: Server) {
+  console.log('This is the gameID:\n' + gameId);
+  const gameToCheckForWinner = new CheckWinner(BlackJack.getGame(gameId), io);
+  gameToCheckForWinner.dealerBet();
 }

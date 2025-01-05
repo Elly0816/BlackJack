@@ -33,4 +33,8 @@ export default class Emitter {
   stand(gameId: string): void {
     this.socket.emit('stand', gameId);
   }
+
+  show(gameId: string) {
+    this.socket.emit('show', gameId);
+  }
 }

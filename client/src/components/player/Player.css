@@ -5,8 +5,16 @@
   align-items: center;
 }
 
-.cards-total-container {
-}
+/* .cards-total-container {
+} */
 
-.cards {
+/* .cards {
+} */
+
+.order-first {
+  order: -9999;
+  flex-basis: 50%;
+  min-width: 50%;
+  max-width: 50%;
+  flex-grow: 1;
 }

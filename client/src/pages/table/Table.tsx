@@ -34,7 +34,7 @@ export default function Table(props: GameFromServerType): ReactElement {
       <Dealer dealer={dealer} />
       <Card numberOfCards={deck.length} type="deck" />
       <div className="flex player-button">
-        <div className="flex flex-row h-fit max-h-fit">
+        <div className="flex flex-row h-fit max-h-fit flex-shrink justify-evenly items-center w-min">
           {players.map((p, i) => (
             <Player player={p} key={i} />
           ))}

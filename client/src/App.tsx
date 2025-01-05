@@ -8,6 +8,7 @@ import Listener from './socket/listeners/Listeners';
 import { GameFromServerType } from './types/gameType/gameFromServerType';
 import { gameContext } from './contexts/gameContext';
 import Table from './pages/table/Table';
+import Emitter from './socket/emitters/Emitters';
 
 type scoreType = 'BlackJack' | 'lose' | null;
 
@@ -50,15 +51,20 @@ export default function App(): ReactElement {
     setIsTurn(false);
   });
 
-  gameListener.score(() => {
+  gameListener.score((game) => {
+    const parsedGame: GameFromServerType = JSON.parse(game);
     console.log(`Socket heard a score event`);
+    console.log('This is the game:\n');
+    console.log(game);
     setIsTurn(false);
     setScore('BlackJack');
+    setGame(parsedGame);
+    Emitter.getInstance().show(parsedGame.id);
   });
 
   divToReturn = <Home />;
 
-  if (score) {
+  if (score === 'BlackJack') {
     divToReturn = <div>The game should be scored now</div>;
   }
 

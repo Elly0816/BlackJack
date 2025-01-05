@@ -40,4 +40,8 @@ export default class Listener {
   score(cb: () => void): void {
     this.socket.on('scoreGame', cb);
   }
+
+  faceUp(cb: () => void): void {
+    this.socket.on('face-up', cb);
+  }
 }

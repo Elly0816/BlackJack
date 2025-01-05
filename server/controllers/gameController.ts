@@ -4,6 +4,8 @@ import { getGameAsString, parseDeck } from '../utilities/utilities';
 import gameManager from '../classes/gameManager';
 import { Server } from 'socket.io';
 import Card from '../classes/cardClass';
+import { numberOfPlayers } from '../config';
+import CheckWinner from '../classes/checkForWinnerInGameClass';
 
 // Create a game with the player and return the gameID
 export async function createdGameAndReturnId(
@@ -18,7 +20,7 @@ export async function createdGameAndReturnId(
   player.setName(name);
   player.setStatus('searching');
 
-  const desiredNumberOfPlayers = 2;
+  const desiredNumberOfPlayers = numberOfPlayers;
   let playersToAddToGame: Player[] = [player];
 
   const availablePlayers = gameManager.getSearchingPlayers().filter(
@@ -31,12 +33,6 @@ export async function createdGameAndReturnId(
     if (playersToAddToGame.length >= desiredNumberOfPlayers) break;
     playersToAddToGame.push(p);
   }
-  // .filter(p => (p.getSocket()?.id != player.getSocket()?.id))){
-  //     playersToAddToGame.push(p);
-  // if(new Set(playersToAddToGame).size == desiredNumberOfPlayers){
-  //     break;
-  // }
-  // }
 
   if (new Set(playersToAddToGame).size < desiredNumberOfPlayers) {
     player.setStatus('notInGame');
@@ -85,7 +81,7 @@ export async function playerChoiceController(
   io: Server,
   choice: 'hit' | 'stand'
 ): Promise<void> {
-  const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
+  const game = BlackJack.getGame(gameId);
   let player: Player | null = null;
 
   if (choice === 'hit') {
@@ -100,8 +96,17 @@ export async function playerChoiceController(
     await nextPlayerTurn(gameId, io);
     io.to(gameId).emit('game', getGameAsString(game));
   } else {
+    if (choice === 'hit') {
+      player?.addCard(game.getDeck().pop() as unknown as Card);
+      io.to(gameId).emit('game', getGameAsString(game));
+    }
     console.log(`Should deal to the dealer and check for the winner`);
-    io.to(gameId).emit('scoreGame');
+    io.to(gameId).emit('scoreGame', getGameAsString(game));
+    checkForWinner(BlackJack.getGame(gameId), io);
     //Logic for fully dealing to the dealer and checking for the winner
   }
+}
+
+function checkForWinner(game: BlackJack, io: Server) {
+  const gameWinner = new CheckWinner(game, io);
 }

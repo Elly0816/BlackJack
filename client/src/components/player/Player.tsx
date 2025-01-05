@@ -15,7 +15,11 @@ export default function Player({
 
   return (
     // <div className="player">
-    <div className="max-w-fit mx-2 max-h-fit">
+    <div
+      className={`max-w-fit mx-2 max-h-fit ${
+        playerID === id ? 'order-first w-3/5' : ''
+      }`}
+    >
       {/*
             3 divs in a flex col
             first div should contain the name 

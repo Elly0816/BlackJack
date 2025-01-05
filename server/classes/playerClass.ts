@@ -9,7 +9,7 @@ export class Player {
   private playerCards: Card[];
   private playerTotal: number;
   protected readonly playerSocket: Socket | null;
-  static players: Player[] = [];
+  private static players: Player[] = [];
   protected status: playerStatusType;
 
   constructor(playerName: string, socket: Socket | null) {
@@ -21,6 +21,15 @@ export class Player {
     if (this.constructor === Player) {
       Player.players.push(this);
     }
+  }
+
+  static getPlayers(): Player[] {
+    return Player.players;
+  }
+
+  static getPlayer(id: string): Player {
+    const player = Player.players.filter((p) => p.getSocket()?.id === id)[0];
+    return player;
   }
 
   getStatus(): playerStatusType {

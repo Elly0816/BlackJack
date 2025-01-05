@@ -4,6 +4,7 @@ import {
   socketHitHandler,
   socketReadyHandler,
   socketSearchHandler,
+  socketShowHandler,
   socketStandHandler,
 } from './controllers/socketEventHandlers';
 import { createPlayer, removePlayerOnDisconnect } from './controllers/playerController';
@@ -68,6 +69,10 @@ export function initializeSocket(
       //Logic for handling stand
     });
 
+    socket.on('show', (gameId: string) => {
+      socketShowHandler(gameId, io);
+    });
+
     socket.on('disconnect', () => {
       console.log(`Disconnected: ${player.getName()}`);
       socket.disconnect(true);
@@ -79,7 +84,7 @@ export function initializeSocket(
             */
 
       console.log(`Remaining players are:\n`);
-      Player.players.forEach((p) => console.log(`${p.getName()}\n`));
+      Player.getPlayers().forEach((p) => console.log(`${p.getName()}\n`));
     });
   });
 

@@ -19,7 +19,7 @@ export default class gameManager {
   private constructor() {}
 
   static getSearchingPlayers(): Player[] {
-    for (const p of Player.players) {
+    for (const p of Player.getPlayers()) {
       if (p.getStatus() == 'searching' && !gameManager.searchingPlayers.includes(p)) {
         gameManager.searchingPlayers.push(p);
       }
@@ -42,15 +42,15 @@ export default class gameManager {
     let game: BlackJack | null = null;
     let player: Player | null = null;
     let tracker: PlayerReadyTracker | null = null;
-    for (const g of BlackJack.games) {
+    for (const g of BlackJack.getGames()) {
       if (g.getGameId() == gameId) {
         game = g;
-        break;
-      }
-    }
-    for (const p of Player.players) {
-      if (p.getSocket()?.id == playerId) {
-        player = p;
+        for (const p of game.getPlayers()) {
+          if (p.getSocket()?.id == playerId) {
+            player = p;
+            break;
+          }
+        }
         break;
       }
     }
@@ -74,7 +74,7 @@ export default class gameManager {
   */
   static decidePlayerTurn(gameID: string): getPlayerTurnType {
     console.log(`Deciding`);
-    let game = BlackJack.games.filter((b) => b.getGameId() === gameID)[0];
+    let game = BlackJack.getGame(gameID);
     // if(gameManager.getPlayerTurn.length === 0){
     //   gameManager.getPlayerTurn.push({gameId:gameID, playerTurn:game.getPlayers().map((p,i) => {return {playerId:p.getSocket()?.id as unknown as string, isTurn:(i=0)?true:false}})});
 
@@ -154,7 +154,7 @@ export default class gameManager {
     gameId: string
     //  choice: 'hit' | 'stand'
   ): boolean {
-    const game = BlackJack.games.filter((g) => g.getGameId() === gameId)[0];
+    const game = BlackJack.getGame(gameId);
     const playersFromGame = game.getPlayers();
 
     const playerObject = playersFromGame.filter((p) => p.getSocket()?.id === playerId)[0];
@@ -176,9 +176,6 @@ export default class gameManager {
         
         
         */
-
-    // const gameFromManager = gameManager.getPlayerTurn.filter((p) => p.gameId === gameId)[0];
-    // const player = gameFromManager.playerTurn.filter((p) => p.playerId === playerId)[0];
 
     const playerTurnsFromManager = gameManager.getPlayerTurn.filter((t) => t.gameId === gameId)[0]
       .playerTurn;

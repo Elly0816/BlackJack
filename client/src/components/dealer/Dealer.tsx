@@ -3,6 +3,7 @@ import { GameDealerType } from '../../types/gameType/gameFromServerType';
 // import Card from "../card/Card";
 import './Dealer.css';
 import Deck from '../deck/Deck';
+import Listener from '../../socket/listeners/Listeners';
 
 export default function Dealer({
   dealer,
@@ -12,6 +13,12 @@ export default function Dealer({
   const { cards, name } = dealer;
 
   const [secondCardBack, setSecondCardBack] = useState<boolean>(true);
+
+  const listener = Listener.getInstance();
+  listener.faceUp(() => {
+    setSecondCardBack(false);
+    console.log(`The client socket heard a face up event`);
+  });
 
   return (
     <div className="max-h-fit max-w-fit">
