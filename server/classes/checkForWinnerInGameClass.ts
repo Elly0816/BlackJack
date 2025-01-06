@@ -1,4 +1,4 @@
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import BlackJack from './gameClass';
 import { Dealer, Player } from './playerClass';
 import Card from './cardClass';
@@ -37,10 +37,9 @@ export default class CheckWinner {
   dealerUntilBust(): void {
     const randNum = Math.floor(Math.random() * (this.Max - this.Min + 1)) + this.Min;
     // const randNum = 1;
-    const maxGameTotal = this.game
-      .getPlayers()
-      .reduce((max, player) => {
-        return player.getTotal() > max.getTotal() ? player : max;
+    const maxGameTotal = this.players
+      .reduce((initialPlayer, currentPlayer) => {
+        return currentPlayer.getTotal() > initialPlayer.getTotal() ? currentPlayer : initialPlayer;
       })
       .getTotal();
 
@@ -56,5 +55,41 @@ export default class CheckWinner {
      *
      *
      */
+  }
+
+  checkWinState(): void {
+    const gameMaxTotal = this.players
+      .reduce((initialPlayer, currentPlayer) => {
+        return currentPlayer.getTotal() > initialPlayer.getTotal() ? currentPlayer : initialPlayer;
+      })
+      .getTotal();
+
+    for (const p of this.players) {
+      if (p.getTotal() > this.MAXTOTAL && this.dealer.getTotal() < this.MAXTOTAL) {
+        p.getSocket()?.emit('bust');
+      }
+
+      if (
+        p.getTotal() === gameMaxTotal &&
+        p.getTotal() > this.dealer.getTotal() &&
+        p.getTotal() < this.MAXTOTAL
+      ) {
+        p.getSocket()?.emit('winner');
+      }
+
+      if (this.dealer.getTotal() > gameMaxTotal && this.dealer.getTotal() < this.MAXTOTAL) {
+        this.io.to(this.game.getGameId()).emit('house-wins');
+      }
+
+      if (p.getTotal() > this.MAXTOTAL && this.dealer.getTotal() > this.MAXTOTAL) {
+        this.io.to(this.game.getGameId()).emit('draw');
+      }
+
+      if (p.getTotal() === this.MAXTOTAL) {
+        if (this.dealer.getTotal() !== this.MAXTOTAL) {
+          p.getSocket()?.emit('BlackJack');
+        }
+      }
+    }
   }
 }

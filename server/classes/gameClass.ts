@@ -15,7 +15,7 @@ export default class BlackJack {
     this.deck = deck;
     this.id = id;
     BlackJack.games.push(this);
-    BlackJack.numberOfGames += 1;
+    BlackJack.numberOfGames = BlackJack.games.length;
   }
 
   static getGame(id: string): BlackJack {
