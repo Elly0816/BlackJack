@@ -11,6 +11,8 @@ export default class CheckWinner {
   private players: Player[];
   private readonly MAXTOTAL: number = 21;
   private io: Server;
+  private readonly Max = 10;
+  private readonly Min = 1;
 
   constructor(game: BlackJack, io: Server) {
     this.io = io;
@@ -23,11 +25,18 @@ export default class CheckWinner {
     this.io.to(this.game.getGameId()).emit('face-up');
   }
 
+  private shouldDealerHit(maxGameTotal: number, randNum: number): boolean {
+    const dealerTotal = this.dealer.getTotal();
+    const potentialTotal = dealerTotal + randNum;
+    const isWinningWithNewCard = maxGameTotal < potentialTotal;
+    const willNotBust = potentialTotal < this.MAXTOTAL;
+    const isCurrentlyLosing = dealerTotal < maxGameTotal;
+
+    return isWinningWithNewCard && willNotBust && isCurrentlyLosing;
+  }
   dealerUntilBust(): void {
-    const min = 1;
-    const max = 10;
-    // const randNum = Math.floor(Math.random() * (max - min + 1)) + min;
-    const randNum = 1;
+    const randNum = Math.floor(Math.random() * (this.Max - this.Min + 1)) + this.Min;
+    // const randNum = 1;
     const maxGameTotal = this.game
       .getPlayers()
       .reduce((max, player) => {
@@ -35,10 +44,7 @@ export default class CheckWinner {
       })
       .getTotal();
 
-    while (
-      this.dealer.getTotal() + randNum < this.MAXTOTAL &&
-      this.dealer.getTotal() < maxGameTotal
-    ) {
+    while (this.shouldDealerHit(maxGameTotal, randNum)) {
       this.dealer.addCard(this.game.getDeck().pop() as unknown as Card);
       // this.io.to(this.game.getGameId()).emit('')
       this.io.to(this.game.getGameId()).emit('dealer', getGameAsString(this.game));

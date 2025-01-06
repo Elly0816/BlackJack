@@ -1,64 +1,74 @@
-# Blackjack Game Client
+# BlackJack Multiplayer Game
 
-A React-based multiplayer Blackjack game client that connects to a backend server via websockets.
+A real-time multiplayer BlackJack game built with React, TypeScript, and Socket.IO.
 
 ## Features
 
 - Real-time multiplayer gameplay
-- User authentication with player names
+- Lobby system for matchmaking
+- Audio ambience for casino atmosphere
 - Responsive design
-- Casino ambiance audio
-- Interactive card gameplay
+- Visual card animations and effects
 
 ## Tech Stack
 
-- React 19.0.0
-- TypeScript
-- Socket.IO for real-time communication
-- CSS for styling
-
-## Getting Started
-
-1. Clone the repository
-2. Install dependencies:
-```bash
-npm install
-```
-3. Start the development server:
-```bash
-npm start
-```
-
-## Available Scripts
-
-- `npm start` - Runs the app in development mode
-- `npm test` - Launches the test runner
-- `npm run build` - Builds the app for production
-- `npm run eject` - Ejects from Create React App
+- Frontend:
+  - React
+  - TypeScript
+  - Socket.IO Client
+  - TailwindCSS
+  - CSS3
 
 ## Project Structure
 
 ```
-/src
-    /components      # Reusable UI components
-    /contexts        # React context definitions
-    /hooks          # Custom React hooks
-    /pages          # Main page components
-    /socket         # Socket.IO configuration
-    /types          # TypeScript type definitions
-    /utilities      # Helper functions
+client/
+├── public/          # Static files
+├── src/
+│   ├── components/  # React components
+│   ├── contexts/    # React contexts
+│   ├── hooks/       # Custom hooks
+│   ├── pages/       # Page components
+│   ├── socket/      # Socket.IO configuration
+│   ├── types/       # TypeScript types
+│   └── utilities/   # Helper functions
 ```
 
-## Environment
+## Getting Started
 
-The app uses different endpoints for development and production:
-- Development: http://localhost:5000/
-- Production: https://polar-harbor-23442.herokuapp.com/
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Start development server:
+
+```bash
+npm start
+```
+
+3. Build for production:
+
+```bash
+npm run build
+```
+
+## Game Rules
+
+- Standard BlackJack rules apply
+- Players can Hit or Stand
+- Dealer must hit on soft 16
+- BlackJack pays 3:2
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open pull request
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+MIT License
