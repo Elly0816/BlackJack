@@ -1,4 +1,4 @@
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import BlackJack from './gameClass';
 import { Dealer, Player } from './playerClass';
 import Card from './cardClass';
@@ -13,6 +13,7 @@ export default class CheckWinner {
   private io: Server;
   private readonly Max = 10;
   private readonly Min = 1;
+  private SEEN: Player[] = [];
 
   constructor(game: BlackJack, io: Server) {
     this.io = io;
@@ -65,30 +66,38 @@ export default class CheckWinner {
       .getTotal();
 
     for (const p of this.players) {
-      if (p.getTotal() > this.MAXTOTAL && this.dealer.getTotal() < this.MAXTOTAL) {
-        p.getSocket()?.emit('bust');
-      }
-
-      if (
-        p.getTotal() === gameMaxTotal &&
-        p.getTotal() > this.dealer.getTotal() &&
-        p.getTotal() < this.MAXTOTAL
-      ) {
-        p.getSocket()?.emit('winner');
-      }
-
-      if (this.dealer.getTotal() > gameMaxTotal && this.dealer.getTotal() < this.MAXTOTAL) {
-        this.io.to(this.game.getGameId()).emit('house-wins');
-      }
-
-      if (p.getTotal() > this.MAXTOTAL && this.dealer.getTotal() > this.MAXTOTAL) {
-        this.io.to(this.game.getGameId()).emit('draw');
-      }
-
-      if (p.getTotal() === this.MAXTOTAL) {
-        if (this.dealer.getTotal() !== this.MAXTOTAL) {
-          p.getSocket()?.emit('BlackJack');
+      if (!this.SEEN.includes(p)) {
+        if (p.getTotal() > this.MAXTOTAL && this.dealer.getTotal() < this.MAXTOTAL) {
+          console.log(`${p.getName()}: BUST`);
+          p.getSocket()?.emit('bust');
         }
+
+        if (
+          p.getTotal() === gameMaxTotal &&
+          p.getTotal() > this.dealer.getTotal() &&
+          p.getTotal() < this.MAXTOTAL
+        ) {
+          console.log(`${p.getName()}: WINNER`);
+          p.getSocket()?.emit('winner');
+        }
+
+        if (this.dealer.getTotal() > gameMaxTotal && this.dealer.getTotal() < this.MAXTOTAL) {
+          console.log(`${this.game.getGameId()}: HOUSE WINS`);
+          this.io.to(this.game.getGameId()).emit('house-wins');
+        }
+
+        if (p.getTotal() > this.MAXTOTAL && this.dealer.getTotal() > this.MAXTOTAL) {
+          console.log(`${this.game.getGameId()}: DRAW`);
+          this.io.to(this.game.getGameId()).emit('draw');
+        }
+
+        if (p.getTotal() === this.MAXTOTAL) {
+          if (this.dealer.getTotal() !== this.MAXTOTAL) {
+            console.log(`${p.getName()}: BlackJack`);
+            p.getSocket()?.emit('BlackJack');
+          }
+        }
+        this.SEEN.push(p);
       }
     }
   }

@@ -102,12 +102,14 @@ export async function playerChoiceController(
     }
     console.log(`Should deal to the dealer and check for the winner`);
     io.to(gameId).emit('scoreGame', getGameAsString(game));
-    checkForWinner(BlackJack.getGame(gameId), io);
+    // checkForWinner(BlackJack.getGame(gameId), io);
     //Logic for fully dealing to the dealer and checking for the winner
   }
 }
 
-function checkForWinner(game: BlackJack, io: Server) {
+export function checkForWinner(game: BlackJack, io: Server) {
   const gameWinner = new CheckWinner(game, io);
+  gameWinner.dealerBet();
   gameWinner.dealerUntilBust();
+  gameWinner.checkWinState();
 }
