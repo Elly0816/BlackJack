@@ -35,7 +35,7 @@ export async function socketSearchHandler(arg: string, player: Player, io: Serve
           game.getPlayers().forEach((p) => console.log(`${p.getName()}\n`));
 
           io.to(String(createdGameid)).emit('game', getGameAsString(game));
-          cleanupTimers([interval, timeout_]);
+          cleanupTimers(interval, timeout_);
         } else {
           console.log('Failed to create game');
         }
@@ -43,7 +43,7 @@ export async function socketSearchHandler(arg: string, player: Player, io: Serve
         console.log(`There was an error creating the game.`);
       }
     } else {
-      cleanupTimers([interval, timeout_]);
+      cleanupTimers(interval, timeout_);
     }
   }, duration);
   // while (player.getStatus() == 'online'){
@@ -55,7 +55,7 @@ export async function socketSearchHandler(arg: string, player: Player, io: Serve
     gameManager.getSearchingPlayers().forEach((p) => console.log(p.getName()));
     player.getSocket()?.emit('search error');
     player.setStatus('notInGame');
-    cleanupTimers([interval, timeout_]);
+    cleanupTimers(interval, timeout_);
   }, timeout);
 }
 

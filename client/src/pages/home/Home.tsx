@@ -38,7 +38,9 @@ export default function Home(): ReactElement {
               type="submit"
               onClick={(e) => {
                 e.preventDefault();
-                searchButtonHandler(name, setSearching);
+                if (name.length > 0) {
+                  searchButtonHandler(name, setSearching);
+                }
               }}
               className="search-button bg-gray-500 text-white hover:shadow-md shadow-slate-50 w-5/6 py-10"
             >

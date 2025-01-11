@@ -1,6 +1,6 @@
 import { Player } from '../classes/playerClass';
 import BlackJack from '../classes/gameClass';
-import { getGameAsString, parseDeck } from '../utilities/utilities';
+import { cleanupTimers, getGameAsString, parseDeck } from '../utilities/utilities';
 import gameManager from '../classes/gameManager';
 import { Server } from 'socket.io';
 import Card from '../classes/cardClass';
@@ -102,6 +102,18 @@ export async function playerChoiceController(
     }
     console.log(`Should deal to the dealer and check for the winner`);
     io.to(gameId).emit('scoreGame', getGameAsString(game));
+    console.log(`Revealing dealer's second card`);
+    io.to(gameId).emit('face-up');
+    const timer = setTimeout(() => {
+      console.log('This is the gameID:\n' + gameId);
+      checkForWinner(BlackJack.getGame(gameId), io);
+      cleanupTimers(timer);
+    }, 500);
+
+    // const timer2 = setTimeout(() => {
+    //   io.to(gameId).emit();
+    // }, 750)
+
     // checkForWinner(BlackJack.getGame(gameId), io);
     //Logic for fully dealing to the dealer and checking for the winner
   }

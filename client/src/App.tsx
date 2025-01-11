@@ -8,7 +8,6 @@ import Listener from './socket/listeners/Listeners';
 import { GameFromServerType } from './types/gameType/gameFromServerType';
 import { gameContext } from './contexts/gameContext';
 import Table from './pages/table/Table';
-import Emitter from './socket/emitters/Emitters';
 
 type scoreType = 'BlackJack' | 'lose' | null;
 
@@ -26,6 +25,35 @@ export default function App(): ReactElement {
   const gameListener = useMemo(() => {
     return Listener.getInstance();
   }, []);
+
+  /*
+   * blackjack
+   * draw
+   * houseWins
+   * winner
+   * bust
+  
+  
+  */
+  gameListener.blackJack(() => {
+    console.log('BlackJack');
+  });
+
+  gameListener.draw(() => {
+    console.log('draw');
+  });
+
+  gameListener.houseWins(() => {
+    console.log('house wins');
+  });
+
+  gameListener.winner(() => {
+    console.log('winner');
+  });
+
+  gameListener.bust(() => {
+    console.log('bust');
+  });
 
   gameListener.game((gameFromServer) => {
     setGame(JSON.parse(gameFromServer));
@@ -63,7 +91,7 @@ export default function App(): ReactElement {
     setIsTurn(false);
     setScore('BlackJack');
     setGame(parsedGame);
-    Emitter.getInstance().show(parsedGame.id);
+    // gameEmitter.show(parsedGame.id);
   });
 
   divToReturn = <Home />;

@@ -48,4 +48,32 @@ export default class Listener {
   dealer(cb: (game: string) => void): void {
     this.socket.on('dealer', cb);
   }
+
+  blackJack(cb: () => void): void {
+    this.socket.on('blackjack', cb);
+  }
+
+  draw(cb: () => void): void {
+    this.socket.on('draw', cb);
+  }
+
+  houseWins(cb: () => void): void {
+    this.socket.on('houseWins', cb);
+  }
+
+  winner(cb: () => void): void {
+    this.socket.on('winner', cb);
+  }
+
+  bust(cb: () => void): void {
+    this.socket.on('bust', cb);
+  }
+
+  /**
+   * blackjack
+   * draw
+   * houseWins
+   * winner
+   * bust
+   */
 }

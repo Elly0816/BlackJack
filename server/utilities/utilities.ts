@@ -41,7 +41,7 @@ export async function parseDeck(): Promise<Card[]> {
   return cards;
 }
 
-export function cleanupTimers(timeout: NodeJS.Timeout[]): void {
+export function cleanupTimers(...timeout: NodeJS.Timeout[]): void {
   for (const t of timeout) {
     clearTimeout(t);
   }
