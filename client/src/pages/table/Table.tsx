@@ -1,4 +1,4 @@
-import { ReactElement, useState, useContext } from 'react';
+import { ReactElement, useState, useContext, useEffect } from 'react';
 import { GameFromServerType } from '../../types/gameType/gameFromServerType';
 import React from 'react';
 import Dealer from '../../components/dealer/Dealer';
@@ -16,6 +16,28 @@ export default function Table(props: GameFromServerType): ReactElement {
   console.log({ ...props });
 
   const { isTurn } = useContext(gameContext) as gameContextAndTurn;
+
+  useEffect(() => {
+    if (dealer.cards.length === 0) {
+      playAudio('dealing');
+    } else {
+      playAudio('single');
+    }
+
+    async function playAudio(type: 'single' | 'dealing'): Promise<void> {
+      const singleAudio = new Audio('./cardPlace1.wav');
+      const dealingAudio = new Audio('./dealing card.wav');
+      try {
+        if (type === 'dealing') {
+          await dealingAudio.play();
+        } else {
+          await singleAudio.play();
+        }
+      } catch (e) {
+        console.log('There was an error playing the audio:\n' + e);
+      }
+    }
+  }, [dealer.cards.length, deck]);
 
   /*
 

@@ -10,17 +10,16 @@ enum WinStateType {
   HOUSE = 'houseWins',
   WINNER = 'winner',
   BUST = 'bust',
+  LOSE = 'lose',
 }
 export default class CheckWinner {
   private game: BlackJack;
-  private winner: Player | Dealer | null = null;
   private dealer: Dealer;
   private players: Player[];
   private readonly MAXTOTAL: number = 21;
   private io: Server;
   private readonly Max = 10;
   private readonly Min = 1;
-  private static SEEN: Player[] = [];
 
   constructor(game: BlackJack, io: Server) {
     this.io = io;
@@ -67,51 +66,47 @@ export default class CheckWinner {
 
   checkWinState(): void {
     const gameMaxTotal = this.players
+      .filter((p) => p.getTotal() <= this.MAXTOTAL)
       .reduce((initialPlayer, currentPlayer) => {
         return currentPlayer.getTotal() > initialPlayer.getTotal() ? currentPlayer : initialPlayer;
       })
       .getTotal();
 
+    if (!gameMaxTotal) {
+      this.players.map((p) => p.getSocket()?.emit(WinStateType.BUST));
+    }
+
     for (const p of this.players) {
-      if (!CheckWinner.SEEN.includes(p)) {
-        if (p.getTotal() > this.MAXTOTAL && this.dealer.getTotal() < this.MAXTOTAL) {
-          console.log(`${p.getName()}: ${WinStateType.BUST}`);
-          p.getSocket()?.emit(WinStateType.BUST);
-        }
+      // if (!CheckWinner.SEEN.includes(p)) {
+      if (p.getTotal() === this.MAXTOTAL) {
+        console.log(`${p.getName()}: ${WinStateType.BLACKJACK}`);
+        p.getSocket()?.emit(WinStateType.BLACKJACK);
+      }
 
-        if (
-          p.getTotal() === gameMaxTotal &&
-          p.getTotal() > this.dealer.getTotal() &&
-          p.getTotal() < this.MAXTOTAL
-        ) {
-          console.log(`${p.getName()}: ${WinStateType.WINNER}`);
-          p.getSocket()?.emit(WinStateType.WINNER);
-        }
+      if (p.getTotal() > gameMaxTotal) {
+        console.log(`${p.getName()}: ${WinStateType.BUST}`);
+        p.getSocket()?.emit(WinStateType.BUST);
+      }
 
-        if (this.dealer.getTotal() > gameMaxTotal && this.dealer.getTotal() < this.MAXTOTAL) {
-          console.log(`${this.game.getGameId()}: ${WinStateType.HOUSE}`);
-          this.io.to(this.game.getGameId()).emit(WinStateType.HOUSE);
-        }
+      if (
+        this.dealer.getTotal() === this.MAXTOTAL ||
+        (this.dealer.getTotal() > gameMaxTotal && this.dealer.getTotal() <= this.MAXTOTAL)
+      ) {
+        console.log(`Dealer total is: ${this.dealer.getTotal()}\n ${WinStateType.HOUSE}`);
+        this.io.to(this.game.getGameId()).emit(WinStateType.HOUSE);
+      }
 
-        if (p.getTotal() > this.MAXTOTAL && this.dealer.getTotal() > this.MAXTOTAL) {
-          console.log(`${this.game.getGameId()}: ${WinStateType.DRAW}`);
-          this.io.to(this.game.getGameId()).emit(WinStateType.DRAW);
-        }
+      // if([this.dealer.getTotal(), ...this.players.map(p => p.getTotal())].every(t => t>game))
 
-        if (p.getTotal() === this.MAXTOTAL) {
-          if (this.dealer.getTotal() !== this.MAXTOTAL) {
-            console.log(`${p.getName()}: ${WinStateType.BLACKJACK}`);
-            p.getSocket()?.emit(WinStateType.BLACKJACK);
-          }
-        }
-        CheckWinner.SEEN.push(p);
+      if (p.getTotal() === gameMaxTotal && this.dealer.getTotal() < gameMaxTotal) {
+        console.log(`${p.getName()}: ${WinStateType.WINNER}`);
+        p.getSocket()?.emit(WinStateType.WINNER);
+      }
+
+      if (p.getTotal() < gameMaxTotal) {
+        console.log(`${p.getName()}: ${WinStateType.LOSE}`);
+        p.getSocket()?.emit(WinStateType.LOSE);
       }
     }
-    const players = this.game.getPlayers();
-    CheckWinner.SEEN.forEach((p, i) => {
-      if (players.includes(p)) {
-        CheckWinner.SEEN.splice(i, 1);
-      }
-    });
   }
 }

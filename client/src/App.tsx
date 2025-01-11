@@ -55,6 +55,10 @@ export default function App(): ReactElement {
     console.log('bust');
   });
 
+  gameListener.lose(() => {
+    console.log('You Lose');
+  });
+
   gameListener.game((gameFromServer) => {
     setGame(JSON.parse(gameFromServer));
     setSearching(false);

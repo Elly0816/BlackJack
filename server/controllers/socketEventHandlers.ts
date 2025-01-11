@@ -1,12 +1,7 @@
 import { Server } from 'socket.io';
 import BlackJack from '../classes/gameClass';
 import { cleanupTimers, getGameAsString } from '../utilities/utilities';
-import {
-  checkForWinner,
-  createdGameAndReturnId,
-  nextPlayerTurn,
-  playerChoiceController,
-} from './gameController';
+import { createdGameAndReturnId, nextPlayerTurn, playerChoiceController } from './gameController';
 import { Player } from '../classes/playerClass';
 import gameManager from '../classes/gameManager';
 import CheckWinner from '../classes/checkForWinnerInGameClass';
@@ -86,10 +81,10 @@ export async function socketStandHandler(gameId: string, socketId: string, io: S
   await playerChoiceController(gameId, socketId, io, 'stand');
 }
 
-export function socketShowHandler(gameId: string, io: Server) {
-  console.log('This is the gameID:\n' + gameId);
-  // const gameToCheckForWinner = new CheckWinner(BlackJack.getGame(gameId), io);
-  // gameToCheckForWinner.dealerBet();
-  // gameToCheckForWinner.checkWinState()
-  checkForWinner(BlackJack.getGame(gameId), io);
-}
+// export function socketShowHandler(gameId: string, io: Server) {
+//   console.log('This is the gameID:\n' + gameId);
+//   // const gameToCheckForWinner = new CheckWinner(BlackJack.getGame(gameId), io);
+//   // gameToCheckForWinner.dealerBet();
+//   // gameToCheckForWinner.checkWinState()
+//   checkForWinner(BlackJack.getGame(gameId), io);
+// }

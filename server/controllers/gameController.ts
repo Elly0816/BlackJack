@@ -119,7 +119,7 @@ export async function playerChoiceController(
   }
 }
 
-export function checkForWinner(game: BlackJack, io: Server) {
+function checkForWinner(game: BlackJack, io: Server) {
   const gameWinner = new CheckWinner(game, io);
   gameWinner.dealerBet();
   gameWinner.dealerUntilBust();

@@ -4,7 +4,7 @@ import {
   socketHitHandler,
   socketReadyHandler,
   socketSearchHandler,
-  socketShowHandler,
+  // socketShowHandler,
   socketStandHandler,
 } from './controllers/socketEventHandlers';
 import { createPlayer, removePlayerOnDisconnect } from './controllers/playerController';
@@ -22,6 +22,7 @@ export function initializeSocket(
 
   io.on('connection', (socket: Socket) => {
     const player = createPlayer(socket.id, socket);
+    console.log('Connected: ' + socket.id);
 
     socket.on('search', async (arg: string) => {
       try {
@@ -69,9 +70,9 @@ export function initializeSocket(
       //Logic for handling stand
     });
 
-    socket.on('show', (gameId: string) => {
-      socketShowHandler(gameId, io);
-    });
+    // socket.on('show', (gameId: string) => {
+    //   socketShowHandler(gameId, io);
+    // });
 
     socket.on('disconnect', () => {
       console.log(`Disconnected: ${player.getName()}`);

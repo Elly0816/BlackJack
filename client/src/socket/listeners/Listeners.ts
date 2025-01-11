@@ -69,11 +69,16 @@ export default class Listener {
     this.socket.on('bust', cb);
   }
 
+  lose(cb: () => void): void {
+    this.socket.on('lose', cb);
+  }
+
   /**
    * blackjack
    * draw
    * houseWins
    * winner
    * bust
+   * lose
    */
 }
