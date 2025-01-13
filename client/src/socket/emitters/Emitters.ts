@@ -6,7 +6,7 @@ export type EventsToEmit = 'search' | 'ready';
 export default class Emitter {
   private socket: Socket = connectedSocket;
 
-  static instance: Emitter;
+  static instance: Emitter | null;
 
   private constructor() {}
 
@@ -16,6 +16,12 @@ export default class Emitter {
       return Emitter.instance;
     }
     return Emitter.instance;
+  }
+
+  static removeEmitter(): void {
+    if (Emitter.instance) {
+      Emitter.instance = null;
+    }
   }
 
   search(name: string): void {

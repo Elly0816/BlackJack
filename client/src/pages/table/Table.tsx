@@ -18,15 +18,15 @@ export default function Table(props: GameFromServerType): ReactElement {
   const { isTurn } = useContext(gameContext) as gameContextAndTurn;
 
   useEffect(() => {
-    if (dealer.cards.length === 0) {
+    const singleAudio = new Audio('./cardPlace1.wav');
+    const dealingAudio = new Audio('./dealing card.wav');
+    if (dealer.cards.length < 2) {
       playAudio('dealing');
     } else {
       playAudio('single');
     }
 
     async function playAudio(type: 'single' | 'dealing'): Promise<void> {
-      const singleAudio = new Audio('./cardPlace1.wav');
-      const dealingAudio = new Audio('./dealing card.wav');
       try {
         if (type === 'dealing') {
           await dealingAudio.play();
@@ -37,6 +37,15 @@ export default function Table(props: GameFromServerType): ReactElement {
         console.log('There was an error playing the audio:\n' + e);
       }
     }
+
+    return () => {
+      singleAudio.pause();
+      dealingAudio.pause();
+      singleAudio.currentTime = 0;
+      dealingAudio.currentTime = 0;
+      singleAudio.src = '';
+      dealingAudio.src = '';
+    };
   }, [dealer.cards.length, deck]);
 
   /*

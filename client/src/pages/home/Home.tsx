@@ -1,4 +1,10 @@
-import React, { useState, ReactElement, useContext } from 'react';
+import React, {
+  useState,
+  ReactElement,
+  useContext,
+  useCallback,
+  // useEffect,
+} from 'react';
 import { searchingContext } from '../../contexts/searchingContext';
 import { searchButtonHandler } from '../../buttonHandlers/searchButtonHandler';
 import './Home.css';
@@ -8,6 +14,32 @@ export default function Home(): ReactElement {
   const [name, setName] = useState<string>('');
 
   const { searching, setSearching } = useContext(searchingContext);
+
+  const handleOnChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      console.log(`This is the current name ${name}`);
+      setName(e.target.value);
+    },
+    [name]
+  );
+
+  const handleSubmit = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      if (name.length > 0) {
+        searchButtonHandler(name, setSearching);
+      }
+    },
+    [name, setSearching]
+  );
+
+  // useEffect(() => {
+  //   console.log(`Component Mounted: ${performance.now()}`);
+
+  //   return () => {
+  //     console.log(`Component Unmounted: ${performance.now()}`);
+  //   };
+  // }, []);
 
   let toReturn: ReactElement;
 
@@ -29,19 +61,12 @@ export default function Home(): ReactElement {
               type="text"
               name="name"
               value={name}
-              onChange={(e) => {
-                console.log(`This is the current name ${name}`);
-                setName(e.target.value);
-              }}
+              onChange={handleOnChange}
             />
             <button
               type="submit"
-              onClick={(e) => {
-                e.preventDefault();
-                if (name.length > 0) {
-                  searchButtonHandler(name, setSearching);
-                }
-              }}
+              disabled={!name}
+              onClick={handleSubmit}
               className="search-button bg-gray-500 text-white hover:shadow-md shadow-slate-50 w-5/6 py-10"
             >
               Search for a game and join

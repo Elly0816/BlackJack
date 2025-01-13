@@ -1,13 +1,14 @@
 import './output.css';
 import './App.css';
 import useFetch from './hooks/useFetch';
-import React, { ReactElement, useState, useMemo } from 'react';
+import React, { ReactElement, useState, useMemo, useEffect } from 'react';
 import Home from './pages/home/Home';
 import { searchingContext } from './contexts/searchingContext';
 import Listener from './socket/listeners/Listeners';
 import { GameFromServerType } from './types/gameType/gameFromServerType';
 import { gameContext } from './contexts/gameContext';
 import Table from './pages/table/Table';
+import Emitter from './socket/emitters/Emitters';
 
 type scoreType = 'BlackJack' | 'lose' | null;
 
@@ -17,6 +18,7 @@ export default function App(): ReactElement {
   const [isTurn, setIsTurn] = useState<boolean>();
   const [score, setScore] = useState<scoreType>(null);
 
+  // const abortController = new AbortController();
   const { data, error } = useFetch();
   let divToReturn: ReactElement;
 
@@ -35,6 +37,14 @@ export default function App(): ReactElement {
   
   
   */
+
+  useEffect(() => {
+    return () => {
+      Listener.removeListener();
+      Emitter.removeEmitter();
+    };
+  }, [gameListener]);
+
   gameListener.blackJack(() => {
     console.log('BlackJack');
   });

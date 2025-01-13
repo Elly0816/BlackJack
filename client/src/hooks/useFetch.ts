@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { CONSTANTS } from "../constants/Constants";
+import { useMemo, useEffect, useState } from 'react';
+import { CONSTANTS } from '../constants/Constants';
 
 export default function useFetch(): {
   loading: boolean;
@@ -10,43 +10,70 @@ export default function useFetch(): {
   const [data, setData] = useState<string>();
   const [error, setError] = useState<string>();
 
+  const getData = useMemo(() => {
+    return (signal: AbortSignal) => getData1(signal);
+  }, []);
+
   useEffect(() => {
+    let mounted = true;
+    const { signal, abort } = new AbortController();
+    // let mounted = true;
     const fetchData = async () => {
       setLoading(true);
       try {
-        const { finalData, errorMessage } = await getData();
+        const { finalData, errorMessage } = await getData(signal);
 
-        if (finalData) {
-          setLoading(false);
-          setData(finalData);
-        } else {
-          setError(errorMessage as unknown as string);
+        if (mounted) {
+          if (finalData) {
+            setLoading(false);
+            setData(finalData);
+          } else {
+            setError(errorMessage as unknown as string);
+          }
         }
       } catch (e: unknown) {
-        if (e instanceof Error) {
-          setError(e.message);
-        } else {
-          setError(e as string);
+        if (mounted && !signal.aborted) {
+          if (e instanceof Error) {
+            setError(e.message);
+          } else {
+            setError(String(e));
+          }
         }
       } finally {
-        setLoading(false);
+        mounted && setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+
+    return () => {
+      try {
+        console.log(`Request aborting`);
+        mounted = false;
+        abort();
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          console.log(`Error: ${e.message}`);
+        } else {
+          console.log(`Error: ${e}`);
+        }
+      }
+    };
+  }, [getData]);
 
   return { loading, data, error };
 }
 
-async function getData(): Promise<{
+async function getData1(signal: AbortSignal): Promise<{
   finalData: string | null;
   errorMessage: string | unknown;
 }> {
   let data: string;
   let errorMessage: unknown | string;
   try {
-    const res = (await fetch(CONSTANTS.developmentEndpoint)) as Response;
+    const res = (await fetch(CONSTANTS.developmentEndpoint, {
+      signal: signal,
+    })) as Response;
     if (res.ok) {
       data = (await res.text()) as string;
       console.log(`Data has been gotten successfully`);

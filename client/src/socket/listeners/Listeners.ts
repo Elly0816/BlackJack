@@ -3,7 +3,7 @@ import { connectedSocket } from '../Socket';
 
 export default class Listener {
   private socket: Socket = connectedSocket;
-  static instance: Listener;
+  static instance: Listener | null;
 
   private constructor() {}
 
@@ -13,6 +13,12 @@ export default class Listener {
     }
     Listener.instance = new Listener();
     return Listener.instance;
+  }
+
+  static removeListener(): void {
+    if (Listener.instance) {
+      Listener.instance = null;
+    }
   }
 
   game(cb: (game: string) => void): void {
