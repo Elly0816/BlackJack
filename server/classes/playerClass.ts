@@ -54,9 +54,21 @@ export class Player {
 
     if (
       total + 10 <= 21 &&
-      this.playerCards.map((card) => card.getCardDetails()['face'].toLowerCase()).includes('ace')
+      this.playerCards.map(
+        (card) =>
+          card.getCardDetails()['face'].toLowerCase().includes('ace') &&
+          card.getCardDetails().number === 1
+      )
     ) {
       total += 10;
+      this.playerCards
+        .find((value: Card) => {
+          return (
+            value.getCardDetails().face.toLowerCase() === 'ace' &&
+            value.getCardDetails().number === 1
+          );
+        })
+        ?.setAceToEleven();
     }
 
     this.playerTotal = total;
