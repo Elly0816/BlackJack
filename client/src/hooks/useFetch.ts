@@ -7,8 +7,8 @@ export default function useFetch(): {
   error: string | undefined;
 } {
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<string>();
-  const [error, setError] = useState<string>();
+  const [data, setData] = useState<GameScoreType>();
+  const [error, setError] = useState<GameScoreType>();
 
   const getData = useMemo(() => {
     return (signal: AbortSignal) => getData1(signal);

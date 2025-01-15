@@ -1,6 +1,21 @@
 import { Socket } from 'socket.io-client';
 import { connectedSocket } from '../Socket';
 
+// blackjack
+// * draw
+// * houseWins
+// * winner
+// * bust
+// * lose
+
+export type GameScoreType =
+  | 'draw'
+  | 'houseWins'
+  | 'winner'
+  | 'bust'
+  | 'lose'
+  | 'blackjack';
+
 export default class Listener {
   private socket: Socket = connectedSocket;
   static instance: Listener | null;
@@ -55,11 +70,11 @@ export default class Listener {
     this.socket.on('dealer', cb);
   }
 
-  blackJack(cb: () => void): void {
+  blackJack(cb: (blackJackState: GameScoreType) => void): void {
     this.socket.on('blackjack', cb);
   }
 
-  draw(cb: () => void): void {
+  draw(cb: (drawState: GameScoreType) => void): void {
     this.socket.on('draw', cb);
   }
 

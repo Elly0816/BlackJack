@@ -1,6 +1,7 @@
 import { CardType, DeckType } from '../../types/gameType/gameFromServerType';
 import getNameFromCard from '../../utilities/Utilities';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useContext } from 'react';
+import { GameStateContext } from '../../contexts/gameStateContext';
 import './Card.css';
 
 type CardProps = CardType | DeckType | Omit<DeckType, 'numberOfCards'>;
@@ -9,6 +10,8 @@ export default function Card(props: CardProps): ReactElement {
   const isDeckType = (props: CardProps): props is DeckType => {
     return 'type' in props && props.type === 'deck';
   };
+
+  const gameContext = useContext(GameStateContext);
 
   if (!isDeckType(props)) {
     const imgURL = getNameFromCard(props as CardType);
@@ -25,16 +28,39 @@ export default function Card(props: CardProps): ReactElement {
   const { numberOfCards } = props;
 
   return (
-    <div className="card back max-h-fit max-w-fit flex-shrink flex-grow">
-      <img src="./back.png" alt="./back.png" />
-      {numberOfCards && (
-        <div className="card-amount">
-          {/* <h1> */}
-          {numberOfCards}
-          {/* </h1> */}
+    <>
+      {gameContext && isDeckType(props) ? (
+        <div className="main-container flex flex-row justify-between items-center min-w-full px-8">
+          {/* <div>
+        </div> */}
+          <h1>Something</h1>
+          <div className="card back max-h-fit max-w-fit">
+            {/* <h1>Something</h1> */}
+            <img src="./back.png" alt="./back.png" />
+            {numberOfCards && (
+              <div className="card-amount">
+                {/* <h1> */}
+                {numberOfCards}
+                {/* </h1> */}
+              </div>
+            )}
+            {/* </img> */}
+          </div>
+        </div>
+      ) : (
+        <div className="card back max-h-fit max-w-fit">
+          {/* <h1>Something</h1> */}
+          <img src="./back.png" alt="./back.png" />
+          {numberOfCards && (
+            <div className="card-amount">
+              {/* <h1> */}
+              {numberOfCards}
+              {/* </h1> */}
+            </div>
+          )}
+          {/* </img> */}
         </div>
       )}
-      {/* </img> */}
-    </div>
+    </>
   );
 }

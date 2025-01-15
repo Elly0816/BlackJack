@@ -25,3 +25,9 @@
   align-self: flex-end;
   margin-right: 20px;
 }
+
+.main-container {
+  justify-content: space-between !important;
+  width: -webkit-fill-available;
+  padding-left: 40px;
+}

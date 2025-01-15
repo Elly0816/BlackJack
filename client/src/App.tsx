@@ -4,7 +4,8 @@ import useFetch from './hooks/useFetch';
 import React, { ReactElement, useState, useMemo, useEffect } from 'react';
 import Home from './pages/home/Home';
 import { searchingContext } from './contexts/searchingContext';
-import Listener from './socket/listeners/Listeners';
+import { GameStateContext } from './contexts/gameStateContext';
+import Listener, { GameScoreType } from './socket/listeners/Listeners';
 import { GameFromServerType } from './types/gameType/gameFromServerType';
 import { gameContext } from './contexts/gameContext';
 import Table from './pages/table/Table';
@@ -17,6 +18,7 @@ export default function App(): ReactElement {
   const [game, setGame] = useState<GameFromServerType>();
   const [isTurn, setIsTurn] = useState<boolean>();
   const [score, setScore] = useState<scoreType>(null);
+  const [gameState, setGameState] = useState<GameScoreType>();
 
   // const abortController = new AbortController();
   const { data, error } = useFetch();
@@ -46,26 +48,32 @@ export default function App(): ReactElement {
   }, [gameListener]);
 
   gameListener.blackJack(() => {
+    setGameState('blackjack');
     console.log('BlackJack');
   });
 
   gameListener.draw(() => {
+    setGameState('draw');
     console.log('draw');
   });
 
   gameListener.houseWins(() => {
+    setGameState('houseWins');
     console.log('house wins');
   });
 
   gameListener.winner(() => {
+    setGameState('winner');
     console.log('winner');
   });
 
   gameListener.bust(() => {
+    setGameState('bust');
     console.log('bust');
   });
 
   gameListener.lose(() => {
+    setGameState('lose');
     console.log('You Lose');
   });
 
@@ -139,8 +147,10 @@ export default function App(): ReactElement {
         }
       >
         <searchingContext.Provider value={{ searching, setSearching }}>
-          {divToReturn}
-          {/* {data? `This is the data: ${data}`:`The data is not available`} */}
+          <GameStateContext.Provider value={gameState}>
+            {divToReturn}
+            {/* {data? `This is the data: ${data}`:`The data is not available`} */}
+          </GameStateContext.Provider>
         </searchingContext.Provider>
       </gameContext.Provider>
     </div>

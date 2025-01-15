@@ -1,4 +1,5 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useContext } from 'react';
+import { GameStateContext } from '../../contexts/gameStateContext';
 import { GamePlayerType } from '../../types/gameType/gameFromServerType';
 import { connectedSocket } from '../../socket/Socket';
 import './Player.css';
@@ -9,9 +10,11 @@ export default function Player({
 }: {
   player: GamePlayerType;
 }): ReactElement {
-  const { id: playerID, cards, name, total } = player;
+  const { id: playerID, cards, name } = player;
 
   const { id } = connectedSocket;
+
+  const gameState = useContext(GameStateContext);
 
   return (
     // <div className="player">
@@ -29,6 +32,18 @@ export default function Player({
           */}
       <h2>{playerID === id ? 'Me' : name}</h2>
       {/* <div className="cards-total-container"> */}
+      {playerID === id && gameState && gameState === 'blackjack' && (
+        <h1>BlackJack!</h1>
+      )}
+      {playerID === id && gameState && gameState === 'bust' && <h1>Bust!</h1>}
+      {playerID === id && gameState && gameState === 'draw' && <h1>Draw!</h1>}
+      {playerID === id && gameState && gameState === 'houseWins' && (
+        <h1>House Wins!</h1>
+      )}
+      {playerID === id && gameState && gameState === 'lose' && <h1>Lose!</h1>}
+      {playerID === id && gameState && gameState === 'winner' && (
+        <h1>Winner!</h1>
+      )}
       <div className="cards">
         <Deck cards={cards} />
       </div>
