@@ -1,5 +1,4 @@
 import { ReactElement, useState, useContext, useEffect } from 'react';
-import { GameFromServerType } from '../../types/gameType/gameFromServerType';
 import React from 'react';
 import Dealer from '../../components/dealer/Dealer';
 import './Table.css';
@@ -9,13 +8,13 @@ import Emitter from '../../socket/emitters/Emitters';
 import { gameContext, gameContextAndTurn } from '../../contexts/gameContext';
 import HitAndStandButtons from '../../components/hitAndStandButtons/HitAndStandButtons';
 
-export default function Table(props: GameFromServerType): ReactElement {
-  const { id, deck, dealer, players } = props;
+export default function Table(): ReactElement {
+  // const { id, deck, dealer, players } = useContext(gameContext);
   const [ready, setReady] = useState<boolean>(false);
 
-  console.log({ ...props });
-
-  const { isTurn } = useContext(gameContext) as gameContextAndTurn;
+  const { isTurn, id, deck, dealer, players } = useContext(
+    gameContext
+  ) as gameContextAndTurn;
 
   useEffect(() => {
     const singleAudio = new Audio('./cardPlace1.wav');

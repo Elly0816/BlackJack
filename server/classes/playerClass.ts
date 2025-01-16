@@ -93,6 +93,12 @@ export class Player {
   setName(name: string): void {
     this.playerName = name;
   }
+
+  reset(): void {
+    this.playerCards = [];
+    this.playerName = '';
+    this.playerTotal = 0;
+  }
 }
 
 export class Dealer extends Player {

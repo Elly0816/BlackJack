@@ -125,3 +125,25 @@ function checkForWinner(game: BlackJack, io: Server) {
   gameWinner.dealerUntilBust();
   gameWinner.checkWinState();
 }
+
+export function removePlayerFromGame(gameId: string, playerId: string) {
+  const game = BlackJack.getGame(gameId);
+  if (game) {
+    const player = Player.getPlayer(playerId);
+    if (player && game.getPlayers().includes(player)) {
+      game.removePlayer(playerId);
+      player.reset();
+      console.log('Below are the remaining players in the game\n');
+      console.log(game.getPlayers());
+    }
+  }
+}
+
+export function removeGameFromMemory(gameId: string) {
+  const game = BlackJack.getGame(gameId);
+  if (game.getPlayers().length === 0) {
+    game.removeGame();
+  }
+  // console.log('Below is the game in memory:\n');
+  // console.log(game);
+}

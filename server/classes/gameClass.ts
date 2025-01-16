@@ -80,4 +80,18 @@ export default class BlackJack {
   getDeck(): Card[] {
     return this.deck;
   }
+
+  removePlayer(playerId: string) {
+    const player = Player.getPlayer(playerId);
+    const playerIndex = this.players.indexOf(player);
+    this.players.splice(playerIndex, 1);
+    player.setStatus('notInGame');
+  }
+
+  removeGame() {
+    // const game = BlackJack.getGame(gameId);
+    const gameIndex = BlackJack.games.indexOf(this);
+    BlackJack.games.splice(gameIndex, 1);
+    BlackJack.numberOfGames = BlackJack.games.length;
+  }
 }

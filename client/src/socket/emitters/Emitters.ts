@@ -43,4 +43,8 @@ export default class Emitter {
   show(gameId: string) {
     this.socket.emit('show', gameId);
   }
+
+  resetGame(gameId: string) {
+    this.socket.emit('end game', gameId);
+  }
 }

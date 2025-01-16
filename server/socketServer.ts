@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { Server, Socket } from 'socket.io';
 import {
+  endGameHandler,
   socketHitHandler,
   socketReadyHandler,
   socketSearchHandler,
@@ -9,6 +10,7 @@ import {
 } from './controllers/socketEventHandlers';
 import { createPlayer, removePlayerOnDisconnect } from './controllers/playerController';
 import { Player } from './classes/playerClass';
+import BlackJack from './classes/gameClass';
 
 export function initializeSocket(
   server: Server<typeof IncomingMessage, typeof ServerResponse> | any
@@ -73,6 +75,12 @@ export function initializeSocket(
     // socket.on('show', (gameId: string) => {
     //   socketShowHandler(gameId, io);
     // });
+
+    socket.on('end game', (gameId: string) => {
+      endGameHandler(gameId, socket.id);
+      console.log(`Below is the game in memory`);
+      console.log(BlackJack.getGames());
+    });
 
     socket.on('disconnect', () => {
       console.log(`Disconnected: ${player.getName()}`);

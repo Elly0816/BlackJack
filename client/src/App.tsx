@@ -11,13 +11,13 @@ import { gameContext } from './contexts/gameContext';
 import Table from './pages/table/Table';
 import Emitter from './socket/emitters/Emitters';
 
-type scoreType = 'BlackJack' | 'lose' | null;
+// type scoreType = 'BlackJack' | 'lose' | null;
 
 export default function App(): ReactElement {
   const [searching, setSearching] = useState<boolean>(false);
   const [game, setGame] = useState<GameFromServerType>();
   const [isTurn, setIsTurn] = useState<boolean>();
-  const [score, setScore] = useState<scoreType>(null);
+  // const [score, setScore] = useState<scoreType>(null);
   const [gameState, setGameState] = useState<GameScoreType>();
 
   // const abortController = new AbortController();
@@ -29,6 +29,13 @@ export default function App(): ReactElement {
   const gameListener = useMemo(() => {
     return Listener.getInstance();
   }, []);
+
+  useEffect(() => {
+    if (!game) {
+      setGameState(undefined);
+      setIsTurn(undefined);
+    }
+  }, [game]);
 
   /*
    * blackjack
@@ -111,16 +118,16 @@ export default function App(): ReactElement {
     console.log('This is the game:\n');
     console.log(game);
     setIsTurn(false);
-    setScore('BlackJack');
+    // setScore('BlackJack');
     setGame(parsedGame);
     // gameEmitter.show(parsedGame.id);
   });
 
   divToReturn = <Home />;
 
-  if (score === 'BlackJack') {
-    divToReturn = <div>The game should be scored now</div>;
-  }
+  // if (score === 'BlackJack') {
+  //   divToReturn = <div>The game should be scored now</div>;
+  // }
 
   if (!data) {
     divToReturn = <div>The data is not available</div>;
@@ -131,10 +138,7 @@ export default function App(): ReactElement {
   }
 
   if (game) {
-    const { id, deck, players, dealer } = game;
-    divToReturn = (
-      <Table id={id} deck={[...deck]} players={[...players]} dealer={dealer} />
-    );
+    divToReturn = <Table />;
   }
 
   return (
@@ -142,7 +146,11 @@ export default function App(): ReactElement {
       <gameContext.Provider
         value={
           game
-            ? { ...(game as GameFromServerType), isTurn: isTurn as boolean }
+            ? {
+                ...(game as GameFromServerType),
+                isTurn: isTurn as boolean,
+                setGame: setGame,
+              }
             : (game as unknown as null)
         }
       >
