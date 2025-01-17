@@ -1,10 +1,9 @@
-import "./App.css";
-// import Game from './components/Game';
-import Table from "./components/Table";
-import Home from "./components/Home";
-import { useState, useEffect, createContext } from "react";
-import { connectedSocket } from "./socket";
-import useFetch from "./hooks/useFetch";
+import './App.css';
+import Table from './components/Table';
+import Home from './components/Home';
+import { useState, useEffect, createContext } from 'react';
+import { connectedSocket } from './socket';
+import useFetch from './hooks/useFetch';
 function App() {
   //When the user clicks to start a game,
   //io opens a connection on the server and connects to another free connection
@@ -19,7 +18,7 @@ function App() {
   const [searching, setSearching] = useState(false);
   // let socketSet;
 
-  const { loading, data, error } = useFetch();
+  const { data } = useFetch();
 
   useEffect(() => {
     if (data) {
@@ -32,7 +31,7 @@ function App() {
     if (socket) {
       setSearching(true);
       timer = setInterval(() => {
-        socket.emit("search", name);
+        socket.emit('search', name);
         if (startGame) {
           clearInterval(timer);
         }
@@ -71,7 +70,7 @@ function App() {
   // };
 
   if (socket) {
-    socket.on("game", () => {
+    socket.on('game', () => {
       // console.log('joined Room');
       clearInterval(timer);
       setSearching(false);
@@ -79,7 +78,7 @@ function App() {
     });
 
     if (socket) {
-      socket.on("waiting", () => {
+      socket.on('waiting', () => {
         clearInterval(timer);
       });
     }
