@@ -30,4 +30,5 @@
   justify-content: space-between !important;
   width: -webkit-fill-available;
   padding-left: 40px;
+  height: min-content;
 }

@@ -33,7 +33,7 @@ export default function Card(props: CardProps): ReactElement {
 
   if (gameScoreContext && isDeckType(props))
     return (
-      <div className="main-container flex flex-row justify-between items-center min-w-full px-8">
+      <div className="main-container h-min flex flex-row justify-between items-center min-w-full px-8">
         {/* <div>
         </div> */}
         <GoBack

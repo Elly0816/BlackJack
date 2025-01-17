@@ -56,7 +56,7 @@ export default function Table(): ReactElement {
   //     are playing a game with ${deck.length} cards.
   // `}</>
   return (
-    <div className="my-table h-screen flex flex-col justify-evenly items-center">
+    <div className="my-table h-min flex flex-col justify-evenly items-center">
       {/* // <div className="min-h-screen"> */}
       {
         //Dealer, deck and players should be on here
