@@ -32,3 +32,9 @@
   padding-left: 40px;
   height: min-content;
 }
+
+.gameScore {
+  color: aliceblue;
+  font-size: larger;
+  font-weight: bolder;
+}

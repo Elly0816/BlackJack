@@ -1,6 +1,6 @@
 import { CardType, DeckType } from '../../types/gameType/gameFromServerType';
 import { getNameFromCard } from '../../utilities/Utilities';
-import React, { ReactElement, useContext } from 'react';
+import React, { ReactElement, useCallback, useContext } from 'react';
 import { GameStateContext } from '../../contexts/gameStateContext';
 import './Card.css';
 import GoBack from '../goBack/GoBack';
@@ -16,6 +16,14 @@ export default function Card(props: CardProps): ReactElement {
 
   const gameScoreContext = useContext(GameStateContext);
   const { setGame, id } = useContext(gameContext) as gameContextAndTurn;
+
+  const goBackHandler = useCallback(
+    (e: React.MouseEvent) => {
+      setGame(undefined);
+      Emitter.getInstance().resetGame(id);
+    },
+    [setGame, id]
+  );
 
   if (!isDeckType(props)) {
     const imgURL = getNameFromCard(props as CardType);
@@ -36,19 +44,8 @@ export default function Card(props: CardProps): ReactElement {
       <div className="main-container h-min flex flex-row justify-between items-center min-w-full px-8">
         {/* <div>
         </div> */}
-        <GoBack
-          onClick={() => {
-            setGame(undefined);
-            Emitter.getInstance().resetGame(id);
-            // console.log('Go back was clicked');
-            // console.log(dealer);
-            // console.log(id);
-            // console.log(isTurn);
-            // console.log(deck);
-            // console.log(players);
-          }}
-        />
-        <h1>{gameScoreContext.toUpperCase()}</h1>
+        <GoBack onClick={goBackHandler} />
+        <h1 className="gameScore">{gameScoreContext.toUpperCase()}!!!</h1>
         <div className="card back max-h-fit max-w-fit">
           {/* <h1>Something</h1> */}
           <img src="./back.png" alt="./back.png" />
