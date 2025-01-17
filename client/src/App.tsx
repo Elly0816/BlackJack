@@ -47,81 +47,161 @@ export default function App(): ReactElement {
   
   */
 
+  const handleGameEvent = useMemo(
+    () => ({
+      blackJack: () => {
+        setGameState('blackjack');
+        console.log('BlackJack');
+      },
+      draw: () => {
+        setGameState('draw');
+        console.log('draw');
+      },
+      houseWins: () => {
+        setGameState('houseWins');
+        console.log('house wins');
+      },
+      winner: () => {
+        setGameState('winner');
+        console.log('winner');
+      },
+      bust: () => {
+        setGameState('bust');
+        console.log('bust');
+      },
+      lose: () => {
+        setGameState('lose');
+        console.log('You Lose');
+      },
+      game: (gameFromServer: string) => {
+        setGame(JSON.parse(gameFromServer));
+        setSearching(false);
+      },
+      searchError: () => {
+        console.log('Search error');
+        setSearching(false);
+      },
+      shuffle: (gameFromServer: string) => {
+        setGame(JSON.parse(gameFromServer));
+      },
+      show: () => {
+        setIsTurn(true);
+      },
+      hide: () => {
+        setIsTurn(false);
+      },
+      dealer: (game: string) => {
+        setGame(JSON.parse(game));
+      },
+      score: (game: string) => {
+        const parsedGame: GameFromServerType = JSON.parse(game);
+        setIsTurn(false);
+        setGame(parsedGame);
+      },
+    }),
+    []
+  );
+
   useEffect(() => {
+    // const gameListener = Listener.getInstance();
+
+    // Setup all listeners
+    gameListener.blackJack(handleGameEvent.blackJack);
+    gameListener.draw(handleGameEvent.draw);
+    gameListener.houseWins(handleGameEvent.houseWins);
+    gameListener.winner(handleGameEvent.winner);
+    gameListener.bust(handleGameEvent.bust);
+    gameListener.lose(handleGameEvent.lose);
+    gameListener.game(handleGameEvent.game);
+    gameListener.searchError(handleGameEvent.searchError);
+    gameListener.shuffle(handleGameEvent.shuffle);
+    gameListener.show(handleGameEvent.show);
+    gameListener.hide(handleGameEvent.hide);
+    gameListener.dealer(handleGameEvent.dealer);
+    gameListener.score(handleGameEvent.score);
+
+    // Cleanup
     return () => {
       Listener.removeListener();
       Emitter.removeEmitter();
     };
-  }, [gameListener]);
+  }, [handleGameEvent, gameListener]);
 
-  gameListener.blackJack(() => {
-    setGameState('blackjack');
-    console.log('BlackJack');
-  });
+  // useEffect(() => {
+  //   return () => {
+  //     Listener.removeListener();
+  //     Emitter.removeEmitter();
+  //   };
+  // }, [gameListener]);
 
-  gameListener.draw(() => {
-    setGameState('draw');
-    console.log('draw');
-  });
+  // gameListener.blackJack(() => {
+  //   setGameState('blackjack');
+  //   console.log('BlackJack');
+  // });
 
-  gameListener.houseWins(() => {
-    setGameState('houseWins');
-    console.log('house wins');
-  });
+  // gameListener.draw(() => {
+  //   setGameState('draw');
+  //   console.log('draw');
+  // });
 
-  gameListener.winner(() => {
-    setGameState('winner');
-    console.log('winner');
-  });
+  // gameListener.houseWins(() => {
+  //   setGameState('houseWins');
+  //   console.log('house wins');
+  // });
 
-  gameListener.bust(() => {
-    setGameState('bust');
-    console.log('bust');
-  });
+  // gameListener.winner(() => {
+  //   setGameState('winner');
+  //   console.log('winner');
+  // });
 
-  gameListener.lose(() => {
-    setGameState('lose');
-    console.log('You Lose');
-  });
+  // gameListener.bust(() => {
+  //   setGameState('bust');
+  //   console.log('bust');
+  // });
 
-  gameListener.game((gameFromServer) => {
-    setGame(JSON.parse(gameFromServer));
-    setSearching(false);
-  });
+  // gameListener.lose(() => {
+  //   setGameState('lose');
+  //   console.log('You Lose');
+  // });
 
-  gameListener.searchError(() => {
-    console.log('There was an error with searching for a game to join');
-    setSearching(false);
-  });
+  // gameListener.game((gameFromServer) => {
+  //   setGame(JSON.parse(gameFromServer));
+  //   setSearching(false);
+  // });
 
-  gameListener.shuffle((gameFromServer) => {
-    setGame(JSON.parse(gameFromServer));
-  });
+  // gameListener.searchError(() => {
+  //   console.log('There was an error with searching for a game to join');
+  //   setSearching(false);
+  // });
 
-  gameListener.show(() => {
-    console.log(`Socket heard a show event`);
-    setIsTurn(true);
-  });
+  // gameListener.shuffle((gameFromServer) => {
+  //   setGame(JSON.parse(gameFromServer));
+  // });
 
-  gameListener.hide(() => {
-    console.log(`Socket heard a hide event`);
-    setIsTurn(false);
-  });
+  // gameListener.show(() => {
+  //   console.log(`Socket heard a show event`);
+  //   setIsTurn(true);
+  // });
 
-  gameListener.dealer((game) => {
-    setGame(JSON.parse(game));
-  });
+  // gameListener.hide(() => {
+  //   console.log(`Socket heard a hide event`);
+  //   setIsTurn(false);
+  // });
 
-  gameListener.score((game) => {
-    const parsedGame: GameFromServerType = JSON.parse(game);
-    console.log(`Socket heard a score event`);
-    console.log('This is the game:\n');
-    console.log(game);
-    setIsTurn(false);
-    // setScore('BlackJack');
-    setGame(parsedGame);
-    // gameEmitter.show(parsedGame.id);
-  });
+  // gameListener.dealer((game) => {
+  //   setGame(JSON.parse(game));
+  // });
+
+  // gameListener.score((game) => {
+  //   const parsedGame: GameFromServerType = JSON.parse(game);
+  //   console.log(`Socket heard a score event`);
+  //   console.log('This is the game:\n');
+  //   console.log(game);
+  //   setIsTurn(false);
+  //   // setScore('BlackJack');
+  //   setGame(parsedGame);
+  //   // gameEmitter.show(parsedGame.id);
+  // });
 
   divToReturn = <Home />;
 

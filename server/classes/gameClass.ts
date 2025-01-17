@@ -11,7 +11,7 @@ export default class BlackJack {
 
   constructor(players: Player[], deck: Card[], id: string) {
     this.players = players;
-    this.dealer = new Dealer('Dealer: ' + id);
+    this.dealer = new Dealer();
     this.deck = deck;
     this.id = id;
     BlackJack.games.push(this);
@@ -89,7 +89,7 @@ export default class BlackJack {
   }
 
   removeGame() {
-    // const game = BlackJack.getGame(gameId);
+    this.dealer.reset();
     const gameIndex = BlackJack.games.indexOf(this);
     BlackJack.games.splice(gameIndex, 1);
     BlackJack.numberOfGames = BlackJack.games.length;

@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import { GameDealerType } from '../../types/gameType/gameFromServerType';
 // import Card from "../card/Card";
 import './Dealer.css';
@@ -14,11 +14,20 @@ export default function Dealer({
 
   const [secondCardBack, setSecondCardBack] = useState<boolean>(true);
 
-  const listener = Listener.getInstance();
-  listener.faceUp(() => {
-    setSecondCardBack(false);
-    console.log(`The client socket heard a face up event`);
-  });
+  const listener = useMemo(() => {
+    return Listener.getInstance();
+  }, []);
+
+  useEffect(() => {
+    listener.faceUp(() => {
+      setSecondCardBack(false);
+      console.log(`The client socket heard a face up event`);
+    });
+
+    return () => {
+      Listener.removeListener();
+    };
+  }, [listener]);
 
   return (
     <div className="max-h-fit max-w-fit">

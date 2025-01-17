@@ -27,6 +27,13 @@ export default class gameManager {
     return gameManager.searchingPlayers;
   }
 
+  static removeGame(gameId: string) {
+    const indexOfGameToRemove = gameManager.getPlayerTurn.indexOf(
+      gameManager.getPlayerTurn.find((pt) => pt.gameId === gameId) as getPlayerTurnType
+    );
+    gameManager.getPlayerTurn.splice(indexOfGameToRemove, 1);
+  }
+
   static removeSearchingPlayers(player: Player): void {
     const indexOfPlayerToRemove = gameManager.searchingPlayers.indexOf(player);
     if (indexOfPlayerToRemove > -1) {
@@ -77,6 +84,7 @@ export default class gameManager {
   static decidePlayerTurn(gameID: string): getPlayerTurnType {
     console.log(`Deciding`);
     let game = BlackJack.getGame(gameID);
+    game ? console.log('THere is a game') : console.log('There is no game');
     // if(gameManager.getPlayerTurn.length === 0){
     //   gameManager.getPlayerTurn.push({gameId:gameID, playerTurn:game.getPlayers().map((p,i) => {return {playerId:p.getSocket()?.id as unknown as string, isTurn:(i=0)?true:false}})});
 

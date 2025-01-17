@@ -1,5 +1,5 @@
 import { CardType, DeckType } from '../../types/gameType/gameFromServerType';
-import getNameFromCard from '../../utilities/Utilities';
+import { getNameFromCard } from '../../utilities/Utilities';
 import React, { ReactElement, useContext } from 'react';
 import { GameStateContext } from '../../contexts/gameStateContext';
 import './Card.css';

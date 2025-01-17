@@ -64,8 +64,11 @@ export async function createdGameAndReturnId(
 
 export async function nextPlayerTurn(gameId: string, io: Server): Promise<void> {
   let playerTurns = gameManager.decidePlayerTurn(gameId);
+  playerTurns ? console.log('There are player turns') : console.log('There are no player turns');
   let players = playerTurns.playerTurn;
+  players ? console.log('There are players') : console.log('There are no players');
   let sockets = await io.in(gameId).fetchSockets();
+  sockets ? console.log('There are sockets') : console.log('There are no sockets');
   for (const p of players) {
     if (p.isTurn) {
       io.to(sockets.filter((s) => s.id === p.playerId)[0].id).emit('show');
@@ -143,6 +146,7 @@ export function removeGameFromMemory(gameId: string) {
   const game = BlackJack.getGame(gameId);
   if (game.getPlayers().length === 0) {
     game.removeGame();
+    gameManager.removeGame(gameId);
   }
   // console.log('Below is the game in memory:\n');
   // console.log(game);

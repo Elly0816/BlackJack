@@ -102,8 +102,8 @@ export class Player {
 }
 
 export class Dealer extends Player {
-  constructor(playerName: string) {
-    super(playerName, null);
+  constructor() {
+    super('Dealer', null);
     this.status = 'inGame';
   }
 
