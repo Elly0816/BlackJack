@@ -15,9 +15,7 @@ export default function Card(props: CardProps): ReactElement {
   };
 
   const gameScoreContext = useContext(GameStateContext);
-  const { setGame, dealer, deck, id, isTurn, players } = useContext(
-    gameContext
-  ) as gameContextAndTurn;
+  const { setGame, id } = useContext(gameContext) as gameContextAndTurn;
 
   if (!isDeckType(props)) {
     const imgURL = getNameFromCard(props as CardType);
@@ -42,14 +40,15 @@ export default function Card(props: CardProps): ReactElement {
           onClick={() => {
             setGame(undefined);
             Emitter.getInstance().resetGame(id);
-            console.log('Go back was clicked');
-            console.log(dealer);
-            console.log(id);
-            console.log(isTurn);
-            console.log(deck);
-            console.log(players);
+            // console.log('Go back was clicked');
+            // console.log(dealer);
+            // console.log(id);
+            // console.log(isTurn);
+            // console.log(deck);
+            // console.log(players);
           }}
         />
+        <h1>{gameScoreContext.toUpperCase()}</h1>
         <div className="card back max-h-fit max-w-fit">
           {/* <h1>Something</h1> */}
           <img src="./back.png" alt="./back.png" />

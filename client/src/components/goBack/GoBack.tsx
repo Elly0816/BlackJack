@@ -8,7 +8,7 @@ export default function GoBack({
 }): ReactElement {
   return (
     <button title="go back" name="go back" type="button" onClick={onClick}>
-      <IoIosArrowBack />
+      <IoIosArrowBack size={40} />
     </button>
   );
 }
